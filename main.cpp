@@ -3,153 +3,100 @@
 //
 
 #include <iostream>
-#include <limits>
+#include <cmath>
+#include <algorithm>
+#include <omp.h>
 
+#include "Ray.h"
 #include "DReader.h"
 #include "PWriter.h"
 
+#include <chrono>
+
+using namespace std::chrono;
 using namespace std;
 
-double findRayX(const int row, const double left, const double right, const int width)
+const bool checkForIntersection(Ray &ray, const DReader &driver, const bool isShadow = false)
 {
-    return static_cast<double>(row) / (width - 1) * (right - left) + left;
-}
+    bool foundItem = false;
 
-double findRayY(const int col, const double top, const double bottom, const int height)
-{
-    return static_cast<double>(col) / (height - 1) * (bottom - top) + top;
-}
-
-vector<Eigen::Vector3d> pixelRay(const int row, const int col, const DReader &driver,
-                                 const Eigen::Vector3d &normalizedCameraWVector,
-                                 const Eigen::Vector3d &normalizedCameraUVector,
-                                 const Eigen::Vector3d &cameraVVector)
-{
-    auto bounds = driver.bounds;
-
-    double left = bounds[0];
-    double right = bounds[1];
-    double top = bounds[2];
-    double bottom = bounds[3];
-
-    auto resolution = driver.resolution;
-
-    int width = resolution[0];
-    int height = resolution[1];
-
-    auto xValue = findRayX(row, left, right, width);
-    auto yValue = findRayY(col, top, bottom, height);
-
-    auto point = driver.eye + (driver.focalLength * normalizedCameraWVector) + (xValue * normalizedCameraUVector) + (yValue * cameraVVector);
-    auto direction = point - driver.eye;
-    auto normalizedDirection = direction.normalized();
-
-    return {point, normalizedDirection};
-}
-
-double findDDistSqr(const double radius, const double cDist, const double vDist)
-{
-    return radius * radius - (cDist - vDist * vDist);
-}
-
-Eigen::Vector3d sphereHitPoint(const Eigen::Vector3d &point, const Eigen::Vector3d &direction, const double vDist, const double dDistSqr)
-{
-    return point + (vDist - sqrt(dDistSqr)) * direction;
-}
-
-Eigen::Vector3d raySphereRGB(const DReader &driver, const vector<Eigen::Vector3d> &ray, const Sphere &sphere)
-{
-    double radius  = sphere.radius;
-    auto spherePosition = sphere.position;
-
-    auto point = ray[0];
-    auto direction = ray[1];
-
-    auto cVector = spherePosition - point;
-    auto cDist = cVector.dot(cVector);
-
-    auto vDist = cVector.dot(direction);
-
-    double dDistSqr = findDDistSqr(radius, cDist, vDist);
-
-    if(dDistSqr < 0)
+    for(const auto &sphere : driver.spheres)
     {
-        return {0, 0, 0};
+        if(sphere.intersectionTest(ray))
+        {
+            foundItem = true;
+
+            if(isShadow)
+            {
+                return foundItem;
+            }
+        }
     }
 
-    else
+    for(const auto &object : driver.objs)
     {
-        auto hitPoint = sphereHitPoint(point, direction, vDist, dDistSqr);
-
-        auto surfaceNormal = hitPoint - sphere.position;
-        auto normalizedSurfaceNormal = surfaceNormal.normalized();
-
-        auto r = driver.ambientLight[0] * sphere.Ka[0];
-        auto g = driver.ambientLight[1] * sphere.Ka[1];
-        auto b = driver.ambientLight[2] * sphere.Ka[2];
-
-        Eigen::Vector3d color(r, g, b);
-
-        for(const auto &light : driver.lights)
+        if(object.intersectionTest(ray))
         {
-            auto lightPoint = light.position;
-            auto lightColor = light.rgb;
+            foundItem = true;
 
-            auto lightVector = lightPoint - hitPoint;
-            auto normalizedLightVector = lightVector.normalized();
-
-            if (normalizedSurfaceNormal.dot(normalxxizedLightVector) > 0.0)
+            if(isShadow)
             {
-                color[0] += sphere.Kd[0] * lightColor[0] * normalizedSurfaceNormal.dot(normalizedLightVector);
-                color[1] += sphere.Kd[1] * lightColor[1] * normalizedSurfaceNormal.dot(normalizedLightVector);
-                color[2] += sphere.Kd[2] * lightColor[2] * normalizedSurfaceNormal.dot(normalizedLightVector);
+                return foundItem;
             }
-
         }
+    }
 
+    return foundItem;
+}
+
+Eigen::Vector3d rayTrace(Ray &ray, const DReader &driver, const Eigen::Vector3d &color, const Eigen::Vector3d &howMuchReflect, const int depth)
+{
+    if(!checkForIntersection(ray, driver))
+    {
         return color;
     }
-}
 
-Eigen::Vector3d findNearestSphere(DReader &driver, const vector<Eigen::Vector3d> &ray)
-{
-    Sphere* closestSphere;
-    double minMagnitude = numeric_limits<double>::max();
+    Eigen::Vector3d ambientColor = driver.ambientLight.cwiseProduct(ray.material.Ka);
 
-    for(auto &sphere : driver.spheres)
+    for(const auto &light : driver.lights)
     {
-        double radius  = sphere.radius;
-        auto spherePosition = sphere.position;
+        auto lightVector = (light.position - ray.closestIntersectionPoint).normalized();
+        auto nSNDotLV = ray.surfaceNormal.dot(lightVector);
 
-        auto point = ray[0];
-        auto direction = ray[1];
-
-        auto cVector = spherePosition - point;
-        auto cDist = cVector.dot(cVector);
-
-        auto vDist = cVector.dot(direction);
-
-        double dDistSqr = findDDistSqr(radius, cDist, vDist);
-
-        if(dDistSqr < 0)
+        if (nSNDotLV > 0)
         {
-            continue;
-        }
+            auto shadowRay = Ray(ray.closestIntersectionPoint, light.position - ray.closestIntersectionPoint);
 
-        else
-        {
-            auto hitPoint = sphereHitPoint(point, direction, vDist, dDistSqr);
-            auto magnitude = hitPoint.norm();
-
-            if(magnitude < minMagnitude)
+            if(checkForIntersection(shadowRay, driver, true))
             {
-                minMagnitude = magnitude;
-                closestSphere = &sphere;
+                continue;
+            }
+
+            ambientColor += ray.material.Kd.cwiseProduct(light.rgb) * nSNDotLV;
+
+            auto distToQ = (ray.point - ray.closestIntersectionPoint).normalized();
+            auto specularReflectAngle = (2 * nSNDotLV * ray.surfaceNormal - lightVector).normalized();
+            auto spec = distToQ.dot(specularReflectAngle);
+
+            if (spec > 0)
+            {
+                ambientColor += ray.material.Ks.cwiseProduct(light.rgb) * pow(spec, ray.material.Ns);
             }
         }
     }
 
-    return raySphereRGB(driver,ray, *closestSphere);
+    Eigen::Vector3d newColor = color + howMuchReflect.cwiseProduct(ambientColor);
+
+    if (depth > 0)
+    {
+        auto invDirection = -1 * ray.direction;
+        auto reflectionDirection = (2 * ray.surfaceNormal.dot(invDirection) * ray.surfaceNormal - invDirection).normalized();
+        auto newRay = Ray(ray.closestIntersectionPoint, reflectionDirection);
+        auto newReflec = ray.material.Kr.cwiseProduct(howMuchReflect);
+        return rayTrace(newRay, driver, newColor, newReflec, depth - 1);
+    }
+
+    return newColor;
 }
 
 int main(int argc, char** argv)
@@ -166,53 +113,65 @@ int main(int argc, char** argv)
     {
         DReader driver;
 
+        cout << "Reading All Files." << '\n';
+
         driver << argv[1];
 
-        auto resolution = driver.resolution;
+        auto resolution = driver.camera.resolution;
 
         int width = resolution[0];
         int height = resolution[1];
 
-        auto cameraWVector = driver.eye - driver.lookAtPoint;
-        auto normalizedCameraWVector = cameraWVector.normalized();
-
-        auto cameraUVector = driver.upVector.cross(normalizedCameraWVector);
-        auto normalizedCameraUVector = cameraUVector.normalized();
-
-        auto cameraVVector = normalizedCameraWVector.cross(normalizedCameraUVector);
-
         vector<vector<vector<int>>> img(height);
 
+        cout << "Beginning Raytracing." << '\n';
+        
+        auto start = high_resolution_clock::now();
+
+        #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(dynamic)
         for(int i = 0; i < height; i++)
         {
-            img[height - i - 1] = vector<vector<int>>(width);
+            vector<vector<int>> newRow(width);
 
             for(int j = 0; j < width; j++)
             {
-                auto ray = pixelRay(j, i, driver, normalizedCameraWVector, normalizedCameraUVector, cameraVVector);
+                auto ray = driver.camera.pixelRay(j, i);
 
-                Eigen::Vector3d color = findNearestSphere(driver, ray);
+                Eigen::Vector3d startWithBlack = {0, 0, 0};
+                Eigen::Vector3d startWithFullReflect = {1, 1, 1};
+
+                Eigen::Vector3d color = rayTrace(ray, driver, startWithBlack, startWithFullReflect, driver.recursionDepth);
 
                 vector<int> intColor(3);
-                intColor[0] = static_cast<int>(color[0] * 255);
-                intColor[1] = static_cast<int>(color[1] * 255);
-                intColor[2] = static_cast<int>(color[2] * 255);
-
-                img[height - i - 1][j] = intColor;
-
+                intColor[0] = min(max(static_cast<int>(color[0] * 255), 0), 255);
+                intColor[1] = min(max(static_cast<int>(color[1] * 255), 0), 255);
+                intColor[2] = min(max(static_cast<int>(color[2] * 255), 0), 255);
+                
+                newRow[j] = intColor;
             }
+
+            img[i] = newRow;
         }
+
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        double durationCount = duration.count();
+
+        cout << "Raytracer ran in " << durationCount * 0.000001 << " seconds." << endl;
+        cout << "Writing to PPM File." << '\n';
 
         // Initialize Object Writer Object. This will create and write to the correctly named file.
 
         PWriter writer(argv[2]);
-
         writer << img;
+
+        cout << "Finished!" << '\n';
     }
 
     catch(invalid_argument &err)
     {
         cerr << err.what();
     }
-}
 
+    return 0;
+}

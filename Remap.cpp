@@ -6,52 +6,32 @@
 
 using namespace std;
 
-Remap::Remap(const vector<string> &transformData) :
+Remap::Remap(const Eigen::Vector3d &rotationVector, const double theta, const Eigen::Matrix4d &scalar,
+             const Eigen::Matrix4d &translation, const string &path) :
 
-objPath(transformData[9])
+objPath(path)
 
 {
-    Eigen::Vector3d rotationVector;
-
-    rotationVector << stod(transformData[1]), stod(transformData[2]), stod(transformData[3]);
-
-    Eigen::Matrix4d rotation = findRotationMatrix(rotationVector, stod(transformData[4]));
-
-    Eigen::Matrix4d scalar;
-    scalar << stod(transformData[5]), 0,                      0,                          0,
-              0,                      stod(transformData[5]), 0,                          0,
-              0,                      0,                          stod(transformData[5]), 0,
-              0,                      0,                          0,                          1;
-
-    Eigen::Matrix4d translation;
-    translation << 1, 0, 0, stod(transformData[6]),
-                   0, 1, 0, stod(transformData[7]),
-                   0, 0, 1, stod(transformData[8]),
-                   0, 0, 0, 1;
-
-
+    Eigen::Matrix4d rotation = findRotationMatrix(rotationVector, theta);
     transformation = translation * scalar * rotation;
 }
 
-Eigen::Matrix4d Remap::findRotationMatrix(Eigen::Vector3d &rotationVector, double theta)
+Eigen::Matrix4d Remap::findRotationMatrix(const Eigen::Vector3d &rotationVector, const double theta) const
 {
-    auto cords = changeCords(rotationVector);
+    auto coords = changeCords(rotationVector);
     Eigen::Matrix4d zMatrix;
 
-    // Radians!!!
+    double radTheta = M_PI * theta / 180;
 
-    theta = M_PI * theta / 180;
+    zMatrix << cos(radTheta), -sin(radTheta), 0, 0,
+               sin(radTheta), cos(radTheta),  0, 0,
+               0,             0,              1, 0,
+               0,             0,              0, 1;
 
-    zMatrix << cos(theta), -sin(theta), 0, 0,
-               sin(theta), cos(theta),  0, 0,
-               0,          0,           1, 0,
-               0,          0,           0, 1;
-
-    return cords.transpose() * zMatrix * cords;
+    return coords.transpose() * zMatrix * coords;
 }
 
-
-Eigen::Matrix4d Remap::changeCords(Eigen::Vector3d &rotationVector)
+Eigen::Matrix4d Remap::changeCords(const Eigen::Vector3d &rotationVector) const
 {
     auto bottomVector = rotationVector.normalized();
 
@@ -74,7 +54,7 @@ Eigen::Matrix4d Remap::changeCords(Eigen::Vector3d &rotationVector)
     return r;
 }
 
-int Remap::findMinIndex(Eigen::Vector3d &rotationVector)
+int Remap::findMinIndex(const Eigen::Vector3d &rotationVector) const
 {
     int index = 0;
     double min = numeric_limits<double>::max();
@@ -91,4 +71,12 @@ int Remap::findMinIndex(Eigen::Vector3d &rotationVector)
     }
 
     return index;
+}
+
+ostream &operator<<(ostream &out, const Remap &remap)
+{
+    out << "Remap Path: " << remap.objPath << '\n';
+    out << "Remap Transformation Matrix:\n" << remap.transformation << '\n';
+
+    return out;
 }

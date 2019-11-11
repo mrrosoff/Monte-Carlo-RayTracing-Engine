@@ -5,28 +5,31 @@
 #ifndef GRAPHICS_SPHERE_H
 #define GRAPHICS_SPHERE_H
 
-#include <vector>
+#include <iostream>
 
-#include "../Eigen/Eigen/Eigen"
+#include "Ray.h"
+
+#include "Eigen/Eigen/Eigen"
 
 class Sphere {
 
 public:
 
-    Sphere() = delete;
-    explicit Sphere(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &, double);
-
+    Sphere() = default;
     Sphere(const Sphere &) = default;
-    Sphere &operator=(const Sphere &) = delete;
-    ~Sphere() = default;
+    Sphere &operator=(const Sphere &) = default;
+    virtual ~Sphere() = default;
+
+    explicit Sphere(const Eigen::Vector3d &, double, const Material &);
+    bool intersectionTest(Ray &) const;
 
     Eigen::Vector3d position;
-    double radius;
-    Eigen::Vector3d Ka;
-    Eigen::Vector3d Kd;
-    Eigen::Vector3d Ks;
-    Eigen::Vector3d Kr;
+    double radius = 0;
+    
+    Material material;
 };
+
+std::ostream &operator<<(std::ostream &, const Sphere &);
 
 
 #endif //GRAPHICS_SPHERE_H
