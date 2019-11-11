@@ -46,6 +46,6 @@ PWriter& PWriter::operator<<(const vector<vector<vector<int>>> &img)
             }
         }
     }
-    
+
      return *this;
 }

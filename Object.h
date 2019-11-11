@@ -38,7 +38,10 @@ public:
 private:
 
     void readObject(const Remap &);
+    void readMaterialFile(std::vector<std::string> &);
+
     std::string objPath;
+
 
 };
 

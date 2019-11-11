@@ -16,7 +16,7 @@
 using namespace std::chrono;
 using namespace std;
 
-const bool checkForIntersection(Ray &ray, const DReader &driver, const bool isShadow = false)
+bool checkForIntersection(Ray &ray, const DReader &driver, const bool isShadow = false)
 {
     bool foundItem = false;
 
@@ -131,10 +131,12 @@ int main(int argc, char** argv)
         #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(dynamic)
         for(int i = 0; i < height; i++)
         {
-            vector<vector<int>> newRow(width);
+            img[i] = vector<vector<int>>(width);
 
             for(int j = 0; j < width; j++)
             {
+                img[i][j] = vector<int>(3);
+
                 auto ray = driver.camera.pixelRay(j, i);
 
                 Eigen::Vector3d startWithBlack = {0, 0, 0};
@@ -142,15 +144,10 @@ int main(int argc, char** argv)
 
                 Eigen::Vector3d color = rayTrace(ray, driver, startWithBlack, startWithFullReflect, driver.recursionDepth);
 
-                vector<int> intColor(3);
-                intColor[0] = min(max(static_cast<int>(color[0] * 255), 0), 255);
-                intColor[1] = min(max(static_cast<int>(color[1] * 255), 0), 255);
-                intColor[2] = min(max(static_cast<int>(color[2] * 255), 0), 255);
-                
-                newRow[j] = intColor;
+                img[i][j][0] = min(max(static_cast<int>(color[0] * 255), 0), 255);
+                img[i][j][1] = min(max(static_cast<int>(color[1] * 255), 0), 255);
+                img[i][j][2] = min(max(static_cast<int>(color[2] * 255), 0), 255);
             }
-
-            img[i] = newRow;
         }
 
         auto stop = high_resolution_clock::now();
