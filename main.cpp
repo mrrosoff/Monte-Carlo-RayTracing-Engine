@@ -1,143 +1,218 @@
-
 //
-// Created by Max Rosoff on 9/2/2019.
+// Created by Max Rosoff on 9/21/2019.
 //
 
-#include <sys/stat.h>
+#include <iostream>
+#include <limits>
 
 #include "DReader.h"
-#include "OReader.h"
-#include "Writer.h"
+#include "PWriter.h"
 
 using namespace std;
 
-// This function finds the type of line specified in the .obj file.
-
-// 0 -> Vertex
-// 1 -> Vertex Normal
-// 2 -> Face
-// 3 -> Other
-
-int findLineType(const string &line)
+double findRayX(const int row, const double left, const double right, const int width)
 {
-    if(line[0] == 'v')
-    {
-        if(line[1] == 'n')
-        {
-            return 1;
-        }
+    return static_cast<double>(row) / (width - 1) * (right - left) + left;
+}
 
-        else
-        {
-            return 0;
-        }
-    }
+double findRayY(const int col, const double top, const double bottom, const int height)
+{
+    return static_cast<double>(col) / (height - 1) * (bottom - top) + top;
+}
 
-    else if(line[0] == 'f')
+vector<Eigen::Vector3d> pixelRay(const int row, const int col, const DReader &driver,
+                                 const Eigen::Vector3d &normalizedCameraWVector,
+                                 const Eigen::Vector3d &normalizedCameraUVector,
+                                 const Eigen::Vector3d &cameraVVector)
+{
+    auto bounds = driver.bounds;
+
+    double left = bounds[0];
+    double right = bounds[1];
+    double top = bounds[2];
+    double bottom = bounds[3];
+
+    auto resolution = driver.resolution;
+
+    int width = resolution[0];
+    int height = resolution[1];
+
+    auto xValue = findRayX(row, left, right, width);
+    auto yValue = findRayY(col, top, bottom, height);
+
+    auto point = driver.eye + (driver.focalLength * normalizedCameraWVector) + (xValue * normalizedCameraUVector) + (yValue * cameraVVector);
+    auto direction = point - driver.eye;
+    auto normalizedDirection = direction.normalized();
+
+    return {point, normalizedDirection};
+}
+
+double findDDistSqr(const double radius, const double cDist, const double vDist)
+{
+    return radius * radius - (cDist - vDist * vDist);
+}
+
+Eigen::Vector3d sphereHitPoint(const Eigen::Vector3d &point, const Eigen::Vector3d &direction, const double vDist, const double dDistSqr)
+{
+    return point + (vDist - sqrt(dDistSqr)) * direction;
+}
+
+Eigen::Vector3d raySphereRGB(const DReader &driver, const vector<Eigen::Vector3d> &ray, const Sphere &sphere)
+{
+    double radius  = sphere.radius;
+    auto spherePosition = sphere.position;
+
+    auto point = ray[0];
+    auto direction = ray[1];
+
+    auto cVector = spherePosition - point;
+    auto cDist = cVector.dot(cVector);
+
+    auto vDist = cVector.dot(direction);
+
+    double dDistSqr = findDDistSqr(radius, cDist, vDist);
+
+    if(dDistSqr < 0)
     {
-        return 2;
+        return {0, 0, 0};
     }
 
     else
     {
-        return 3;
+        auto hitPoint = sphereHitPoint(point, direction, vDist, dDistSqr);
+
+        auto surfaceNormal = hitPoint - sphere.position;
+        auto normalizedSurfaceNormal = surfaceNormal.normalized();
+
+        auto r = driver.ambientLight[0] * sphere.Ka[0];
+        auto g = driver.ambientLight[1] * sphere.Ka[1];
+        auto b = driver.ambientLight[2] * sphere.Ka[2];
+
+        Eigen::Vector3d color(r, g, b);
+
+        for(const auto &light : driver.lights)
+        {
+            auto lightPoint = light.position;
+            auto lightColor = light.rgb;
+
+            auto lightVector = lightPoint - hitPoint;
+            auto normalizedLightVector = lightVector.normalized();
+
+            if (normalizedSurfaceNormal.dot(normalxxizedLightVector) > 0.0)
+            {
+                color[0] += sphere.Kd[0] * lightColor[0] * normalizedSurfaceNormal.dot(normalizedLightVector);
+                color[1] += sphere.Kd[1] * lightColor[1] * normalizedSurfaceNormal.dot(normalizedLightVector);
+                color[2] += sphere.Kd[2] * lightColor[2] * normalizedSurfaceNormal.dot(normalizedLightVector);
+            }
+
+        }
+
+        return color;
     }
 }
 
-vector<double> breakLine(const string &line)
+Eigen::Vector3d findNearestSphere(DReader &driver, const vector<Eigen::Vector3d> &ray)
 {
-    stringstream tokenizer(line);
-    string token;
+    Sphere* closestSphere;
+    double minMagnitude = numeric_limits<double>::max();
 
-    vector<double> vertex;
-
-    while(getline(tokenizer, token, ' '))
+    for(auto &sphere : driver.spheres)
     {
-        if(token == "v")
+        double radius  = sphere.radius;
+        auto spherePosition = sphere.position;
+
+        auto point = ray[0];
+        auto direction = ray[1];
+
+        auto cVector = spherePosition - point;
+        auto cDist = cVector.dot(cVector);
+
+        auto vDist = cVector.dot(direction);
+
+        double dDistSqr = findDDistSqr(radius, cDist, vDist);
+
+        if(dDistSqr < 0)
         {
             continue;
         }
 
-        vertex.push_back(stod(token));
+        else
+        {
+            auto hitPoint = sphereHitPoint(point, direction, vDist, dDistSqr);
+            auto magnitude = hitPoint.norm();
+
+            if(magnitude < minMagnitude)
+            {
+                minMagnitude = magnitude;
+                closestSphere = &sphere;
+            }
+        }
     }
 
-    return vertex;
+    return raySphereRGB(driver,ray, *closestSphere);
 }
 
 int main(int argc, char** argv)
 {
-    if(argc < 2)
+    if(argc < 3)
     {
-        cout << "Usage: ./modeltoworld" << " " << "[Driver File]" << '\n';
+        cerr << "Usage: ./raytracer" << " " << "[Driver File]" << " " << "[PPM Output File]" << '\n';
         return 1;
     }
 
-    // Initialize Driver Reader Object. This will create a list of transform objects.
-    // Each Transform object holds a transformation matrix. This needs to be multiplied into the .obj file specified.
+    // Initialize Driver Reader Object. This will load public members of the driver file for use.
 
-    DReader driver(argv[1]);
+    try
+    {
+        DReader driver;
 
-    // Create a new directory for all new files.
+        driver << argv[1];
 
-    int status = mkdir(driver.driverName.c_str(), S_IRWXU);
+        auto resolution = driver.resolution;
 
-    // Initialize Object Writer Object. This will create and write to the correctly named file.
+        int width = resolution[0];
+        int height = resolution[1];
 
-    Writer objOut(driver.driverName);
+        auto cameraWVector = driver.eye - driver.lookAtPoint;
+        auto normalizedCameraWVector = cameraWVector.normalized();
 
-    for(const auto &a : driver.remaps) {
+        auto cameraUVector = driver.upVector.cross(normalizedCameraWVector);
+        auto normalizedCameraUVector = cameraUVector.normalized();
 
-        OReader object(a.objPath);
+        auto cameraVVector = normalizedCameraWVector.cross(normalizedCameraUVector);
 
-        vector<string> newLines;
+        vector<vector<vector<int>>> img(height);
 
-        double absTrans = 0;
-        double absTransInv = 0;
-
-        for (const auto &line : object.lines)
+        for(int i = 0; i < height; i++)
         {
-            int type = findLineType(line);
+            img[height - i - 1] = vector<vector<int>>(width);
 
-            if(type == 0)
+            for(int j = 0; j < width; j++)
             {
-                vector<double> vertex = breakLine(line);
+                auto ray = pixelRay(j, i, driver, normalizedCameraWVector, normalizedCameraUVector, cameraVVector);
 
-                Eigen::Vector4d beforeVector;
+                Eigen::Vector3d color = findNearestSphere(driver, ray);
 
-                beforeVector << vertex[0], vertex[1], vertex[2], 1;
+                vector<int> intColor(3);
+                intColor[0] = static_cast<int>(color[0] * 255);
+                intColor[1] = static_cast<int>(color[1] * 255);
+                intColor[2] = static_cast<int>(color[2] * 255);
 
-                auto afterVector = a.transformation * beforeVector;
+                img[height - i - 1][j] = intColor;
 
-                absTrans += abs(beforeVector[0] - afterVector[0]) +
-                            abs(beforeVector[1] - afterVector[1]) +
-                            abs(beforeVector[2] - afterVector[2]);
-
-                auto reverseVector = a.transformation.inverse() * afterVector;
-
-                absTransInv += abs(afterVector[0] - reverseVector[0]) +
-                            abs(afterVector[1] - reverseVector[1]) +
-                            abs(afterVector[2] - reverseVector[2]);
-
-                newLines.push_back("v "s +
-                                  to_string(afterVector[0]) + " "s +
-                                  to_string(afterVector[1]) + " "s +
-                                  to_string(afterVector[2]));
-            }
-
-            else if(type == 2 || type == 3)
-            {
-                newLines.push_back(line);
             }
         }
 
-        absTransInv -= absTrans;
+        // Initialize Object Writer Object. This will create and write to the correctly named file.
 
-        string objName = a.objPath.substr(0, a.objPath.find_last_of('.'));
+        PWriter writer(argv[2]);
 
-        // Pass the Object Write the name of the .obj file and what to write.
+        writer << img;
+    }
 
-        objOut.writeObject(objName, newLines);
-        objOut.writeTxt(objName, a.transformation, absTrans, absTransInv);
+    catch(invalid_argument &err)
+    {
+        cerr << err.what();
     }
 }
 

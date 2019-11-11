@@ -2,40 +2,23 @@
 // Created by Max Rosoff on 9/7/2019.
 //
 
-
 #include "DReader.h"
 
 using namespace std;
 
-DReader::DReader(const string &driverFile) : driverPath(driverFile), driverName(findDriverName(driverFile)) {
+DReader &DReader::operator<<(const string &driverFile)
+{
+    readDriver(driverFile);
+}
 
-    int status = readDriver();
+void DReader::readDriver(const string &driverFile)
+{
+    ifstream driverReader(driverFile);
 
-    if(status != 0)
+    if (!driverReader)
     {
-        throw "Error with Driver Creation"s;
-    }
-}
-
-
-string DReader::findDriverName(const string &driverFile) {
-
-    unsigned long pIndex = driverFile.find_last_of('.');
-    unsigned long sIndex = driverFile.find_last_of('/');
-    sIndex += 1;
-    return driverFile.substr(sIndex, pIndex - sIndex);
-
-}
-
-
-int DReader::readDriver() {
-
-    ifstream driverReader(driverPath);
-
-    if (!driverReader) {
         string err = strerror(errno);
-        cerr << "Failure to open Driver File - " << driverPath << ": " << err << '\n';
-        return 1;
+        throw invalid_argument("Failure to open Driver File - " + driverFile + ": " + err);
     }
 
     string driverLine;
@@ -52,8 +35,106 @@ int DReader::readDriver() {
             lineData.push_back(token);
         }
 
-        remaps.emplace_back(lineData);
-    }
+        if(lineData[0] == "eye")
+        {
+            eye << stod(lineData[1]),
+                   stod(lineData[2]),
+                   stod(lineData[3]);
+        }
 
-    return 0;
+        if(lineData[0] == "look")
+        {
+            lookAtPoint << stod(lineData[1]),
+                           stod(lineData[2]),
+                           stod(lineData[3]);
+        }
+
+        if(lineData[0] == "up")
+        {
+            upVector << stod(lineData[1]),
+                        stod(lineData[2]),
+                        stod(lineData[3]);
+        }
+
+        if(lineData[0] == "d")
+        {
+            focalLength =  stod(lineData[1]);
+        }
+
+        if(lineData[0] == "bounds")
+        {
+            bounds << stod(lineData[1]),
+                      stod(lineData[2]),
+                      stod(lineData[3]),
+                      stod(lineData[4]);
+        }
+
+        if(lineData[0] == "res")
+        {
+            resolution << stod(lineData[1]),
+                          stod(lineData[2]);
+        }
+
+        if(lineData[0] == "ambient")
+        {
+            ambientLight << stod(lineData[1]),
+                            stod(lineData[2]),
+                            stod(lineData[3]);
+        }
+
+        if(lineData[0] == "light")
+        {
+            Eigen::Vector3d position;
+            Eigen::Vector3d rgb;
+            double w;
+
+            position << stod(lineData[1]),
+                        stod(lineData[2]),
+                        stod(lineData[3]);
+
+            w = stod(lineData[4]);
+
+            rgb << stod(lineData[5]),
+                   stod(lineData[6]),
+                   stod(lineData[7]);
+
+            lights.emplace_back(position, rgb, w);
+        }
+
+        if(lineData[0] == "sphere")
+        {
+            Eigen::Vector3d position;
+            double radius;
+            Eigen::Vector3d Ka;
+            Eigen::Vector3d Kd;
+            Eigen::Vector3d Ks;
+            Eigen::Vector3d Kr;
+
+            position << stod(lineData[1]),
+                        stod(lineData[2]),
+                        stod(lineData[3]);
+
+            radius = stod(lineData[4]);
+
+            Ka << stod(lineData[5]),
+                  stod(lineData[6]),
+                  stod(lineData[7]);
+
+            Kd << stod(lineData[8]),
+                  stod(lineData[9]),
+                  stod(lineData[10]);
+
+            Ks << stod(lineData[11]),
+                  stod(lineData[12]),
+                  stod(lineData[13]);
+
+            Kr << stod(lineData[14]),
+                  stod(lineData[15]),
+                  stod(lineData[16]);
+
+            vector<Eigen::Vector3d> colors = {Ka, Kd, Ks, Kr};
+
+            spheres.emplace_back(position, colors, radius);
+        }
+    }
 }

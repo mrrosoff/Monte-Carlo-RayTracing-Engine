@@ -8,36 +8,43 @@
 #include <string>
 #include <vector>
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 
 #include <cerrno>
 #include <cstring>
 
-#include "Remap.h"
+#include <stdexcept>
 
+#include "../Eigen/Eigen/Eigen"
+
+#include "LightSource.h"
+#include "Sphere.h"
 
 class DReader {
 
 public:
 
-    explicit DReader(const std::string &);
+    DReader() = default;
+    DReader &operator<<(const std::string &);
 
     DReader(const DReader &) = delete;
     DReader &operator=(const DReader &) = delete;
-    ~DReader()= default;
+    ~DReader() = default;
 
-    std::string driverName;
-    std::vector<Remap> remaps;
+    Eigen::Vector3d eye;
+    Eigen::Vector3d lookAtPoint;
+    Eigen::Vector3d upVector;
+    double focalLength = 0;
+    Eigen::Vector4d bounds;
+    Eigen::Vector2d resolution;
+    Eigen::Vector3d ambientLight;
+    std::vector<LightSource> lights;
+    std::vector<Sphere> spheres;
 
 private:
 
-    std::string findDriverName(const std::string &);
-    int readDriver();
-
-    std::string driverPath;
-
+    void readDriver(const std::string &);
 };
 
 
