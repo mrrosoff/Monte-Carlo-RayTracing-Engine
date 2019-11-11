@@ -8,11 +8,7 @@ using namespace std;
 
 Sphere::Sphere(const Eigen::Vector3d &position, const double radius, const Material &material) :
 
-position(position), radius(radius)
-
-{
-    this->material = material;
-}
+        position(position), radius(radius), material(material) {}
 
 bool Sphere::intersectionTest(Ray &ray) const
 {

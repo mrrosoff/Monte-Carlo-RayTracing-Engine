@@ -15,6 +15,7 @@ point(point), direction(direction.normalized()), closestIntersectionDistance(std
 ostream &operator<<(ostream &out, const Ray &ray)
 {
     Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
+
     out << "Ray Point: \n" << ray.point.format(ArrayFormat) << '\n';
     out << "Ray Direction: \n" << ray.direction.format(ArrayFormat) << '\n';
 

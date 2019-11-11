@@ -19,8 +19,8 @@ public:
     Material &operator=(const Material &) = default;
     ~Material() = default;
 
-    explicit Material(const std::string &, const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &,
-                      double = 16, double = 1, double = 1, int = 2);
+    explicit Material(const std::string &, const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &,
+                      const Eigen::Vector3d &, double = 16, double = 1, double = 1, int = 2);
 
     std::string name;
     Eigen::Vector3d Ka;
@@ -28,10 +28,10 @@ public:
     Eigen::Vector3d Ks;
     Eigen::Vector3d Kr;
 
-    double Ns;
-    double Ni;
-    double d;
-    int illum;
+    double Ns = 16;
+    double Ni = 1;
+    double d = 1;
+    int illum = 2;
 };
 
 std::ostream &operator<<(std::ostream &, const Material &);
