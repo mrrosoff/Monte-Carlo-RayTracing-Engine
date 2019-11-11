@@ -45,107 +45,7 @@ void Object::readObject(const Remap &map) {
 
         else if (line[0] == "mtllib")
         {
-            ifstream matReader(line[1]);
-
-	          if (!matReader)
-    	      {
-        	     string err = strerror(errno);
-        	     throw invalid_argument("Failure to open Material File - " + line[1] + ": " + err);
-    	      }
-
-            string matLine;
-            string name;
-            Eigen::Vector3d Ka;
-            Eigen::Vector3d Kd;
-            Eigen::Vector3d Ks;
-            Eigen::Vector3d Kr;
-            double Ns = 0;
-            double Ni = 0;
-            double d = 0;
-            int illum = 0;
-
-            while(getline(matReader, matLine))
-            {
-                if(matLine.empty())
-                {
-                    if(illum != 0)
-                    {
-                        if(illum == 2)
-                        {
-                            Kr = {0, 0, 0};
-                        }
-
-                        else if(illum == 3)
-                        {
-                            Kr = Ks;
-                        }
-
-                        materials.emplace_back(name, Ka, Kd, Ks, Kr, Ns, Ni, d, illum);
-                    }
-
-                    continue;
-                }
-
-                vector<string> matLineData;
-                stringstream matTokenizer(matLine);
-                string matToken;
-
-                while (getline(matTokenizer, matToken, ' '))
-                {
-                    matLineData.push_back(matToken);
-                }
-
-                if(matLineData[0] == "#")
-                {
-                    continue;
-                }
-
-                if(matLineData[0] == "newmtl")
-                {
-                    name = matLineData[1];
-                }
-
-                else if(matLineData[0] == "Ka")
-                {
-                    Ka << stod(matLineData[1]),
-                          stod(matLineData[2]),
-                          stod(matLineData[3]);
-                }
-
-                else if(matLineData[0] == "Kd")
-                {
-                    Kd << stod(matLineData[1]),
-                          stod(matLineData[2]),
-                          stod(matLineData[3]);
-                }
-
-                else if(matLineData[0] == "Ks")
-                {
-                    Ks << stod(matLineData[1]),
-                          stod(matLineData[2]),
-                          stod(matLineData[3]);
-                }
-
-                else if(matLineData[0] == "Ns")
-                {
-                    Ns = stod(matLineData[1]);
-                }
-
-                else if(matLineData[0] == "Ni")
-                {
-                    Ni = stod(matLineData[1]);
-                }
-
-                else if(matLineData[0] == "d")
-                {
-                    d = stod(matLineData[1]);
-                }
-
-                else if(matLineData[0] == "illum")
-                {
-                    illum = stoi(matLineData[1]);
-                }
-            }
+            readMaterialFile(line);
         }
 
         else if (line[0] == "usemtl")
@@ -185,7 +85,7 @@ void Object::readObject(const Remap &map) {
                 face.push_back(faceInfo);
             }
 
-            faces.push_back(tuple<vector<vector<int>>, int>(face, currentMatIndex));
+            faces.emplace_back(face, currentMatIndex);
         }
     }
 }
@@ -235,6 +135,111 @@ bool Object::intersectionTest(Ray &ray) const
     }
 
     return foundFace;
+}
+
+void Object::readMaterialFile(vector<string> &line) {
+
+    ifstream matReader(line[1]);
+
+    if (!matReader)
+    {
+        string err = strerror(errno);
+        throw invalid_argument("Failure to open Material File - " + line[1] + ": " + err);
+    }
+
+    string matLine;
+    string name;
+    Eigen::Vector3d Ka;
+    Eigen::Vector3d Kd;
+    Eigen::Vector3d Ks;
+    Eigen::Vector3d Kr;
+    double Ns = 0;
+    double Ni = 0;
+    double d = 0;
+    int illum = 0;
+
+    while(getline(matReader, matLine))
+    {
+        if(matLine.empty())
+        {
+            if(illum != 0)
+            {
+                if(illum == 2)
+                {
+                    Kr = {0, 0, 0};
+                }
+
+                else if(illum == 3)
+                {
+                    Kr = Ks;
+                }
+
+                materials.emplace_back(name, Ka, Kd, Ks, Kr, Ns, Ni, d, illum);
+            }
+
+            continue;
+        }
+
+        vector<string> matLineData;
+        stringstream matTokenizer(matLine);
+        string matToken;
+
+        while (getline(matTokenizer, matToken, ' '))
+        {
+            matLineData.push_back(matToken);
+        }
+
+        if(matLineData[0] == "#")
+        {
+            continue;
+        }
+
+        if(matLineData[0] == "newmtl")
+        {
+            name = matLineData[1];
+        }
+
+        else if(matLineData[0] == "Ka")
+        {
+            Ka << stod(matLineData[1]),
+                    stod(matLineData[2]),
+                    stod(matLineData[3]);
+        }
+
+        else if(matLineData[0] == "Kd")
+        {
+            Kd << stod(matLineData[1]),
+                    stod(matLineData[2]),
+                    stod(matLineData[3]);
+        }
+
+        else if(matLineData[0] == "Ks")
+        {
+            Ks << stod(matLineData[1]),
+                    stod(matLineData[2]),
+                    stod(matLineData[3]);
+        }
+
+        else if(matLineData[0] == "Ns")
+        {
+            Ns = stod(matLineData[1]);
+        }
+
+        else if(matLineData[0] == "Ni")
+        {
+            Ni = stod(matLineData[1]);
+        }
+
+        else if(matLineData[0] == "d")
+        {
+            d = stod(matLineData[1]);
+        }
+
+        else if(matLineData[0] == "illum")
+        {
+            illum = stoi(matLineData[1]);
+        }
+    }
 }
 
 ostream &operator<<(ostream &out, const Object &object)
