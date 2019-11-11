@@ -13,8 +13,6 @@
 #include <cerrno>
 #include <cstring>
 
-#include "../Eigen/Eigen/Eigen"
-
 class PWriter {
 
 public:

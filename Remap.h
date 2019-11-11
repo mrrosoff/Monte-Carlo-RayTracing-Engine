@@ -8,15 +8,17 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
-#include "../Eigen/Eigen/Eigen"
+#include "Eigen/Eigen/Eigen"
 
 class Remap {
 
 public:
 
-    explicit Remap(const std::vector<std::string> &);
+    explicit Remap(const Eigen::Vector3d &, double, const Eigen::Matrix4d &, const Eigen::Matrix4d &, const std::string &);
 
+    Remap(const Remap &) = default;
     Remap &operator=(const Remap &) = delete;
     ~Remap()= default;
 
@@ -25,11 +27,13 @@ public:
 
 private:
 
-    Eigen::Matrix4d findRotationMatrix(Eigen::Vector3d &, double theta);
-    Eigen::Matrix4d changeCords(Eigen::Vector3d &);
-    int findMinIndex(Eigen::Vector3d &rotationVector);
+    Eigen::Matrix4d findRotationMatrix(const Eigen::Vector3d &, double theta) const;
+    Eigen::Matrix4d changeCords(const Eigen::Vector3d &) const;
+    int findMinIndex(const Eigen::Vector3d &rotationVector) const;
 
 };
+
+std::ostream &operator<<(std::ostream &, const Remap &);
 
 
 #endif //GRAPHICS_TRANSFORM_H

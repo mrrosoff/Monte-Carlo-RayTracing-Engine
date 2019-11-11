@@ -12,7 +12,7 @@ outFile(outFile)
 
 {}
 
-PWriter& PWriter::operator<<(const std::vector<std::vector<std::vector<int>>> &img)
+PWriter& PWriter::operator<<(const vector<vector<vector<int>>> &img)
 {
     ofstream outWriter(outFile);
 
@@ -46,4 +46,6 @@ PWriter& PWriter::operator<<(const std::vector<std::vector<std::vector<int>>> &i
             }
         }
     }
+    
+     return *this;
 }

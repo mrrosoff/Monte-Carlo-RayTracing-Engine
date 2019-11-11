@@ -14,38 +14,57 @@
 #include <cerrno>
 #include <cstring>
 
-#include <stdexcept>
+#include <exception>
 
-#include "../Eigen/Eigen/Eigen"
+#include "Eigen/Eigen/Eigen"
 
+#include "Camera.h"
 #include "LightSource.h"
 #include "Sphere.h"
+#include "Remap.h"
+#include "Object.h"
 
 class DReader {
 
 public:
 
     DReader() = default;
-    DReader &operator<<(const std::string &);
-
-    DReader(const DReader &) = delete;
+    DReader(const DReader &) = default;
     DReader &operator=(const DReader &) = delete;
     ~DReader() = default;
 
-    Eigen::Vector3d eye;
-    Eigen::Vector3d lookAtPoint;
-    Eigen::Vector3d upVector;
-    double focalLength = 0;
-    Eigen::Vector4d bounds;
-    Eigen::Vector2d resolution;
+    DReader &operator<<(const std::string &);
+
+    std::string driverName;
+    std::string driverFile;
+
+    Camera camera;
+    int recursionDepth = 0;
+
     Eigen::Vector3d ambientLight;
     std::vector<LightSource> lights;
     std::vector<Sphere> spheres;
+    std::vector<Object> objs;
 
 private:
 
     void readDriver(const std::string &);
+    Eigen::Vector3d parseEye(const std::vector<std::string> &) const;
+    Eigen::Vector3d parseLook(const std::vector<std::string> &) const;
+    Eigen::Vector3d parseUp(const std::vector<std::string> &) const;
+    double parseD(const std::vector<std::string> &) const;
+    Eigen::Vector4d parseBounds(const std::vector<std::string> &) const;
+    Eigen::Vector2d parseRes(const std::vector<std::string> &) const;
+    Eigen::Vector3d parseAmbient(const std::vector<std::string> &) const;
+    void parseLight(const std::vector<std::string> &);
+    void parseSphere(const std::vector<std::string> &);
+    int parseRecursionLevel(const std::vector<std::string> &);
+    void parseModel(const std::vector<std::string> &);
+
+    std::string findDriverName(const std::string &);
 };
+
+std::ostream &operator<<(std::ostream &, const DReader &);
 
 
 #endif //GRAPHICS_DRIVERREADER_H
