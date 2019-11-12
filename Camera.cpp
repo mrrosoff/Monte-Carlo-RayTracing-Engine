@@ -49,6 +49,7 @@ Ray Camera::pixelRay(const int row, const int col)
 ostream &operator<<(ostream &out, const Camera &cam)
 {
     Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
+
     out << "Camera Eye: " << cam.eye.format(ArrayFormat) << '\n';
     out << "Camera Look At: " << cam.lookAtPoint.format(ArrayFormat) << '\n';
     out << "Camera Up: " << cam.upVector.format(ArrayFormat) << '\n';
@@ -58,5 +59,6 @@ ostream &operator<<(ostream &out, const Camera &cam)
     out << "Camera W: " << cam.cameraWVector.format(ArrayFormat) << '\n';
     out << "Camera U: " << cam.cameraUVector.format(ArrayFormat) << '\n';
     out << "Camera V: " << cam.cameraVVector.format(ArrayFormat) << '\n';
+
     return out;
 }

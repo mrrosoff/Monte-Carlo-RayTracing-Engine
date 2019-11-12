@@ -15,6 +15,7 @@ position(position), rgb(rgb), w(w)
 ostream &operator<<(ostream &out, const LightSource &light)
 {
     Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
+
     out << "Light Position: " << light.position.format(ArrayFormat) << '\n';
     out << "Light RGB: " << light.rgb.format(ArrayFormat) << '\n';
     out << "Light W: " << light.w << '\n';

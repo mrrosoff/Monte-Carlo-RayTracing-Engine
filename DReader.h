@@ -13,16 +13,15 @@
 
 #include <cerrno>
 #include <cstring>
-
 #include <exception>
 
 #include "Eigen/Eigen/Eigen"
 
 #include "Camera.h"
 #include "LightSource.h"
-#include "Sphere.h"
-#include "Remap.h"
 #include "Object.h"
+#include "Remap.h"
+#include "Sphere.h"
 
 class DReader {
 
@@ -40,7 +39,6 @@ public:
 
     Camera camera;
     int recursionDepth = 0;
-
     Eigen::Vector3d ambientLight;
     std::vector<LightSource> lights;
     std::vector<Sphere> spheres;
@@ -49,6 +47,8 @@ public:
 private:
 
     void readDriver(const std::string &);
+
+    std::string findDriverName(const std::string &);
     Eigen::Vector3d parseEye(const std::vector<std::string> &) const;
     Eigen::Vector3d parseLook(const std::vector<std::string> &) const;
     Eigen::Vector3d parseUp(const std::vector<std::string> &) const;
@@ -60,8 +60,6 @@ private:
     void parseSphere(const std::vector<std::string> &);
     int parseRecursionLevel(const std::vector<std::string> &);
     void parseModel(const std::vector<std::string> &);
-
-    std::string findDriverName(const std::string &);
 };
 
 std::ostream &operator<<(std::ostream &, const DReader &);
