@@ -20,7 +20,7 @@ endif()
 include_directories(Eigen)
 
 # Create Ray Tracer Executable
-add_executable(raytracer main.cpp RayTracingFiles/RayTracer.cpp RayTracingFiles/RayTracer.h RayTracingFiles/Camera.cpp RayTracingFiles/Camera.h RayTracingFiles/DReader.cpp RayTracingFiles/DReader.h RayTracingFiles/LightSource.cpp RayTracingFiles/LightSource.h RayTracingFiles/Material.cpp RayTracingFiles/Material.h RayTracingFiles/Object.cpp RayTracingFiles/Object.h RayTracingFiles/PWriter.cpp RayTracingFiles/PWriter.h RayTracingFiles/Ray.cpp RayTracingFiles/Ray.h RayTracingFiles/Remap.cpp RayTracingFiles/Remap.h RayTracingFiles/Sphere.cpp RayTracingFiles/Sphere.h)
+add_executable(raytracer main.cpp RayTracingFiles/RayTracing/RayTracer.cpp RayTracingFiles/RayTracing/RayTracer.h RayTracingFiles/RayTracing/Camera.cpp RayTracingFiles/RayTracing/Camera.h RayTracingFiles/FileInOut/DReader.cpp RayTracingFiles/FileInOut/DReader.h RayTracingFiles/SceneItems/LightSource.cpp RayTracingFiles/SceneItems/LightSource.h RayTracingFiles/SceneItems/Material.cpp RayTracingFiles/SceneItems/Material.h RayTracingFiles/SceneItems/Object.cpp RayTracingFiles/SceneItems/Object.h RayTracingFiles/FileInOut/PWriter.cpp RayTracingFiles/FileInOut/PWriter.h RayTracingFiles/RayTracing/Ray.cpp RayTracingFiles/RayTracing/Ray.h RayTracingFiles/SceneItems/Remap.cpp RayTracingFiles/SceneItems/Remap.h RayTracingFiles/SceneItems/Sphere.cpp RayTracingFiles/SceneItems/Sphere.h)
 
 # Create a tar file every time
 add_custom_target(mrosoff.tar ALL COMMAND tar cf mrosoff.tar *.cpp *.h README.md CMakeLists.txt Eigen)

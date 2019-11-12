@@ -12,10 +12,10 @@
 #include <chrono>
 
 #include "Ray.h"
-#include "DReader.h"
-#include "PWriter.h"
+#include "../FileInOut/DReader.h"
+#include "../FileInOut/PWriter.h"
 
-#include "../Eigen/Eigen"
+#include "Eigen"
 
 class RayTracer {
 

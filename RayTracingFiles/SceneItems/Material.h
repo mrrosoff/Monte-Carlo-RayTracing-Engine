@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 
-#include "../Eigen/Eigen"
+#include "Eigen"
 
 class Material {
 

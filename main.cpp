@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "RayTracingFiles/RayTracer.h"
+#include "RayTracingFiles/RayTracing/RayTracer.h"
 
 using namespace std;
 

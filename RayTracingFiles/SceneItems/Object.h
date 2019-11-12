@@ -16,7 +16,7 @@
 #include <cerrno>
 #include <cstring>
 
-#include "Ray.h"
+#include "../RayTracing/Ray.h"
 #include "Remap.h"
 
 class Object {

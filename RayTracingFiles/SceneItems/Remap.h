@@ -10,7 +10,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "../Eigen/Eigen"
+#include "Eigen"
 
 class Remap {
 
