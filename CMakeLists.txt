@@ -20,7 +20,7 @@ endif()
 include_directories(Eigen)
 
 # Create Ray Tracer Executable
-add_executable(raytracer main.cpp Camera.cpp Camera.h DReader.cpp DReader.h LightSource.cpp LightSource.h Material.cpp Material.h Object.cpp Object.h PWriter.cpp PWriter.h Ray.cpp Ray.h Remap.cpp Remap.h Sphere.cpp Sphere.h)
+add_executable(raytracer main.cpp RayTracingFiles/RayTracer.cpp RayTracingFiles/RayTracer.h RayTracingFiles/Camera.cpp RayTracingFiles/Camera.h RayTracingFiles/DReader.cpp RayTracingFiles/DReader.h RayTracingFiles/LightSource.cpp RayTracingFiles/LightSource.h RayTracingFiles/Material.cpp RayTracingFiles/Material.h RayTracingFiles/Object.cpp RayTracingFiles/Object.h RayTracingFiles/PWriter.cpp RayTracingFiles/PWriter.h RayTracingFiles/Ray.cpp RayTracingFiles/Ray.h RayTracingFiles/Remap.cpp RayTracingFiles/Remap.h RayTracingFiles/Sphere.cpp RayTracingFiles/Sphere.h)
 
 # Create a tar file every time
 add_custom_target(mrosoff.tar ALL COMMAND tar cf mrosoff.tar *.cpp *.h README.md CMakeLists.txt Eigen)
