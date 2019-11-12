@@ -7,9 +7,9 @@
 
 #include <iostream>
 
-#include "Ray.h"
+#include "../RayTracing/Ray.h"
 
-#include "../Eigen/Eigen"
+#include "Eigen"
 
 class Sphere {
 

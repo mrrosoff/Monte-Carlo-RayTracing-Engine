@@ -9,7 +9,7 @@
 
 #include "Ray.h"
 
-#include "../Eigen/Eigen"
+#include "Eigen"
 
 class Camera {
 

@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "../Eigen/Eigen"
+#include "Eigen"
 
 class LightSource {
 

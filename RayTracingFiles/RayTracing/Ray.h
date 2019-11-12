@@ -11,8 +11,8 @@
 
 #include <iostream>
 
-#include "Material.h"
-#include "../Eigen/Eigen"
+#include "../SceneItems/Material.h"
+#include "Eigen"
 
 class Ray {
 

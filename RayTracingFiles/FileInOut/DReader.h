@@ -15,13 +15,13 @@
 #include <cstring>
 #include <exception>
 
-#include "Camera.h"
-#include "LightSource.h"
-#include "Object.h"
-#include "Remap.h"
-#include "Sphere.h"
+#include "../RayTracing/Camera.h"
+#include "../SceneItems/LightSource.h"
+#include "../SceneItems/Object.h"
+#include "../SceneItems/Remap.h"
+#include "../SceneItems/Sphere.h"
 
-#include "../Eigen/Eigen"
+#include "Eigen"
 
 class DReader {
 
