@@ -14,10 +14,12 @@ DReader &DReader::operator<<(const string &file)
     return *this;
 }
 
-void DReader::readDriver(const string &file) {
+void DReader::readDriver(const string &file)
+{
     ifstream driverReader(file);
 
-    if (!driverReader) {
+    if (!driverReader)
+    {
         string err = strerror(errno);
         throw invalid_argument("Failure to open Driver File - " + file + ": " + err);
     }
@@ -31,43 +33,88 @@ void DReader::readDriver(const string &file) {
 
     string driverLine;
 
-    while (getline(driverReader, driverLine)) {
+    while (getline(driverReader, driverLine))
+    {
+        if(driverLine.empty())
+        {
+            continue;
+        }
+
         stringstream lineReader(driverLine);
         string token;
 
         vector<string> lineData;
 
-        while (getline(lineReader, token, ' ')) {
-            if (!token.empty()) {
+        while (getline(lineReader, token, ' '))
+        {
+            if (!token.empty())
+            {
                 lineData.push_back(token);
             }
         }
 
-        if (lineData[0] == "eye") {
+        if (lineData[0] == "eye")
+        {
             eye = parseEye(lineData);
-        } else if (lineData[0] == "look") {
+        }
+
+        else if (lineData[0] == "look")
+        {
             look = parseLook(lineData);
-        } else if (lineData[0] == "up") {
+        }
+
+        else if (lineData[0] == "up")
+        {
             up = parseUp(lineData);
-        } else if (lineData[0] == "d") {
+        }
+
+        else if (lineData[0] == "d")
+        {
             focLen = parseD(lineData);
-        } else if (lineData[0] == "bounds") {
+        }
+
+        else if (lineData[0] == "bounds")
+        {
             bounds = parseBounds(lineData);
-        } else if (lineData[0] == "res") {
+        }
+
+        else if (lineData[0] == "res")
+        {
             res = parseRes(lineData);
-        } else if (lineData[0] == "ambient") {
+        }
+
+        else if (lineData[0] == "ambient")
+        {
             ambientLight = parseAmbient(lineData);
-        } else if (lineData[0] == "light") {
+        }
+
+        else if (lineData[0] == "light")
+        {
             parseLight(lineData);
-        } else if (lineData[0] == "sphere") {
+        }
+
+        else if (lineData[0] == "sphere")
+        {
             parseSphere(lineData);
-        } else if (lineData[0] == "recursionlevel") {
+        }
+
+        else if (lineData[0] == "recursionlevel")
+        {
             recursionDepth = parseRecursionLevel(lineData);
-        } else if (lineData[0] == "model") {
+        }
+
+        else if (lineData[0] == "model")
+        {
             parseModel(lineData);
-        } else if (lineData[0] == "#" || lineData[0][0] == '#') {
+        }
+
+        else if (lineData[0] == "#" || lineData[0][0] == '#')
+        {
             continue;
-        } else {
+        }
+
+        else
+        {
             throw invalid_argument("Invalid Driver File Argument, File - " + file);
         }
     }
@@ -75,7 +122,8 @@ void DReader::readDriver(const string &file) {
     camera = Camera(eye, look, up, bounds, focLen, res);
 }
 
-string DReader::findDriverName(const string &file) {
+string DReader::findDriverName(const string &file)
+{
     unsigned long pIndex = driverFile.find_last_of('.');
     unsigned long sIndex = driverFile.find_last_of('/');
     sIndex += 1;

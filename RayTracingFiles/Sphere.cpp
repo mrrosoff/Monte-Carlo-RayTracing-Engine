@@ -8,7 +8,9 @@ using namespace std;
 
 Sphere::Sphere(const Eigen::Vector3d &position, const double radius, const Material &material) :
 
-        position(position), radius(radius), material(material) {}
+position(position), radius(radius), material(material)
+
+{}
 
 bool Sphere::intersectionTest(Ray &ray) const
 {
@@ -44,6 +46,7 @@ bool Sphere::intersectionTest(Ray &ray) const
 ostream &operator<<(ostream &out, const Sphere &sph)
 {
     Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
+
     out << "Sphere Position: " << sph.position.format(ArrayFormat) << '\n';
     out << "Sphere Radius: " << sph.radius << '\n';
     out << "Sphere Material: \n" << sph.material << '\n';
