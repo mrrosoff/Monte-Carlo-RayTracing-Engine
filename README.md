@@ -1,4 +1,4 @@
-# Ray Tracer
+# Ray Tracing Engine Built in C++
 
 ### Building the Executable
 
