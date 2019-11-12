@@ -6,8 +6,7 @@
 
 using namespace std;
 
-Camera::Camera(const Eigen::Vector3d &eye, const Eigen::Vector3d &lookAtPoint, const Eigen::Vector3d &upVector,
-               const Eigen::Vector4d &bounds, const double focalLength, const Eigen::Vector2d &resolution) :
+Camera::Camera(const Eigen::Vector3d &eye, const Eigen::Vector3d &lookAtPoint, const Eigen::Vector3d &upVector, const Eigen::Vector4d &bounds, const double focalLength, const Eigen::Vector2d &resolution) :
 
 eye(eye), lookAtPoint(lookAtPoint), upVector(upVector), bounds(bounds), focalLength(focalLength), resolution(resolution)
 
