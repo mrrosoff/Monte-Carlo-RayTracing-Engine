@@ -15,8 +15,6 @@ inFile(argv[1]), outFile(argv[2])
 
 void RayTracer::rayTrace() {
 
-    // Initialize Driver Reader Object. This will load public members of the driver file for use.
-
     try
     {
         DReader driver;
@@ -24,6 +22,8 @@ void RayTracer::rayTrace() {
         cout << "Reading All Files." << '\n';
 
         driver << inFile;
+        
+        cout << driver << endl;
 
         auto resolution = driver.camera.resolution;
 
@@ -35,7 +35,9 @@ void RayTracer::rayTrace() {
         cout << "Beginning Raytracing." << '\n';
 
         auto start = high_resolution_clock::now();
-
+        const bool showProgress = driver.objs.size() > 0;
+        int counter = 10;
+        
         #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(dynamic)
         for(int i = 0; i < height; i++)
         {
@@ -56,6 +58,13 @@ void RayTracer::rayTrace() {
                 img[i][j][1] = min(max(static_cast<int>(color[1] * 255), 0), 255);
                 img[i][j][2] = min(max(static_cast<int>(color[2] * 255), 0), 255);
             }
+            
+            #pragma omp critical
+            if(showProgress && static_cast<int>(floor((static_cast<double>(i) / height) * 100)) == counter)
+            {
+                cout << floor((static_cast<double>(i) / height) * 100) << "% complete." << endl;
+                counter += 10;
+            }
         }
 
         auto stop = high_resolution_clock::now();
@@ -64,8 +73,6 @@ void RayTracer::rayTrace() {
 
         cout << "Raytracer ran in " << durationCount * 0.000001 << " seconds." << endl;
         cout << "Writing to PPM File." << '\n';
-
-        // Initialize Object Writer Object. This will create and write to the correctly named file.
 
         PWriter writer(outFile);
         writer << img;
@@ -95,7 +102,8 @@ Eigen::Vector3d RayTracer::doARayTrace(Ray &ray, const DReader &driver, const Ei
 
         if (nSNDotLV > 0)
         {
-            auto shadowRay = Ray(ray.closestIntersectionPoint, light.position - ray.closestIntersectionPoint);
+            auto shadowRayDirection = light.position - ray.closestIntersectionPoint;
+            auto shadowRay = Ray(ray.closestIntersectionPoint, shadowRayDirection, shadowRayDirection.norm());
 
             if(checkForIntersection(shadowRay, driver, true))
             {

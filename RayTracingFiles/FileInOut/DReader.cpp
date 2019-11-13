@@ -194,28 +194,28 @@ void DReader::parseSphere(const vector<string> &lineData)
     Eigen::Vector3d Kr;
 
     position << stod(lineData[1]),
-            stod(lineData[2]),
-            stod(lineData[3]);
+                stod(lineData[2]),
+                stod(lineData[3]);
 
     radius = stod(lineData[4]);
 
     Ka << stod(lineData[5]),
-            stod(lineData[6]),
-            stod(lineData[7]);
+          stod(lineData[6]),
+          stod(lineData[7]);
 
     Kd << stod(lineData[8]),
-            stod(lineData[9]),
-            stod(lineData[10]);
+          stod(lineData[9]),
+          stod(lineData[10]);
 
     Ks << stod(lineData[11]),
-            stod(lineData[12]),
-            stod(lineData[13]);
+          stod(lineData[12]),
+          stod(lineData[13]);
 
     Kr << stod(lineData[14]),
-            stod(lineData[15]),
-            stod(lineData[16]);
+          stod(lineData[15]),
+          stod(lineData[16]);
 
-    Material mat("A Sphere Material", Ka, Kd, Ks, Kr);
+    Material mat("A Sphere Material", Ka, Kd, Ks, Kr, 16, stod(lineData[17]));
     spheres.emplace_back(position, radius, mat);
 }
 
@@ -246,9 +246,10 @@ void DReader::parseModel(const vector<string> &lineData)
             0, 0, 1, stod(lineData[8]),
             0, 0, 0, 1;
 
-    string modelPath = lineData[9];
+    double smoothingAngle = stod(lineData[9]);
+    string modelPath = lineData[10];
 
-    Remap map(rotationVector, theta, scalar, translation, modelPath);
+    Remap map(rotationVector, theta, scalar, translation, smoothingAngle, modelPath);
     objs.emplace_back(map);
 }
 

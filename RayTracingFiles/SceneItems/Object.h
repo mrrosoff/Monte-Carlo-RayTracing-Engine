@@ -34,13 +34,14 @@ public:
     std::vector<Material> materials;
     std::vector<Eigen::Vector3d> vertices;
     std::vector<std::tuple<std::vector<std::vector<int>>, int>> faces;
-
+    std::string objPath;
+    double smoothingAngle;
+        
 private:
 
     void readObject(const Remap &);
-    void readMaterialFile(std::vector<std::string> &);
-
-    std::string objPath;
+    void readObjectFaceLine(const std::vector<std::string> &, int);
+    void readMaterialFile(const std::string &);
 };
 
 std::ostream &operator<<(std::ostream &, const Object &);

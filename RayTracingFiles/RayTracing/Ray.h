@@ -23,7 +23,7 @@ public:
     Ray &operator=(const Ray &) = delete;
     ~Ray() = default;
 
-    explicit Ray(const Eigen::Vector3d &, const Eigen::Vector3d &);
+    explicit Ray(const Eigen::Vector3d &, const Eigen::Vector3d &, double = std::numeric_limits<double>::max());
 
     Eigen::Vector3d point;
     Eigen::Vector3d direction;

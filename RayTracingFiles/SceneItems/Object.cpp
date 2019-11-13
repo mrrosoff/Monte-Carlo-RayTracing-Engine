@@ -8,7 +8,7 @@ using namespace std;
 
 Object::Object(const Remap &map) :
 
-objPath(map.objPath)
+objPath(map.objPath), smoothingAngle(map.smoothingAngle)
 
 {
     readObject(map);
@@ -46,12 +46,18 @@ void Object::readObject(const Remap &map)
 
         else if (line[0] == "mtllib")
         {
-            readMaterialFile(line);
+            readMaterialFile(line[1]);
         }
 
         else if (line[0] == "usemtl")
         {
-            currentMatIndex++;
+            for(size_t i = 0; i < materials.size(); i++)
+            {
+                if(materials[i].name == line[1])
+                {
+                    currentMatIndex = i;
+                }
+            }
         }
 
         else if (line[0] == "v")
@@ -68,26 +74,169 @@ void Object::readObject(const Remap &map)
 
         else if (line[0] == "f")
         {
-            vector<vector<int>> face;
+            readObjectFaceLine(line, currentMatIndex);
+        }
+    }
+}
 
-            for(size_t i = 1; i < line.size(); i++)
+void Object::readObjectFaceLine(const vector<string> &line, const int currentMatIndex)
+{
+    vector<vector<int>> face;
+
+    for(size_t i = 1; i < line.size(); i++)
+    {
+        string faceElement = line[i];
+        int positionOfSlashes = faceElement.find("//");
+
+        string leftFace = faceElement.substr(0, positionOfSlashes);
+        faceElement.erase(0, positionOfSlashes + 2);
+        string rightFace = faceElement.substr(0, faceElement.size());
+
+        vector<int> faceInfo;
+        faceInfo.push_back(stoi(leftFace));
+        faceInfo.push_back(stoi(rightFace));
+
+        face.push_back(faceInfo);
+    }
+
+    faces.emplace_back(face, currentMatIndex);
+}
+
+void Object::readMaterialFile(const string &filePath) {
+
+    ifstream matReader(filePath);
+
+    if (!matReader)
+    {
+        string err = strerror(errno);
+        throw invalid_argument("Failure to open Material. File - " + filePath + ": " + err);
+    }
+
+    string matLine;
+    string name;
+    Eigen::Vector3d Ka;
+    Eigen::Vector3d Kd;
+    Eigen::Vector3d Ks;
+    Eigen::Vector3d Kr;
+    double Ns = 0;
+    double Ni = 0;
+    double d = 0;
+    int illum = 0;
+
+    while(getline(matReader, matLine))
+    {
+        if(matLine.empty())
+        {
+            if(illum != 0)
             {
-                string faceElement = line[i];
-                int positionOfSlashes = faceElement.find("//");
+                if(illum == 2)
+                {
+                    Kr = {0, 0, 0};
+                }
 
-                string leftFace = faceElement.substr(0, positionOfSlashes);
-                faceElement.erase(0, positionOfSlashes + 2);
-                string rightFace = faceElement.substr(0, faceElement.size());
+                else if(illum == 3)
+                {
+                    Kr = Ks;
+                }
+                
+                else if(illum == 6)
+                {
+                    Kr = Ks;
+                }
 
-                vector<int> faceInfo;
-                faceInfo.push_back(stoi(leftFace));
-                faceInfo.push_back(stoi(rightFace));
-
-                face.push_back(faceInfo);
+                materials.emplace_back(name, Ka, Kd, Ks, Kr, Ns, Ni, d, illum);
+                illum = 0;
             }
 
-            faces.emplace_back(face, currentMatIndex);
+            continue;
         }
+
+        vector<string> matLineData;
+        stringstream matTokenizer(matLine);
+        string matToken;
+
+        while(getline(matTokenizer, matToken, ' '))
+        {
+            matLineData.push_back(matToken);
+        }
+
+        if(matLineData[0] == "#")
+        {
+            continue;
+        }
+
+        if(matLineData[0] == "newmtl")
+        {
+            for(const auto &material : materials)
+            {
+                if(material.name == matLineData[1])
+                {
+                    throw invalid_argument("It is Illegal To Have Mulitple Materials Of The Same Name!");
+                }
+            }
+            
+            name = matLineData[1];
+        }
+
+        else if(matLineData[0] == "Ka")
+        {
+            Ka << stod(matLineData[1]),
+                  stod(matLineData[2]),
+                  stod(matLineData[3]);
+        }
+
+        else if(matLineData[0] == "Kd")
+        {
+            Kd << stod(matLineData[1]),
+                  stod(matLineData[2]),
+                  stod(matLineData[3]);
+        }
+
+        else if(matLineData[0] == "Ks")
+        {
+            Ks << stod(matLineData[1]),
+                  stod(matLineData[2]),
+                  stod(matLineData[3]);
+        }
+
+        else if(matLineData[0] == "Ns")
+        {
+            Ns = stod(matLineData[1]);
+        }
+
+        else if(matLineData[0] == "Ni")
+        {
+            Ni = stod(matLineData[1]);
+        }
+
+        else if(matLineData[0] == "d")
+        {
+            d = stod(matLineData[1]);
+        }
+
+        else if(matLineData[0] == "illum")
+        {
+            illum = stoi(matLineData[1]);
+        }
+    }
+    
+    if(illum != 0)
+    {
+        if(illum == 2)
+        {
+            Kr = {0, 0, 0};
+        }
+
+        else if(illum == 3)
+        {
+            Kr = Ks;
+        }
+
+        materials.emplace_back(name, Ka, Kd, Ks, Kr, Ns, Ni, d, illum);
+    }
+    
+    for(const auto &material : materials) {
+        cout << material << endl;
     }
 }
 
@@ -136,111 +285,6 @@ bool Object::intersectionTest(Ray &ray) const
     }
 
     return foundFace;
-}
-
-void Object::readMaterialFile(vector<string> &line) {
-
-    ifstream matReader(line[1]);
-
-    if (!matReader)
-    {
-        string err = strerror(errno);
-        throw invalid_argument("Failure to open Material File - " + line[1] + ": " + err);
-    }
-
-    string matLine;
-    string name;
-    Eigen::Vector3d Ka;
-    Eigen::Vector3d Kd;
-    Eigen::Vector3d Ks;
-    Eigen::Vector3d Kr;
-    double Ns = 0;
-    double Ni = 0;
-    double d = 0;
-    int illum = 0;
-
-    while(getline(matReader, matLine))
-    {
-        if(matLine.empty())
-        {
-            if(illum != 0)
-            {
-                if(illum == 2)
-                {
-                    Kr = {0, 0, 0};
-                }
-
-                else if(illum == 3)
-                {
-                    Kr = Ks;
-                }
-
-                materials.emplace_back(name, Ka, Kd, Ks, Kr, Ns, Ni, d, illum);
-            }
-
-            continue;
-        }
-
-        vector<string> matLineData;
-        stringstream matTokenizer(matLine);
-        string matToken;
-
-        while (getline(matTokenizer, matToken, ' '))
-        {
-            matLineData.push_back(matToken);
-        }
-
-        if(matLineData[0] == "#")
-        {
-            continue;
-        }
-
-        if(matLineData[0] == "newmtl")
-        {
-            name = matLineData[1];
-        }
-
-        else if(matLineData[0] == "Ka")
-        {
-            Ka << stod(matLineData[1]),
-                    stod(matLineData[2]),
-                    stod(matLineData[3]);
-        }
-
-        else if(matLineData[0] == "Kd")
-        {
-            Kd << stod(matLineData[1]),
-                    stod(matLineData[2]),
-                    stod(matLineData[3]);
-        }
-
-        else if(matLineData[0] == "Ks")
-        {
-            Ks << stod(matLineData[1]),
-                    stod(matLineData[2]),
-                    stod(matLineData[3]);
-        }
-
-        else if(matLineData[0] == "Ns")
-        {
-            Ns = stod(matLineData[1]);
-        }
-
-        else if(matLineData[0] == "Ni")
-        {
-            Ni = stod(matLineData[1]);
-        }
-
-        else if(matLineData[0] == "d")
-        {
-            d = stod(matLineData[1]);
-        }
-
-        else if(matLineData[0] == "illum")
-        {
-            illum = stoi(matLineData[1]);
-        }
-    }
 }
 
 ostream &operator<<(ostream &out, const Object &object)

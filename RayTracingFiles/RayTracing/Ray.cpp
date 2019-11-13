@@ -6,9 +6,9 @@
 
 using namespace std;
 
-Ray::Ray(const Eigen::Vector3d &point, const Eigen::Vector3d &direction) :
+Ray::Ray(const Eigen::Vector3d &point, const Eigen::Vector3d &direction, const double distance) :
 
-point(point), direction(direction.normalized()), closestIntersectionDistance(std::numeric_limits<double>::max())
+point(point), direction(direction.normalized()), closestIntersectionDistance(distance)
 
 {}
 
