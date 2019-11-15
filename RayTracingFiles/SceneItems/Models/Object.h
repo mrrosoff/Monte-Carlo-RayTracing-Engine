@@ -7,7 +7,8 @@
 
 #include <string>
 #include <vector>
-#include <tuple>
+#include <cmath>
+#include <algorithm>
 
 #include <iostream>
 #include <fstream>
@@ -16,8 +17,14 @@
 #include <cerrno>
 #include <cstring>
 
-#include "../RayTracing/Ray.h"
-#include "Remap.h"
+#include "../../RayTracing/Ray.h"
+#include "../Material.h"
+
+#include "./Remap.h"
+#include "./Vertex.h"
+#include "./Face.h"
+
+#include "../../../Eigen/Eigen"
 
 class Object {
 
@@ -32,8 +39,8 @@ public:
     bool intersectionTest(Ray &ray) const;
 
     std::vector<Material> materials;
-    std::vector<Eigen::Vector3d> vertices;
-    std::vector<std::tuple<std::vector<std::vector<int>>, int>> faces;
+    std::vector<Vertex> vertices;
+    std::vector<Face> faces;
     std::string objPath;
     double smoothingAngle;
         
@@ -42,6 +49,7 @@ private:
     void readObject(const Remap &);
     void readObjectFaceLine(const std::vector<std::string> &, int);
     void readMaterialFile(const std::string &);
+    void calculateNormals();
 };
 
 std::ostream &operator<<(std::ostream &, const Object &);

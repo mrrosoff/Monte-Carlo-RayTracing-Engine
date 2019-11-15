@@ -9,7 +9,7 @@
 
 #include "../RayTracing/Ray.h"
 
-#include "Eigen"
+#include "../../Eigen/Eigen"
 
 class Sphere {
 

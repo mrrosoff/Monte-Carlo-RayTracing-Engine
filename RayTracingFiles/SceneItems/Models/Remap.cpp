@@ -8,7 +8,7 @@ using namespace std;
 
 Remap::Remap(const Eigen::Vector3d &rotationVector, const double theta, const Eigen::Matrix4d &scalar, const Eigen::Matrix4d &translation, const double smoothingAngle, const string &path) :
 
-objPath(path), smoothingAngle(smoothingAngle)
+smoothingAngle(smoothingAngle), objPath(path)
 
 {
     Eigen::Matrix4d rotation = findRotationMatrix(rotationVector, theta);

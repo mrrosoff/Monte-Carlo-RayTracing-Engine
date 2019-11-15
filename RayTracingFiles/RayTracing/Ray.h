@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "../SceneItems/Material.h"
-#include "Eigen"
+#include "../../Eigen/Eigen"
 
 class Ray {
 

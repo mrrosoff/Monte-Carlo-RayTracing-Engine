@@ -17,11 +17,11 @@
 
 #include "../RayTracing/Camera.h"
 #include "../SceneItems/LightSource.h"
-#include "../SceneItems/Object.h"
-#include "../SceneItems/Remap.h"
+#include "../SceneItems/Models/Object.h"
 #include "../SceneItems/Sphere.h"
+#include "../SceneItems/Models/Remap.h"
 
-#include "Eigen"
+#include "../../Eigen/Eigen"
 
 class DReader {
 

@@ -64,7 +64,7 @@ void Object::readObject(const Remap &map)
         {
             Eigen::Vector4d beforeVector(stod(line[1]), stod(line[2]), stod(line[3]), 1);
             auto afterVector = map.transformation * beforeVector;
-            vertices.emplace_back(afterVector[0], afterVector[1], afterVector[2]);
+            vertices.emplace_back(Eigen::Vector3d(afterVector[0], afterVector[1], afterVector[2]));
         }
 
         else if (line[0] == "vn")
@@ -77,28 +77,30 @@ void Object::readObject(const Remap &map)
             readObjectFaceLine(line, currentMatIndex);
         }
     }
+    
+    calculateNormals();
 }
 
 void Object::readObjectFaceLine(const vector<string> &line, const int currentMatIndex)
 {
-    vector<vector<int>> face;
+    vector<int> face;
 
     for(size_t i = 1; i < line.size(); i++)
     {
         string faceElement = line[i];
-        int positionOfSlashes = faceElement.find("//");
+        
+        stringstream faceTokenizer(faceElement);
+        string faceToken;
 
-        string leftFace = faceElement.substr(0, positionOfSlashes);
-        faceElement.erase(0, positionOfSlashes + 2);
-        string rightFace = faceElement.substr(0, faceElement.size());
-
-        vector<int> faceInfo;
-        faceInfo.push_back(stoi(leftFace));
-        faceInfo.push_back(stoi(rightFace));
-
-        face.push_back(faceInfo);
+        getline(faceTokenizer, faceToken, '/');
+        face.push_back(stoi(faceToken));
     }
 
+    for(int vertexIndex : face)
+    {
+        vertices[vertexIndex - 1].adjacentFaces.emplace_back(faces.size());
+    }
+    
     faces.emplace_back(face, currentMatIndex);
 }
 
@@ -234,9 +236,44 @@ void Object::readMaterialFile(const string &filePath) {
 
         materials.emplace_back(name, Ka, Kd, Ks, Kr, Ns, Ni, d, illum);
     }
-    
-    for(const auto &material : materials) {
-        cout << material << endl;
+}
+
+void Object::calculateNormals()
+{
+    for(auto &face: faces)
+    {
+        const auto &vertexOne = vertices[face.vertexIndexList[0] - 1].vertex;
+        const auto &vertexTwo = vertices[face.vertexIndexList[1] - 1].vertex;
+        const auto &vertexThree = vertices[face.vertexIndexList[2] - 1].vertex;
+
+        auto columnOne = vertexOne - vertexTwo;
+        auto columnTwo = vertexOne - vertexThree;
+        
+        auto F1Normal = (columnOne.cross(columnTwo)).normalized();
+                
+        for(const auto vertex : face.vertexIndexList)
+        {
+            Eigen::Vector3d sum(F1Normal);
+            
+            for(const auto faceIndex : vertices[vertex - 1].adjacentFaces)
+            {
+                const auto &otherFace = faces[faceIndex];
+                const auto &otherVertexOne = vertices[otherFace.vertexIndexList[0] - 1].vertex;
+                const auto &otherVertexTwo = vertices[otherFace.vertexIndexList[1] - 1].vertex;
+                const auto &otherVertexThree = vertices[otherFace.vertexIndexList[2] - 1].vertex;
+                
+                const auto &columnOne = otherVertexOne - otherVertexTwo;
+                const auto &columnTwo = otherVertexOne - otherVertexThree;
+        
+                auto F2Normal = (columnOne.cross(columnTwo)).normalized();
+                if(acos(min(max(F1Normal.dot(F2Normal), -1.0), 1.0)) < smoothingAngle)
+                {
+                    sum += F2Normal;
+                }
+            }
+            
+            face.normals.emplace_back(sum.normalized());
+        }
     }
 }
 
@@ -247,32 +284,29 @@ bool Object::intersectionTest(Ray &ray) const
 
     for(const auto &face : faces)
     {
-        vector<vector<int>> faceInfo; int matIndex;
-        tie (faceInfo, matIndex) = face;
+        const auto &vertexOne = vertices[face.vertexIndexList[0] - 1].vertex;
+        const auto &vertexTwo = vertices[face.vertexIndexList[1] - 1].vertex;
+        const auto &vertexThree = vertices[face.vertexIndexList[2] - 1].vertex;
 
-        auto vertexOne = vertices[faceInfo[0][0] - 1];
-        auto vertexTwo = vertices[faceInfo[1][0] - 1];
-        auto vertexThree = vertices[faceInfo[2][0] - 1];
-
-        Eigen::Vector3d b = vertexOne - ray.point;
-        auto columnOne = vertexOne - vertexTwo;
-        auto columnTwo = vertexOne - vertexThree;
+        const auto b = vertexOne - ray.point;
+        const auto columnOne = vertexOne - vertexTwo;
+        const auto columnTwo = vertexOne - vertexThree;
 
         Eigen::Matrix3d a;
         a << columnOne[0], columnTwo[0], ray.direction[0],
              columnOne[1], columnTwo[1], ray.direction[1],
              columnOne[2], columnTwo[2], ray.direction[2];
 
-        Eigen::Vector3d x = a.inverse() * b;
-
+        const auto x = a.inverse() * b;
+        
         if(x[0] >= EPSILON && x[1] >= EPSILON && x[0] + x[1] <= 1 - EPSILON && x[2] > EPSILON)
         {
             if(x[2] < ray.closestIntersectionDistance)
             {
-                ray.material = materials[matIndex];
+                ray.material = materials[face.materialIndex];
                 ray.closestIntersectionDistance = x[2];
                 ray.closestIntersectionPoint = ray.point + x[2] * ray.direction;
-                ray.surfaceNormal = (columnOne.cross(columnTwo)).normalized();
+                ray.surfaceNormal = (1 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2];
 
                 if(ray.direction.dot(ray.surfaceNormal) > 0)
                 {

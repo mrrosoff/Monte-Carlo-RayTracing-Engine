@@ -1,0 +1,13 @@
+eye 100.0 40.0 100.0
+look 0.0 0.0 0.0
+up 0.0 1.0 0.0
+d -40.0
+bounds -20 20 -20 20
+res 512 512
+recursionlevel 2
+ambient 0.1 0.1 0.1
+light 300 300 300 1 0.5 0.5 0.5
+light 300 0 0 1 0.1 0.1 0.1
+light 0 300 0 1 0.5 0.5 0.5
+light 0 0 300 1 0.1 0.1 0.1
+model 0 1.0 0.2 270 80 0 -30 0 0 ExampleDriverFiles/Apple/Manzana.obj

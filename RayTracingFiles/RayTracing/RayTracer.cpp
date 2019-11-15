@@ -19,11 +19,11 @@ void RayTracer::rayTrace() {
     {
         DReader driver;
 
-        cout << "Reading All Files." << '\n';
+        cout << "Reading All Files." << endl;
 
         driver << inFile;
         
-        cout << driver << endl;
+        //cout << driver << endl;
 
         auto resolution = driver.camera.resolution;
 
@@ -32,7 +32,7 @@ void RayTracer::rayTrace() {
 
         vector<vector<vector<int>>> img(height);
 
-        cout << "Beginning Raytracing." << '\n';
+        cout << "Beginning Raytracing." << endl;
 
         auto start = high_resolution_clock::now();
         const bool showProgress = driver.objs.size() > 0;
@@ -82,7 +82,7 @@ void RayTracer::rayTrace() {
 
     catch(invalid_argument &err)
     {
-        cerr << err.what();
+        cerr << err.what() << endl;
     }
 }
 
