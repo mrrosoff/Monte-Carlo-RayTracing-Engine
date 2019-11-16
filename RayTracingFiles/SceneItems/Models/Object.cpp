@@ -3,7 +3,6 @@
 //
 
 #include "Object.h"
-#include <unistd.h>
 
 using namespace std;
 
@@ -125,7 +124,7 @@ void Object::readObjectFaceLine(const vector<string> &line, const int currentMat
     faces.emplace_back(face, currentMatIndex);
 }
 
-void Object::readMaterialFile(string filePath) {
+void Object::readMaterialFile(const string &filePath) {
     
     ifstream matReader(filePath);
     

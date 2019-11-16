@@ -48,7 +48,7 @@ private:
 
     void readObject(const Remap &);
     void readObjectFaceLine(const std::vector<std::string> &, int);
-    void readMaterialFile(std::string );
+    void readMaterialFile(const std::string &);
     void calculateNormals();
 };
 
