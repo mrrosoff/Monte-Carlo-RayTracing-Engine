@@ -15,6 +15,5 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    RayTracer(argv).rayTrace();
-    return 0;
+    return RayTracer(argv).rayTrace();
 }

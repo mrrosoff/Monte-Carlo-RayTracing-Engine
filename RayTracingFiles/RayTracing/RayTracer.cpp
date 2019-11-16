@@ -13,7 +13,7 @@ inFile(argv[1]), outFile(argv[2])
 
 {}
 
-void RayTracer::rayTrace() {
+int RayTracer::rayTrace() {
 
     try
     {
@@ -22,8 +22,6 @@ void RayTracer::rayTrace() {
         cout << "Reading All Files." << endl;
 
         driver << inFile;
-        
-        //cout << driver << endl;
 
         auto resolution = driver.camera.resolution;
 
@@ -37,7 +35,7 @@ void RayTracer::rayTrace() {
         auto start = high_resolution_clock::now();
         const bool showProgress = driver.objs.size() > 0;
         int counter = 10;
-        
+
         #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(dynamic)
         for(int i = 0; i < height; i++)
         {
@@ -58,7 +56,7 @@ void RayTracer::rayTrace() {
                 img[i][j][1] = min(max(static_cast<int>(color[1] * 255), 0), 255);
                 img[i][j][2] = min(max(static_cast<int>(color[2] * 255), 0), 255);
             }
-            
+
             #pragma omp critical
             if(showProgress && static_cast<int>(floor((static_cast<double>(i) / height) * 100)) == counter)
             {
@@ -78,11 +76,13 @@ void RayTracer::rayTrace() {
         writer << img;
 
         cout << "Finished!" << '\n';
+        return 0;
     }
 
     catch(invalid_argument &err)
     {
-        cerr << err.what() << endl;
+        cerr << "\033[1;31m" << err.what() << "\033[0m" << endl;
+        return 1;
     }
 }
 

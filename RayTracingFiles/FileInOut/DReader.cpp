@@ -55,56 +55,111 @@ void DReader::readDriver(const string &file)
 
         if (lineData[0] == "eye")
         {
+            if(lineData.size() != 4)
+            {
+                throw invalid_argument("You must specify all the fields for eye!");
+            }
+            
             eye = parseEye(lineData);
         }
 
         else if (lineData[0] == "look")
         {
+            if(lineData.size() != 4)
+            {
+                throw invalid_argument("You must specify all the fields for look!");
+            }
+            
             look = parseLook(lineData);
         }
 
         else if (lineData[0] == "up")
         {
+            if(lineData.size() != 4)
+            {
+                throw invalid_argument("You must specify all the fields for up!");
+            }
+            
             up = parseUp(lineData);
         }
 
         else if (lineData[0] == "d")
         {
+            if(lineData.size() != 2)
+            {
+                throw invalid_argument("You must specify all the fields for d!");
+            }
+            
             focLen = parseD(lineData);
         }
 
         else if (lineData[0] == "bounds")
         {
+            if(lineData.size() != 5)
+            {
+                throw invalid_argument("You must specify all the fields for bounds!");
+            }
+            
             bounds = parseBounds(lineData);
         }
 
         else if (lineData[0] == "res")
         {
+            if(lineData.size() != 3)
+            {
+                throw invalid_argument("You must specify all the fields for res!");
+            }
+            
             res = parseRes(lineData);
         }
 
         else if (lineData[0] == "ambient")
         {
+            if(lineData.size() != 4)
+            {
+                throw invalid_argument("You must specify all the fields for ambient!");
+            }
+            
             ambientLight = parseAmbient(lineData);
         }
 
         else if (lineData[0] == "light")
         {
+            if(lineData.size() != 8)
+            {
+                throw invalid_argument("You must specify all the fields for light!");
+            }
+            
             parseLight(lineData);
         }
 
         else if (lineData[0] == "sphere")
         {
+            if(lineData.size() != 18)
+            {
+                throw invalid_argument("You must specify all the fields for sphere!");
+            }
+            
             parseSphere(lineData);
         }
 
         else if (lineData[0] == "recursionlevel")
         {
+            if(lineData.size() != 2)
+            {
+                throw invalid_argument("You must specify all the fields for recursionlevel!");
+            }
+            
             recursionDepth = parseRecursionLevel(lineData);
         }
 
         else if (lineData[0] == "model")
         {
+            if(lineData.size() != 11)
+            {
+                throw invalid_argument("You must specify all the fields for model!");
+            }
+            
             parseModel(lineData);
         }
 

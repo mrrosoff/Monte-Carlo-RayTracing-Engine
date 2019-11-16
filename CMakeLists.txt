@@ -6,7 +6,7 @@ project(RayTracer)
 set(CMAKE_CXX_STANDARD 14)
 
 # Compile Flags
-add_compile_options(-Wall -O3)
+add_compile_options(-Wall -O4)
 
 # Parallel Capabilities
 find_package(OpenMP)
@@ -27,4 +27,4 @@ RayTracingFiles/SceneItems/LightSource.cpp RayTracingFiles/SceneItems/LightSourc
 RayTracingFiles/SceneItems/Models/Object.cpp RayTracingFiles/SceneItems/Models/Object.h RayTracingFiles/SceneItems/Models/Remap.cpp RayTracingFiles/SceneItems/Models/Remap.h RayTracingFiles/SceneItems/Models/Vertex.cpp RayTracingFiles/SceneItems/Models/Vertex.h RayTracingFiles/SceneItems/Models/Face.cpp RayTracingFiles/SceneItems/Models/Face.h)
 
 # Create a tar file every time
-add_custom_target(mrosoff.tar ALL COMMAND tar cf mrosoff.tar *.cpp *.h README.md CMakeLists.txt Eigen)
+add_custom_target(mrosoff.tar ALL COMMAND tar cf mrosoff.tar ExampleDriverFiles RayTracingFiles README.md CMakeLists.txt Eigen)

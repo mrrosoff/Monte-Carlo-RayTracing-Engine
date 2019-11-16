@@ -3,6 +3,7 @@
 //
 
 #include "Object.h"
+#include <unistd.h>
 
 using namespace std;
 
@@ -29,6 +30,21 @@ void Object::readObject(const Remap &map)
 
     while(getline(objReader, objLine))
     {
+        if(objLine.empty())
+        {
+            continue;
+        }
+        
+        if(objLine[objLine.size() - 1] == '\r')
+        {
+            objLine.erase(objLine.size() - 1, 1);
+            
+            if(objLine.empty())
+            {
+                continue;
+            }
+        }
+        
         vector<string> line;
 
         stringstream tokenizer(objLine);
@@ -36,9 +52,12 @@ void Object::readObject(const Remap &map)
 
         while (getline(tokenizer, token, ' '))
         {
-            line.push_back(token);
+            if(!token.empty())
+            {
+                line.emplace_back(token);
+            }
         }
-
+        
         if (line[0] == "#")
         {
             continue;
@@ -77,7 +96,7 @@ void Object::readObject(const Remap &map)
             readObjectFaceLine(line, currentMatIndex);
         }
     }
-    
+
     calculateNormals();
 }
 
@@ -87,31 +106,33 @@ void Object::readObjectFaceLine(const vector<string> &line, const int currentMat
 
     for(size_t i = 1; i < line.size(); i++)
     {
-        string faceElement = line[i];
-        
-        stringstream faceTokenizer(faceElement);
+        stringstream faceTokenizer(line[i]);
         string faceToken;
 
         getline(faceTokenizer, faceToken, '/');
-        face.push_back(stoi(faceToken));
+        
+        if(!faceToken.empty())
+        {
+            face.push_back(stoi(faceToken));
+        }
     }
 
     for(int vertexIndex : face)
     {
         vertices[vertexIndex - 1].adjacentFaces.emplace_back(faces.size());
     }
-    
+
     faces.emplace_back(face, currentMatIndex);
 }
 
-void Object::readMaterialFile(const string &filePath) {
-
+void Object::readMaterialFile(string filePath) {
+    
     ifstream matReader(filePath);
-
+    
     if (!matReader)
     {
         string err = strerror(errno);
-        throw invalid_argument("Failure to open Material. File - " + filePath + ": " + err);
+        throw invalid_argument("Failure to open Material File - " + filePath + ": " + err);
     }
 
     string matLine;
@@ -140,7 +161,7 @@ void Object::readMaterialFile(const string &filePath) {
                 {
                     Kr = Ks;
                 }
-                
+
                 else if(illum == 6)
                 {
                     Kr = Ks;
@@ -176,7 +197,7 @@ void Object::readMaterialFile(const string &filePath) {
                     throw invalid_argument("It is Illegal To Have Mulitple Materials Of The Same Name!");
                 }
             }
-            
+
             name = matLineData[1];
         }
 
@@ -221,7 +242,7 @@ void Object::readMaterialFile(const string &filePath) {
             illum = stoi(matLineData[1]);
         }
     }
-    
+
     if(illum != 0)
     {
         if(illum == 2)
@@ -242,36 +263,38 @@ void Object::calculateNormals()
 {
     for(auto &face: faces)
     {
-        const auto &vertexOne = vertices[face.vertexIndexList[0] - 1].vertex;
-        const auto &vertexTwo = vertices[face.vertexIndexList[1] - 1].vertex;
-        const auto &vertexThree = vertices[face.vertexIndexList[2] - 1].vertex;
+        if(!face.calcColumns)
+        {
+            face.columnOne = vertices[face.vertexIndexList[0] - 1].vertex - vertices[face.vertexIndexList[1] - 1].vertex;
+            face.columnTwo = vertices[face.vertexIndexList[0] - 1].vertex - vertices[face.vertexIndexList[2] - 1].vertex;
+            face.calcColumns = true;
+        }
 
-        auto columnOne = vertexOne - vertexTwo;
-        auto columnTwo = vertexOne - vertexThree;
-        
-        auto F1Normal = (columnOne.cross(columnTwo)).normalized();
-                
+        auto F1Normal = (face.columnOne.cross(face.columnTwo)).normalized();
+
         for(const auto vertex : face.vertexIndexList)
         {
             Eigen::Vector3d sum(F1Normal);
-            
+
             for(const auto faceIndex : vertices[vertex - 1].adjacentFaces)
             {
-                const auto &otherFace = faces[faceIndex];
-                const auto &otherVertexOne = vertices[otherFace.vertexIndexList[0] - 1].vertex;
-                const auto &otherVertexTwo = vertices[otherFace.vertexIndexList[1] - 1].vertex;
-                const auto &otherVertexThree = vertices[otherFace.vertexIndexList[2] - 1].vertex;
-                
-                const auto &columnOne = otherVertexOne - otherVertexTwo;
-                const auto &columnTwo = otherVertexOne - otherVertexThree;
-        
-                auto F2Normal = (columnOne.cross(columnTwo)).normalized();
+                auto &otherFace = faces[faceIndex];
+
+                if(!otherFace.calcColumns)
+                {
+                    otherFace.columnOne = vertices[otherFace.vertexIndexList[0] - 1].vertex - vertices[otherFace.vertexIndexList[1] - 1].vertex;
+                    otherFace.columnTwo = vertices[otherFace.vertexIndexList[0] - 1].vertex - vertices[otherFace.vertexIndexList[2] - 1].vertex;
+                    otherFace.calcColumns = true;
+                }
+
+                auto F2Normal = (otherFace.columnOne.cross(otherFace.columnTwo)).normalized();
+
                 if(acos(min(max(F1Normal.dot(F2Normal), -1.0), 1.0)) < smoothingAngle)
                 {
                     sum += F2Normal;
                 }
             }
-            
+
             face.normals.emplace_back(sum.normalized());
         }
     }
@@ -284,21 +307,15 @@ bool Object::intersectionTest(Ray &ray) const
 
     for(const auto &face : faces)
     {
-        const auto &vertexOne = vertices[face.vertexIndexList[0] - 1].vertex;
-        const auto &vertexTwo = vertices[face.vertexIndexList[1] - 1].vertex;
-        const auto &vertexThree = vertices[face.vertexIndexList[2] - 1].vertex;
-
-        const auto b = vertexOne - ray.point;
-        const auto columnOne = vertexOne - vertexTwo;
-        const auto columnTwo = vertexOne - vertexThree;
+        const auto b = vertices[face.vertexIndexList[0] - 1].vertex - ray.point;
 
         Eigen::Matrix3d a;
-        a << columnOne[0], columnTwo[0], ray.direction[0],
-             columnOne[1], columnTwo[1], ray.direction[1],
-             columnOne[2], columnTwo[2], ray.direction[2];
+        a << face.columnOne[0], face.columnTwo[0], ray.direction[0],
+             face.columnOne[1], face.columnTwo[1], ray.direction[1],
+             face.columnOne[2], face.columnTwo[2], ray.direction[2];
 
         const auto x = a.inverse() * b;
-        
+
         if(x[0] >= EPSILON && x[1] >= EPSILON && x[0] + x[1] <= 1 - EPSILON && x[2] > EPSILON)
         {
             if(x[2] < ray.closestIntersectionDistance)

@@ -27,7 +27,7 @@ public:
     ~RayTracer() = default;
 
     explicit RayTracer(char**);
-    void rayTrace();
+    int rayTrace();
 
 private:
 

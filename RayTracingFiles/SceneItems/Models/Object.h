@@ -43,12 +43,12 @@ public:
     std::vector<Face> faces;
     std::string objPath;
     double smoothingAngle;
-        
+
 private:
 
     void readObject(const Remap &);
     void readObjectFaceLine(const std::vector<std::string> &, int);
-    void readMaterialFile(const std::string &);
+    void readMaterialFile(std::string );
     void calculateNormals();
 };
 

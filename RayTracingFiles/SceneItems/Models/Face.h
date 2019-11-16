@@ -24,6 +24,9 @@ public:
     std::vector<int> vertexIndexList;
     int materialIndex;
     std::vector<Eigen::Vector3d> normals;
+    
+    Eigen::Vector3d columnOne, columnTwo;
+    bool calcColumns = false;
 };
 
 std::ostream &operator<<(std::ostream &, const Face &);
