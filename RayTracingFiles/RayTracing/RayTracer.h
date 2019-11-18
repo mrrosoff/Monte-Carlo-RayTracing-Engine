@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <omp.h>
 #include <chrono>
+#include <random>
 
 #include "Ray.h"
 #include "../FileInOut/DReader.h"
@@ -26,16 +27,20 @@ public:
     RayTracer &operator=(const RayTracer &) = delete;
     ~RayTracer() = default;
 
-    explicit RayTracer(char**);
+    explicit RayTracer(char**, bool = false, int = 0);
     int rayTrace();
 
 private:
 
-    static Eigen::Vector3d doARayTrace(Ray &, const DReader &, const Eigen::Vector3d &, const Eigen::Vector3d &, int);
-    static bool checkForIntersection(Ray &, const DReader &, bool isShadow = false);
+    static Eigen::Vector3d makeRandomUnitVector();
+    Eigen::Vector3d calculateColor(Ray &, const DReader &, const Eigen::Vector3d &, int);
+    Eigen::Vector3d calculateTraditionalColor(const Ray &, const DReader &, const Eigen::Vector3d &);
+    bool checkForIntersection(Ray &, const DReader &, bool isShadow = false);
 
     std::string inFile;
     std:: string outFile;
+    bool isMonteCarlo;
+    int samples;
 };
 
 

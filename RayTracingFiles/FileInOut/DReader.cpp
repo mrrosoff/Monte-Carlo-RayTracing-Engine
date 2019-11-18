@@ -6,10 +6,16 @@
 
 using namespace std;
 
+DReader &DReader::operator<<(const bool isCarlo)
+{
+    isMonteCarlo = isCarlo;
+    return *this;
+}
+
 DReader &DReader::operator<<(const string &file)
 {
-    this->driverFile = file;
-    this->driverName = findDriverName(file);
+    driverFile = file;
+    driverName = findDriverName(file);
     readDriver(file);
     return *this;
 }
@@ -35,6 +41,8 @@ void DReader::readDriver(const string &file)
 
     while (getline(driverReader, driverLine))
     {
+        driverLine.erase(remove(driverLine.begin(), driverLine.end(), '\r'), driverLine.end());
+
         if(driverLine.empty())
         {
             continue;
@@ -227,14 +235,14 @@ void DReader::parseLight(const vector<string> &lineData)
     double w;
 
     position << stod(lineData[1]),
-            stod(lineData[2]),
-            stod(lineData[3]);
+                stod(lineData[2]),
+                stod(lineData[3]);
 
     w = stod(lineData[4]);
 
     rgb << stod(lineData[5]),
-            stod(lineData[6]),
-            stod(lineData[7]);
+           stod(lineData[6]),
+           stod(lineData[7]);
 
     lights.emplace_back(position, rgb, w);
 }
@@ -271,7 +279,7 @@ void DReader::parseSphere(const vector<string> &lineData)
           stod(lineData[16]);
 
     Material mat("A Sphere Material", Ka, Kd, Ks, Kr, 16, stod(lineData[17]));
-    spheres.emplace_back(position, radius, mat);
+    items.emplace_back(new Sphere(position, radius, mat));
 }
 
 int DReader::parseRecursionLevel(const vector<string> &lineData)
@@ -305,7 +313,7 @@ void DReader::parseModel(const vector<string> &lineData)
     string modelPath = lineData[10];
 
     Remap map(rotationVector, theta, scalar, translation, smoothingAngle, modelPath);
-    objs.emplace_back(map);
+    items.emplace_back(new Object(map));
 }
 
 ostream &operator<<(ostream &out, const DReader &driver)
@@ -328,16 +336,10 @@ ostream &operator<<(ostream &out, const DReader &driver)
         out << "Light " << i << ": " << driver.lights[i] << '\n';
     }
 
-    cout << '\n' << "Spheres" << '\n' << "-------" << '\n';
-    for(size_t i = 0; i < driver.spheres.size(); i++)
+    cout << '\n' << "Items" << '\n' << "-------" << '\n';
+    for(size_t i = 0; i < driver.items.size(); i++)
     {
-        out << "Sphere " << i << ": " << driver.spheres[i] << '\n';
-    }
-
-    cout << '\n' << "Objects" << '\n' << "------" << '\n';
-    for(size_t i = 0; i < driver.objs.size(); i++)
-    {
-        out << "Objects " << i << ": " << driver.objs[i] << '\n';
+        out << "Sphere " << i << ": " << driver.items[i] << '\n';
     }
 
     return out;

@@ -18,8 +18,6 @@ ostream &operator<<(ostream &out, const Face &face)
     {
         out << vertex << ' ';
     }
-    
-    out << '\n';
 
     return out;
 }

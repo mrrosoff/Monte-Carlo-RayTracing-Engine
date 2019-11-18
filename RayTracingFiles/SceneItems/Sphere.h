@@ -7,11 +7,12 @@
 
 #include <iostream>
 
+#include "SceneItem.h"
 #include "../RayTracing/Ray.h"
 
 #include "../../Eigen/Eigen"
 
-class Sphere {
+class Sphere : public SceneItem {
 
 public:
 
@@ -21,11 +22,14 @@ public:
     virtual ~Sphere() = default;
 
     explicit Sphere(const Eigen::Vector3d &, double, const Material &);
-    bool intersectionTest(Ray &) const;
+
+    bool intersectionTest(Ray &) const override;
+
+    Ray makeExitRefrationRay(const Ray &, double, double) const override;
+    virtual Eigen::Vector3d doSnellsLaw(const Ray &, const Eigen::Vector3d &, double, double) const;
 
     Eigen::Vector3d position;
     double radius = 0;
-    
     Material material;
 };
 

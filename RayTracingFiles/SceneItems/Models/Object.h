@@ -18,6 +18,7 @@
 #include <cstring>
 
 #include "../../RayTracing/Ray.h"
+#include "../SceneItem.h"
 #include "../Material.h"
 
 #include "./Remap.h"
@@ -26,7 +27,7 @@
 
 #include "../../../Eigen/Eigen"
 
-class Object {
+class Object : public SceneItem {
 
 public:
 
@@ -36,13 +37,14 @@ public:
     virtual ~Object()= default;
 
     explicit Object(const Remap &);
-    bool intersectionTest(Ray &ray) const;
+    bool intersectionTest(Ray &ray) const override;
+    Ray makeExitRefrationRay(const Ray &, double, double) const override;
 
     std::vector<Material> materials;
     std::vector<Vertex> vertices;
     std::vector<Face> faces;
     std::string objPath;
-    double smoothingAngle;
+    double smoothingAngle = 0;
 
 private:
 

@@ -14,5 +14,9 @@ vertex(vertex)
 
 ostream &operator<<(ostream &out, const Vertex &vertex)
 {
+    Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
+
+    out << vertex.vertex.format(ArrayFormat);
+
     return out;
 }

@@ -14,10 +14,12 @@
 #include <cerrno>
 #include <cstring>
 #include <exception>
+#include <memory>
 
 #include "../RayTracing/Camera.h"
 #include "../SceneItems/LightSource.h"
 #include "../SceneItems/Models/Object.h"
+#include "../SceneItems/SceneItem.h"
 #include "../SceneItems/Sphere.h"
 #include "../SceneItems/Models/Remap.h"
 
@@ -33,16 +35,17 @@ public:
     ~DReader() = default;
 
     DReader &operator<<(const std::string &);
+    DReader &operator<<(bool);
 
     std::string driverName;
     std::string driverFile;
+    bool isMonteCarlo = false;
 
     Camera camera;
     int recursionDepth = 0;
     Eigen::Vector3d ambientLight;
     std::vector<LightSource> lights;
-    std::vector<Sphere> spheres;
-    std::vector<Object> objs;
+    std::vector<std::shared_ptr<SceneItem>> items;
 
 private:
 

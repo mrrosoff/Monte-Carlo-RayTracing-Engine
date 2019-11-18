@@ -8,19 +8,21 @@
 #include <string>
 #include <vector>
 #include <limits>
-
 #include <iostream>
 
 #include "../SceneItems/Material.h"
+
 #include "../../Eigen/Eigen"
+
+class SceneItem;
 
 class Ray {
 
 public:
 
-    Ray() = delete;
+    Ray() = default;
     Ray(const Ray &) = default;
-    Ray &operator=(const Ray &) = delete;
+    Ray &operator=(const Ray &) = default;
     ~Ray() = default;
 
     explicit Ray(const Eigen::Vector3d &, const Eigen::Vector3d &, double = std::numeric_limits<double>::max());
@@ -29,10 +31,11 @@ public:
     Eigen::Vector3d direction;
 
     Eigen::Vector3d closestIntersectionPoint;
-    double closestIntersectionDistance;
-    
-    Eigen::Vector3d surfaceNormal;
+    double closestIntersectionDistance = std::numeric_limits<double>::max();
+
+    const SceneItem* hit = nullptr;
     Material material;
+    Eigen::Vector3d surfaceNormal;
 };
 
 std::ostream &operator<<(std::ostream &, const Ray &);

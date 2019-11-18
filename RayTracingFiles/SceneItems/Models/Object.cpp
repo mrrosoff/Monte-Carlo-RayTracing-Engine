@@ -29,21 +29,13 @@ void Object::readObject(const Remap &map)
 
     while(getline(objReader, objLine))
     {
+        objLine.erase(remove(objLine.begin(), objLine.end(), '\r'), objLine.end());
+
         if(objLine.empty())
         {
             continue;
         }
-        
-        if(objLine[objLine.size() - 1] == '\r')
-        {
-            objLine.erase(objLine.size() - 1, 1);
-            
-            if(objLine.empty())
-            {
-                continue;
-            }
-        }
-        
+
         vector<string> line;
 
         stringstream tokenizer(objLine);
@@ -56,7 +48,7 @@ void Object::readObject(const Remap &map)
                 line.emplace_back(token);
             }
         }
-        
+
         if (line[0] == "#")
         {
             continue;
@@ -109,7 +101,7 @@ void Object::readObjectFaceLine(const vector<string> &line, const int currentMat
         string faceToken;
 
         getline(faceTokenizer, faceToken, '/');
-        
+
         if(!faceToken.empty())
         {
             face.push_back(stoi(faceToken));
@@ -125,9 +117,9 @@ void Object::readObjectFaceLine(const vector<string> &line, const int currentMat
 }
 
 void Object::readMaterialFile(const string &filePath) {
-    
+
     ifstream matReader(filePath);
-    
+
     if (!matReader)
     {
         string err = strerror(errno);
@@ -147,6 +139,8 @@ void Object::readMaterialFile(const string &filePath) {
 
     while(getline(matReader, matLine))
     {
+        matLine.erase(remove(matLine.begin(), matLine.end(), '\r'), matLine.end());
+
         if(matLine.empty())
         {
             if(illum != 0)
@@ -156,12 +150,7 @@ void Object::readMaterialFile(const string &filePath) {
                     Kr = {0, 0, 0};
                 }
 
-                else if(illum == 3)
-                {
-                    Kr = Ks;
-                }
-
-                else if(illum == 6)
+                else if(illum == 3 || illum == 6)
                 {
                     Kr = Ks;
                 }
@@ -299,6 +288,10 @@ void Object::calculateNormals()
     }
 }
 
+Ray Object::makeExitRefrationRay(const Ray &, double, double) const {
+    return Ray();
+}
+
 bool Object::intersectionTest(Ray &ray) const
 {
     bool foundFace = false;
@@ -319,14 +312,16 @@ bool Object::intersectionTest(Ray &ray) const
         {
             if(x[2] < ray.closestIntersectionDistance)
             {
-                ray.material = materials[face.materialIndex];
                 ray.closestIntersectionDistance = x[2];
                 ray.closestIntersectionPoint = ray.point + x[2] * ray.direction;
+
+                ray.hit = this;
+                ray.material = materials[face.materialIndex];
                 ray.surfaceNormal = (1 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2];
 
                 if(ray.direction.dot(ray.surfaceNormal) > 0)
                 {
-                    ray.surfaceNormal = ray.surfaceNormal * -1;
+                    ray.surfaceNormal *= -1;
                 }
 
                 foundFace = true;
@@ -339,7 +334,7 @@ bool Object::intersectionTest(Ray &ray) const
 
 ostream &operator<<(ostream &out, const Object &object)
 {
-    out << '\n';
+    out << "\n\n" << "Materials: " << "\n\n";
 
     for(const auto &material : object.materials)
     {
