@@ -128,13 +128,15 @@ void Object::readMaterialFile(const string &filePath) {
 
     string matLine;
     string name;
+
     Eigen::Vector3d Ka;
     Eigen::Vector3d Kd;
     Eigen::Vector3d Ks;
     Eigen::Vector3d Kr;
+    Eigen::Vector3d Ko(0, 0, 0);
+
     double Ns = 0;
     double Ni = 0;
-    double d = 0;
     int illum = 0;
 
     while(getline(matReader, matLine))
@@ -155,7 +157,7 @@ void Object::readMaterialFile(const string &filePath) {
                     Kr = Ks;
                 }
 
-                materials.emplace_back(name, Ka, Kd, Ks, Kr, Ns, Ni, d, illum);
+                materials.emplace_back(name, Ka, Kd, Ks, Kr, Ko, Ns, Ni, illum);
                 illum = 0;
             }
 
@@ -210,6 +212,13 @@ void Object::readMaterialFile(const string &filePath) {
                   stod(matLineData[3]);
         }
 
+        else if(matLineData[0] == "Tr")
+        {
+            Ko << stod(matLineData[1]),
+                  stod(matLineData[2]),
+                  stod(matLineData[3]);
+        }
+
         else if(matLineData[0] == "Ns")
         {
             Ns = stod(matLineData[1]);
@@ -218,11 +227,6 @@ void Object::readMaterialFile(const string &filePath) {
         else if(matLineData[0] == "Ni")
         {
             Ni = stod(matLineData[1]);
-        }
-
-        else if(matLineData[0] == "d")
-        {
-            d = stod(matLineData[1]);
         }
 
         else if(matLineData[0] == "illum")
@@ -238,12 +242,12 @@ void Object::readMaterialFile(const string &filePath) {
             Kr = {0, 0, 0};
         }
 
-        else if(illum == 3)
+        else if(illum == 3 || illum == 6)
         {
             Kr = Ks;
         }
 
-        materials.emplace_back(name, Ka, Kd, Ks, Kr, Ns, Ni, d, illum);
+        materials.emplace_back(name, Ka, Kd, Ks, Kr, Ko, Ns, Ni, illum);
     }
 }
 
@@ -262,7 +266,7 @@ void Object::calculateNormals()
 
         for(const auto vertex : face.vertexIndexList)
         {
-            Eigen::Vector3d sum(F1Normal);
+            Eigen::Vector3d sum = F1Normal;
 
             for(const auto faceIndex : vertices[vertex - 1].adjacentFaces)
             {
@@ -288,8 +292,14 @@ void Object::calculateNormals()
     }
 }
 
-Ray Object::makeExitRefrationRay(const Ray &, double, double) const {
-    return Ray();
+Ray Object::makeExitRefrationRay(const Ray &invRay, double indexOne, double indexTwo) const
+{
+    Eigen::Vector3d refractionDirection = doSnellsLaw(invRay, indexTwo, indexOne);
+    Ray refracRayOne(invRay.closestIntersectionPoint, -1 * refractionDirection);
+    intersectionTest(refracRayOne);
+    Ray refracRayTwo(refracRayOne.closestIntersectionPoint, -1 * refractionDirection);
+    refracRayTwo.surfaceNormal = refracRayOne.surfaceNormal;
+    return Ray(refracRayOne.closestIntersectionPoint, doSnellsLaw(refracRayTwo, indexOne, indexTwo));
 }
 
 bool Object::intersectionTest(Ray &ray) const

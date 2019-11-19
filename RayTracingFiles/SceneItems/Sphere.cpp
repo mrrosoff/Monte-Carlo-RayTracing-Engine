@@ -48,29 +48,11 @@ bool Sphere::intersectionTest(Ray &ray) const
 
 Ray Sphere::makeExitRefrationRay(const Ray &invRay, double indexOne, double indexTwo) const
 {
-    Eigen::Vector3d refractPoint = doSnellsLaw(invRay, (invRay.point - position).normalized(), indexTwo, indexOne);
-    Eigen::Vector3d exitPoint = invRay.point + 2 * (position - invRay.point).dot(refractPoint) * refractPoint;
-    Ray refractRay(exitPoint, -refractPoint);
-    return Ray(exitPoint, doSnellsLaw(refractRay, (position - (invRay.point + 2 * (position - invRay.point).dot(refractPoint) * refractPoint)).normalized(), indexOne, indexTwo));
-}
-
-Eigen::Vector3d Sphere::doSnellsLaw(const Ray &invRay, const Eigen::Vector3d &normal, const double indexOne, const double indexTwo) const
-{
-    double refractionEquation  = indexOne / indexTwo;
-
-    double wn = invRay.direction.dot(normal);
-    double indexSq = refractionEquation * refractionEquation * (wn * wn - 1) + 1;
-
-    if (indexSq < 0)
-    {
-        throw range_error("Refraction Error");
-    }
-
-    else
-    {
-        double b = (refractionEquation * wn) - sqrt(indexSq);
-        return -refractionEquation * invRay.direction + b * normal;
-    }
+    Eigen::Vector3d refractionDirection = doSnellsLaw(invRay, indexTwo, indexOne);
+    Eigen::Vector3d exitPoint = invRay.point + 2 * (position - invRay.point).dot(refractionDirection) * refractionDirection;
+    Ray refractRay(exitPoint, -1 * refractionDirection);
+    refractRay.surfaceNormal = (position - exitPoint).normalized();
+    return Ray(exitPoint, doSnellsLaw(refractRay, indexOne, indexTwo));
 }
 
 ostream &operator<<(ostream &out, const Sphere &sph)

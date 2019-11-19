@@ -26,7 +26,6 @@ public:
     bool intersectionTest(Ray &) const override;
 
     Ray makeExitRefrationRay(const Ray &, double, double) const override;
-    virtual Eigen::Vector3d doSnellsLaw(const Ray &, const Eigen::Vector3d &, double, double) const;
 
     Eigen::Vector3d position;
     double radius = 0;

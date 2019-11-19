@@ -38,6 +38,8 @@ int RayTracer::rayTrace() {
 
         driver << isMonteCarlo << inFile;
 
+        //cout << driver << endl; // Uncomment for Debugging.
+
         auto resolution = driver.camera.resolution;
 
         int width = resolution[0];
@@ -45,7 +47,7 @@ int RayTracer::rayTrace() {
 
         vector<vector<vector<int>>> img(height);
 
-        cout << "Beginning Raytracing." << endl;
+        //cout << "Beginning Raytracing." << endl;
 
         auto start = high_resolution_clock::now();
         int counter = 10;
@@ -139,12 +141,14 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const DReader &driver, const
     }
 
 
-    if(depth > 0 && ray.material.Ni > 0)
+    if(depth > 0 && ray.material.illum == 6)
     {
         try
         {
-            Ray refractedRay = ray.hit->makeExitRefrationRay(Ray(ray.closestIntersectionPoint, -1 * ray.direction), ray.material.Ni, 1.0);
-            calculatedColor += calculateColor(refractedRay, driver, ray.material.Kr.cwiseProduct(howMuchReflect), depth - 1);
+            Ray invRay(ray.closestIntersectionPoint, -1 * ray.direction);
+            invRay.surfaceNormal = ray.surfaceNormal;
+            Ray refractedRay = ray.hit->makeExitRefrationRay(invRay, ray.material.Ni, 1.0);
+            calculatedColor += calculateColor(refractedRay, driver, ray.material.Ko.cwiseProduct(howMuchReflect), depth - 1);
         }
 
         catch(const range_error &err) {}

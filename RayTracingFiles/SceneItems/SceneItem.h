@@ -5,8 +5,12 @@
 #ifndef RAYTRACER_SCENEITEM_H
 #define RAYTRACER_SCENEITEM_H
 
+#include <exception>
+
 #include "../SceneItems/Material.h"
 #include "../RayTracing/Ray.h"
+
+#include "../../Eigen/Eigen"
 
 class SceneItem {
 
@@ -14,8 +18,7 @@ public:
 
     virtual bool intersectionTest(Ray &) const = 0;
     virtual Ray makeExitRefrationRay(const Ray &, double, double) const = 0;
+    Eigen::Vector3d doSnellsLaw(const Ray &, double, double) const;
 };
-
-std::ostream &operator<<(std::ostream &, const SceneItem &);
 
 #endif //RAYTRACER_SCENEITEM_H

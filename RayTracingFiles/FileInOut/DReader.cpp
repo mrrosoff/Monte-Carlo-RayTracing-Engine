@@ -278,7 +278,7 @@ void DReader::parseSphere(const vector<string> &lineData)
           stod(lineData[15]),
           stod(lineData[16]);
 
-    Material mat("A Sphere Material", Ka, Kd, Ks, Kr, 16, stod(lineData[17]));
+    Material mat("A Sphere Material", Ka, Kd, Ks, Kr, Eigen::Vector3d(1, 1, 1) - Kr, 16, stod(lineData[17]));
     items.emplace_back(new Sphere(position, radius, mat));
 }
 
@@ -337,9 +337,17 @@ ostream &operator<<(ostream &out, const DReader &driver)
     }
 
     cout << '\n' << "Items" << '\n' << "-------" << '\n';
-    for(size_t i = 0; i < driver.items.size(); i++)
+    for(const auto &item : driver.items)
     {
-        out << "Sphere " << i << ": " << driver.items[i] << '\n';
+        if(dynamic_cast<Sphere *>(&*item))
+        {
+            out << "Sphere: \n" << *dynamic_cast<Sphere *>(&*item) << '\n';
+        }
+
+        else if(dynamic_cast<Object *>(&*item))
+        {
+            out << "Object:" << *dynamic_cast<Object *>(&*item) << '\n';
+        }
     }
 
     return out;

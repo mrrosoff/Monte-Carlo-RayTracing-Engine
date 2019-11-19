@@ -6,9 +6,9 @@
 
 using namespace std;
 
-Material::Material(const string &name, const Eigen::Vector3d &Ka, const Eigen::Vector3d &Kd, const Eigen::Vector3d &Ks, const Eigen::Vector3d &Kr, const double Ns, const double Ni, const double d, const int illum) :
+Material::Material(const string &name, const Eigen::Vector3d &Ka, const Eigen::Vector3d &Kd, const Eigen::Vector3d &Ks, const Eigen::Vector3d &Kr, const Eigen::Vector3d &Ko, const double Ns, const double Ni, const int illum) :
 
-name(name), Ka(Ka), Kd(Kd), Ks(Ks), Kr(Kr), Ns(Ns), Ni(Ni), d(d), illum(illum)
+name(name), Ka(Ka), Kd(Kd), Ks(Ks), Kr(Kr), Ko(Ko), Ns(Ns), Ni(Ni), illum(illum)
 
 {}
 
@@ -21,9 +21,9 @@ ostream &operator<<(ostream &out, const Material &mat)
     out << "Material Kd: " << mat.Kd.format(ArrayFormat) << '\n';
     out << "Material Ks: " << mat.Ks.format(ArrayFormat) << '\n';
     out << "Material Kr: " << mat.Kr.format(ArrayFormat) << '\n';
+    out << "Material Ko: " << mat.Ko.format(ArrayFormat) << '\n';
     out << "Material Ns: " << mat.Ns << '\n';
     out << "Material Ni: " << mat.Ni << '\n';
-    out << "Material D: " << mat.d << '\n';
     out << "Material Illum: " << mat.illum << '\n';
 
     return out;

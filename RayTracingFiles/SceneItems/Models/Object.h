@@ -38,6 +38,7 @@ public:
 
     explicit Object(const Remap &);
     bool intersectionTest(Ray &ray) const override;
+
     Ray makeExitRefrationRay(const Ray &, double, double) const override;
 
     std::vector<Material> materials;
