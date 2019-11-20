@@ -26,15 +26,15 @@ Eigen::Vector3d RayTracer::makeRandomUnitVector()
         {
             returnVector[i] = distribution(generator);
         }
-        
+
         returnVector.normalize();
-        
+
         if(returnVector.dot(returnVector))
         {
             return returnVector;
         }
     }
-    
+
     return {0, 0, 0};
 }
 
@@ -88,7 +88,10 @@ int RayTracer::rayTrace() {
                         }
                     }
 
-                    color /= samples;
+                    for(int i = 0; i < 3; i++)
+                    {
+                        color[i] = sqrt(color[i] / samples);
+                    }
                 }
 
                 else
@@ -102,7 +105,7 @@ int RayTracer::rayTrace() {
             }
 
             int percentComplete = static_cast<int>(floor((static_cast<double>(i) / height) * 100));
-            
+
             #pragma omp critical
             if(percentComplete == counter)
             {
@@ -147,7 +150,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const Eigen::Vector3d &howMu
         Eigen::Vector3d reflectionDirection = (2 * ray.surfaceNormal.dot(invDirection) * ray.surfaceNormal - invDirection).normalized();
 
         auto newRay = Ray(ray.closestIntersectionPoint, reflectionDirection);
-        //calculatedColor += calculateColor(newRay, ray.material.Kr.cwiseProduct(howMuchReflect), depth - 1);
+        calculatedColor += calculateColor(newRay, ray.material.Kr.cwiseProduct(howMuchReflect), depth - 1);
     }
 
 
@@ -211,12 +214,26 @@ Eigen::Vector3d RayTracer::calculateMCColor(Ray &ray, const Eigen::Vector3d curr
 
     else if(ray.hit->isLight)
     {
-        return currentAlbedo * 3;
+        return currentAlbedo.cwiseProduct(ray.material.Kd);
     }
-    
+
     else if (depth > 0)
     {
-        auto newRay = Ray(ray.closestIntersectionPoint, makeRandomUnitVector());
+	Ray newRay;
+
+	if(ray.material.Kr[0] > 0 || ray.material.Kr[1] > 0 || ray.material.Kr[2] > 0)
+	{
+            auto invDirection = -1 * ray.direction;
+            Eigen::Vector3d reflectionDirection = (2 * ray.surfaceNormal.dot(invDirection) * ray.surfaceNormal - invDirection).normalized();
+
+            newRay = Ray(ray.closestIntersectionPoint, reflectionDirection);
+	}
+
+        else
+	{
+	    newRay = Ray(ray.closestIntersectionPoint, makeRandomUnitVector());
+	}
+
         return calculateMCColor(newRay, currentAlbedo.cwiseProduct(ray.material.Kd), depth - 1);
     }
 
