@@ -244,7 +244,16 @@ void DReader::parseLight(const vector<string> &lineData)
            stod(lineData[6]),
            stod(lineData[7]);
 
-    lights.emplace_back(position, rgb, w);
+    if(isMonteCarlo)
+    {
+        Material mat("A Light Material", {0, 0, 0}, rgb, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, 16, 0);
+        items.emplace_back(new Sphere(position, w, mat, true));
+    }
+    
+    else
+    {
+        lights.emplace_back(position, rgb, w);
+    }
 }
 
 void DReader::parseSphere(const vector<string> &lineData)

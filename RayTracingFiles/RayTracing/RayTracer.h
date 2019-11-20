@@ -33,10 +33,12 @@ public:
 private:
 
     static Eigen::Vector3d makeRandomUnitVector();
-    Eigen::Vector3d calculateColor(Ray &, const DReader &, const Eigen::Vector3d &, int);
-    Eigen::Vector3d calculateTraditionalColor(const Ray &, const DReader &, const Eigen::Vector3d &);
-    bool checkForIntersection(Ray &, const DReader &, bool isShadow = false);
+    Eigen::Vector3d calculateColor(Ray &, const Eigen::Vector3d &, int);
+    Eigen::Vector3d calculateMCColor(Ray &, const Eigen::Vector3d, int);
+    Eigen::Vector3d calculateTraditionalColor(const Ray &, const Eigen::Vector3d &);
+    bool checkForIntersection(Ray &, bool isShadow = false);
 
+    DReader driver;
     std::string inFile;
     std:: string outFile;
     bool isMonteCarlo;

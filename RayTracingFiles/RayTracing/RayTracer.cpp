@@ -15,25 +15,33 @@ inFile(argv[1]), outFile(argv[2]), isMonteCarlo(isMonteCarlo), samples(samples)
 
 Eigen::Vector3d RayTracer::makeRandomUnitVector()
 {
-    Eigen::Vector3d returnVector;
-
-    default_random_engine generator(system_clock::now().time_since_epoch().count());
-    uniform_real_distribution<double> distribution(-1,1);
-
-    for (int i = 0; i < 3; i++)
+    while(true)
     {
-        returnVector[i] = distribution(generator);
-    }
+        Eigen::Vector3d returnVector;
 
-    return returnVector.normalized();
+        default_random_engine generator(system_clock::now().time_since_epoch().count());
+        uniform_real_distribution<double> distribution(-1,1);
+
+        for (int i = 0; i < 3; i++)
+        {
+            returnVector[i] = distribution(generator);
+        }
+        
+        returnVector.normalize();
+        
+        if(returnVector.dot(returnVector))
+        {
+            return returnVector;
+        }
+    }
+    
+    return {0, 0, 0};
 }
 
 int RayTracer::rayTrace() {
 
     try
     {
-        DReader driver;
-
         cout << "Reading All Files." << endl;
 
         driver << isMonteCarlo << inFile;
@@ -47,7 +55,7 @@ int RayTracer::rayTrace() {
 
         vector<vector<vector<int>>> img(height);
 
-        //cout << "Beginning Raytracing." << endl;
+        cout << "Beginning Raytracing." << endl;
 
         auto start = high_resolution_clock::now();
         int counter = 10;
@@ -72,7 +80,7 @@ int RayTracer::rayTrace() {
 
                     for(int sample = 0; sample < samples + 1; sample++)
                     {
-                        color += calculateColor(ray, driver, startWithFullReflect, driver.recursionDepth);
+                        color += calculateMCColor(ray, startWithFullReflect, driver.recursionDepth);
 
                         if(sample < samples)
                         {
@@ -85,7 +93,7 @@ int RayTracer::rayTrace() {
 
                 else
                 {
-                    color = calculateColor(ray, driver, startWithFullReflect, driver.recursionDepth);
+                    color = calculateColor(ray, startWithFullReflect, driver.recursionDepth);
                 }
 
                 img[i][j][0] = min(max(static_cast<int>(color[0] * 255), 0), 255);
@@ -93,10 +101,12 @@ int RayTracer::rayTrace() {
                 img[i][j][2] = min(max(static_cast<int>(color[2] * 255), 0), 255);
             }
 
+            int percentComplete = static_cast<int>(floor((static_cast<double>(i) / height) * 100));
+            
             #pragma omp critical
-            if(static_cast<int>(floor((static_cast<double>(i) / height) * 100)) == counter)
+            if(percentComplete == counter)
             {
-                cout << floor((static_cast<double>(i) / height) * 100) << "% complete." << endl;
+                cout << percentComplete << "% complete." << endl;
                 counter += 10;
             }
         }
@@ -122,14 +132,14 @@ int RayTracer::rayTrace() {
     }
 }
 
-Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const DReader &driver, const Eigen::Vector3d &howMuchReflect, const int depth) {
+Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const Eigen::Vector3d &howMuchReflect, const int depth) {
 
-    if (!checkForIntersection(ray, driver))
+    if (!checkForIntersection(ray))
     {
         return {0, 0, 0};
     }
 
-    Eigen::Vector3d calculatedColor = calculateTraditionalColor(ray, driver, howMuchReflect);
+    Eigen::Vector3d calculatedColor = calculateTraditionalColor(ray, howMuchReflect);
 
     if (depth > 0)
     {
@@ -137,7 +147,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const DReader &driver, const
         Eigen::Vector3d reflectionDirection = (2 * ray.surfaceNormal.dot(invDirection) * ray.surfaceNormal - invDirection).normalized();
 
         auto newRay = Ray(ray.closestIntersectionPoint, reflectionDirection);
-        calculatedColor += calculateColor(newRay, driver, ray.material.Kr.cwiseProduct(howMuchReflect), depth - 1);
+        //calculatedColor += calculateColor(newRay, ray.material.Kr.cwiseProduct(howMuchReflect), depth - 1);
     }
 
 
@@ -148,7 +158,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const DReader &driver, const
             Ray invRay(ray.closestIntersectionPoint, -1 * ray.direction);
             invRay.surfaceNormal = ray.surfaceNormal;
             Ray refractedRay = ray.hit->makeExitRefrationRay(invRay, ray.material.Ni, 1.0);
-            calculatedColor += calculateColor(refractedRay, driver, ray.material.Ko.cwiseProduct(howMuchReflect), depth - 1);
+            calculatedColor += calculateColor(refractedRay, ray.material.Ko.cwiseProduct(howMuchReflect), depth - 1);
         }
 
         catch(const range_error &err) {}
@@ -157,7 +167,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const DReader &driver, const
     return calculatedColor;
 }
 
-Eigen::Vector3d RayTracer::calculateTraditionalColor(const Ray &ray, const DReader &driver, const Eigen::Vector3d &howMuchReflect)
+Eigen::Vector3d RayTracer::calculateTraditionalColor(const Ray &ray, const Eigen::Vector3d &howMuchReflect)
 {
     Eigen::Vector3d ambientColor = driver.ambientLight.cwiseProduct(ray.material.Ka);
 
@@ -171,7 +181,7 @@ Eigen::Vector3d RayTracer::calculateTraditionalColor(const Ray &ray, const DRead
             auto shadowRayDirection = light.position - ray.closestIntersectionPoint;
             auto shadowRay = Ray(ray.closestIntersectionPoint, shadowRayDirection, shadowRayDirection.norm());
 
-            if (checkForIntersection(shadowRay, driver, true))
+            if (checkForIntersection(shadowRay, true))
             {
                 continue;
             }
@@ -192,7 +202,28 @@ Eigen::Vector3d RayTracer::calculateTraditionalColor(const Ray &ray, const DRead
     return howMuchReflect.cwiseProduct(ambientColor);
 }
 
-bool RayTracer::checkForIntersection(Ray &ray, const DReader &driver, const bool isShadow)
+Eigen::Vector3d RayTracer::calculateMCColor(Ray &ray, const Eigen::Vector3d currentAlbedo, const int depth)
+{
+    if (!checkForIntersection(ray))
+    {
+        return {0, 0, 0};
+    }
+
+    else if(ray.hit->isLight)
+    {
+        return currentAlbedo * 3;
+    }
+    
+    else if (depth > 0)
+    {
+        auto newRay = Ray(ray.closestIntersectionPoint, makeRandomUnitVector());
+        return calculateMCColor(newRay, currentAlbedo.cwiseProduct(ray.material.Kd), depth - 1);
+    }
+
+    return currentAlbedo;
+}
+
+bool RayTracer::checkForIntersection(Ray &ray, const bool isShadow)
 {
     bool foundItem = false;
 

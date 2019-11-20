@@ -6,11 +6,16 @@
 
 using namespace std;
 
-Material::Material(const string &name, const Eigen::Vector3d &Ka, const Eigen::Vector3d &Kd, const Eigen::Vector3d &Ks, const Eigen::Vector3d &Kr, const Eigen::Vector3d &Ko, const double Ns, const double Ni, const int illum) :
+Material::Material(const string &name, const Eigen::Vector3d &Ka, const Eigen::Vector3d &Kd, const Eigen::Vector3d &Ks, const Eigen::Vector3d &Kr, const Eigen::Vector3d &Ko, const double Ns, const double Ni, const int ill) :
 
-name(name), Ka(Ka), Kd(Kd), Ks(Ks), Kr(Kr), Ko(Ko), Ns(Ns), Ni(Ni), illum(illum)
+name(name), Ka(Ka), Kd(Kd), Ks(Ks), Kr(Kr), Ko(Ko), Ns(Ns), Ni(Ni), illum(ill)
 
-{}
+{
+    if(Ni > 0)
+    {
+        illum = 6;
+    }
+}
 
 ostream &operator<<(ostream &out, const Material &mat)
 {

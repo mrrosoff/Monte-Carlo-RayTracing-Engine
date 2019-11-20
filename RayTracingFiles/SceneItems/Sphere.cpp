@@ -6,11 +6,13 @@
 
 using namespace std;
 
-Sphere::Sphere(const Eigen::Vector3d &position, const double radius, const Material &material) :
+Sphere::Sphere(const Eigen::Vector3d &position, const double radius, const Material &material, const bool light) :
 
 position(position), radius(radius), material(material)
 
-{}
+{
+    isLight = light;
+}
 
 bool Sphere::intersectionTest(Ray &ray) const
 {

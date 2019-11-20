@@ -266,7 +266,7 @@ void Object::calculateNormals()
 
         for(const auto vertex : face.vertexIndexList)
         {
-            Eigen::Vector3d sum = F1Normal;
+            Eigen::Vector3d sum = {0, 0, 0};
 
             for(const auto faceIndex : vertices[vertex - 1].adjacentFaces)
             {
@@ -281,7 +281,7 @@ void Object::calculateNormals()
 
                 auto F2Normal = (otherFace.columnOne.cross(otherFace.columnTwo)).normalized();
 
-                if(acos(min(max(F1Normal.dot(F2Normal), -1.0), 1.0)) < smoothingAngle)
+                if(acos(min(max(F1Normal.dot(F2Normal), -1.0), 1.0)) * (180 / M_PI) <= smoothingAngle)
                 {
                     sum += F2Normal;
                 }

@@ -25,7 +25,7 @@ void Camera::setUpUVW()
     cameraVVector = cameraWVector.cross(cameraUVector);
 }
 
-Ray Camera::pixelRay(const int row, const int col)
+Ray Camera::pixelRay(const int row, const int col) const
 {
     double left = bounds[0];
     double right = bounds[1];

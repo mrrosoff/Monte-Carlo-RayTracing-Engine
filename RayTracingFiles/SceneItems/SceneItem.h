@@ -19,6 +19,8 @@ public:
     virtual bool intersectionTest(Ray &) const = 0;
     virtual Ray makeExitRefrationRay(const Ray &, double, double) const = 0;
     Eigen::Vector3d doSnellsLaw(const Ray &, double, double) const;
+    
+    bool isLight = false;
 };
 
 #endif //RAYTRACER_SCENEITEM_H

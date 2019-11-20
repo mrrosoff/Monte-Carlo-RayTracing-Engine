@@ -21,7 +21,7 @@ public:
     ~Camera() = default;
 
     explicit Camera(const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector4d &, double, const Eigen::Vector2d &);
-    Ray pixelRay( int row, int col);
+    Ray pixelRay( int row, int col) const;
 
     Eigen::Vector3d eye;
     Eigen::Vector3d lookAtPoint;

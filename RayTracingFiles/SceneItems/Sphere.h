@@ -21,7 +21,7 @@ public:
     Sphere &operator=(const Sphere &) = default;
     virtual ~Sphere() = default;
 
-    explicit Sphere(const Eigen::Vector3d &, double, const Material &);
+    explicit Sphere(const Eigen::Vector3d &, double, const Material &, bool = false);
 
     bool intersectionTest(Ray &) const override;
 
