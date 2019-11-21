@@ -263,7 +263,7 @@ void Object::calculateNormals()
         }
 
         auto F1Normal = (face.columnOne.cross(face.columnTwo)).normalized();
-
+        
         for(const auto vertex : face.vertexIndexList)
         {
             Eigen::Vector3d sum = {0, 0, 0};
@@ -281,7 +281,7 @@ void Object::calculateNormals()
 
                 auto F2Normal = (otherFace.columnOne.cross(otherFace.columnTwo)).normalized();
 
-                if(acos(min(max(F1Normal.dot(F2Normal), -1.0), 1.0)) * (180 / M_PI) <= smoothingAngle)
+                if(abs(acos(min(max(F1Normal.dot(F2Normal), -1.0), 1.0)) * (180 / M_PI)) <= smoothingAngle)
                 {
                     sum += F2Normal;
                 }
@@ -295,11 +295,12 @@ void Object::calculateNormals()
 Ray Object::makeExitRefrationRay(const Ray &invRay, double indexOne, double indexTwo) const
 {
     Eigen::Vector3d refractionDirection = doSnellsLaw(invRay, indexTwo, indexOne);
-    Ray refracRayOne(invRay.closestIntersectionPoint, -1 * refractionDirection);
-    intersectionTest(refracRayOne);
-    Ray refracRayTwo(refracRayOne.closestIntersectionPoint, -1 * refractionDirection);
-    refracRayTwo.surfaceNormal = refracRayOne.surfaceNormal;
-    return Ray(refracRayOne.closestIntersectionPoint, doSnellsLaw(refracRayTwo, indexOne, indexTwo));
+    Ray innerRefractionRay(invRay.closestIntersectionPoint + refractionDirection * 0.00001, refractionDirection);
+    intersectionTest(innerRefractionRay);
+    Ray newInvRay(innerRefractionRay.closestIntersectionPoint, -1 * refractionDirection);
+    newInvRay.surfaceNormal = innerRefractionRay.surfaceNormal;
+    Eigen::Vector3d exitDirection = doSnellsLaw(newInvRay, indexOne, indexTwo);
+    return Ray(innerRefractionRay.closestIntersectionPoint + exitDirection * 0.0001, exitDirection);
 }
 
 bool Object::intersectionTest(Ray &ray) const
@@ -327,7 +328,7 @@ bool Object::intersectionTest(Ray &ray) const
 
                 ray.hit = this;
                 ray.material = materials[face.materialIndex];
-                ray.surfaceNormal = (1 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2];
+                ray.surfaceNormal = ((1 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2]).normalized();
 
                 if(ray.direction.dot(ray.surfaceNormal) > 0)
                 {
@@ -338,7 +339,7 @@ bool Object::intersectionTest(Ray &ray) const
             }
         }
     }
-
+    
     return foundFace;
 }
 
