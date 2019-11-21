@@ -88,9 +88,9 @@ int RayTracer::rayTrace() {
                         }
                     }
 
-                    for(int i = 0; i < 3; i++)
+                    for(int k = 0; k < 3; k++)
                     {
-                        color[i] = sqrt(color[i] / samples);
+                        color[k] = sqrt(color[k] / samples);
                     }
                 }
 

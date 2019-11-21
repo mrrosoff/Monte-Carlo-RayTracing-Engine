@@ -11,6 +11,7 @@
 #include <omp.h>
 #include <chrono>
 #include <random>
+#include <iomanip>
 
 #include "Ray.h"
 #include "../FileInOut/DReader.h"
