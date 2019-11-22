@@ -154,7 +154,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const Eigen::Vector3d &howMu
     }
 
 
-    if(depth > 0 && ray.material.illum == 6)
+    if(depth > 0 && ray.material.illum == 6 && ray.material.Ni != 1)
     {
         try
         {
@@ -219,20 +219,20 @@ Eigen::Vector3d RayTracer::calculateMCColor(Ray &ray, const Eigen::Vector3d curr
 
     else if (depth > 0)
     {
-	Ray newRay;
+        Ray newRay;
 
-	if(ray.material.Kr[0] > 0 || ray.material.Kr[1] > 0 || ray.material.Kr[2] > 0)
-	{
+        if(ray.material.Kr[0] > 0 || ray.material.Kr[1] > 0 || ray.material.Kr[2] > 0)
+        {
             auto invDirection = -1 * ray.direction;
             Eigen::Vector3d reflectionDirection = (2 * ray.surfaceNormal.dot(invDirection) * ray.surfaceNormal - invDirection).normalized();
 
             newRay = Ray(ray.closestIntersectionPoint, reflectionDirection);
-	}
+        }
 
         else
-	{
-	    newRay = Ray(ray.closestIntersectionPoint, makeRandomUnitVector());
-	}
+        {
+            newRay = Ray(ray.closestIntersectionPoint, ray.surfaceNormal + makeRandomUnitVector());
+        }
 
         return calculateMCColor(newRay, currentAlbedo.cwiseProduct(ray.material.Kd), depth - 1);
     }
