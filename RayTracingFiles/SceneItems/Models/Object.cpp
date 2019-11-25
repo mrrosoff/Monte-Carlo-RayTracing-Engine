@@ -179,6 +179,21 @@ void Object::readMaterialFile(const string &filePath) {
                       stod(matLineData[2]),
                       stod(matLineData[3]);
         }
+
+        else if(matLineData[0] == "light")
+        {
+            otherProperty = 1;
+        }
+
+        else if(matLineData[0] == "mirror")
+        {
+            otherProperty = 2;
+        }
+
+        else if(matLineData[0] == "glass")
+        {
+            otherProperty = 3;
+        }
     }
 
     if(matLine.empty())
