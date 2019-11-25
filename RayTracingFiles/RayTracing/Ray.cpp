@@ -6,9 +6,15 @@
 
 using namespace std;
 
-Ray::Ray(const Eigen::Vector3d &point, const Eigen::Vector3d &direction, const double distance) :
+Ray::Ray(const Eigen::Vector3d &point, const Eigen::Vector3d &direction) :
 
-point(point), direction(direction.normalized()), closestIntersectionDistance(distance)
+point(point), direction(direction.normalized())
+
+{}
+
+Ray::Ray(const Eigen::Vector3d &point, const Eigen::Vector3d &direction, const Eigen::Vector3d &surfaceNormal) :
+
+point(point), direction(direction.normalized()), surfaceNormal(surfaceNormal)
 
 {}
 

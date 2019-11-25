@@ -6,12 +6,6 @@
 
 using namespace std;
 
-DReader &DReader::operator<<(const bool isCarlo)
-{
-    isMonteCarlo = isCarlo;
-    return *this;
-}
-
 DReader &DReader::operator<<(const string &file)
 {
     driverFile = file;
@@ -63,111 +57,49 @@ void DReader::readDriver(const string &file)
 
         if (lineData[0] == "eye")
         {
-            if(lineData.size() != 4)
-            {
-                throw invalid_argument("You must specify all the fields for eye!");
-            }
-            
+            throwErrorMessage(lineData.size(), 4, "You must specify all the fields for eye!");
             eye = parseEye(lineData);
         }
 
         else if (lineData[0] == "look")
         {
-            if(lineData.size() != 4)
-            {
-                throw invalid_argument("You must specify all the fields for look!");
-            }
-            
+            throwErrorMessage(lineData.size(), 4, "You must specify all the fields for look!");
             look = parseLook(lineData);
         }
 
         else if (lineData[0] == "up")
         {
-            if(lineData.size() != 4)
-            {
-                throw invalid_argument("You must specify all the fields for up!");
-            }
-            
+            throwErrorMessage(lineData.size(), 4, "You must specify all the fields for up!");
             up = parseUp(lineData);
         }
 
         else if (lineData[0] == "d")
         {
-            if(lineData.size() != 2)
-            {
-                throw invalid_argument("You must specify all the fields for d!");
-            }
-            
+            throwErrorMessage(lineData.size(), 2, "You must specify all the fields for d!");
             focLen = parseD(lineData);
         }
 
         else if (lineData[0] == "bounds")
         {
-            if(lineData.size() != 5)
-            {
-                throw invalid_argument("You must specify all the fields for bounds!");
-            }
-            
+            throwErrorMessage(lineData.size(), 5, "You must specify all the fields for bounds!");
             bounds = parseBounds(lineData);
         }
 
         else if (lineData[0] == "res")
         {
-            if(lineData.size() != 3)
-            {
-                throw invalid_argument("You must specify all the fields for res!");
-            }
-            
+            throwErrorMessage(lineData.size(), 3, "You must specify all the fields for res!");
             res = parseRes(lineData);
-        }
-
-        else if (lineData[0] == "ambient")
-        {
-            if(lineData.size() != 4)
-            {
-                throw invalid_argument("You must specify all the fields for ambient!");
-            }
-            
-            ambientLight = parseAmbient(lineData);
-        }
-
-        else if (lineData[0] == "light")
-        {
-            if(lineData.size() != 8)
-            {
-                throw invalid_argument("You must specify all the fields for light!");
-            }
-            
-            parseLight(lineData);
         }
 
         else if (lineData[0] == "sphere")
         {
-            if(lineData.size() != 18)
-            {
-                throw invalid_argument("You must specify all the fields for sphere!");
-            }
-            
+            throwErrorMessage(lineData.size(), 8, "You must specify all the fields for sphere!");
             parseSphere(lineData);
-        }
-
-        else if (lineData[0] == "recursionlevel")
-        {
-            if(lineData.size() != 2)
-            {
-                throw invalid_argument("You must specify all the fields for recursionlevel!");
-            }
-            
-            recursionDepth = parseRecursionLevel(lineData);
         }
 
         else if (lineData[0] == "model")
         {
-            if(lineData.size() != 11)
-            {
-                throw invalid_argument("You must specify all the fields for model!");
-            }
-            
+            throwErrorMessage(lineData.size(), 11, "You must specify all the fields for model!");
             parseModel(lineData);
         }
 
@@ -183,6 +115,14 @@ void DReader::readDriver(const string &file)
     }
 
     camera = Camera(eye, look, up, bounds, focLen, res);
+}
+
+void DReader::throwErrorMessage(int size, int requiredSize, const string &message)
+{
+    if(size < requiredSize)
+    {
+        throw invalid_argument(message);
+    }
 }
 
 string DReader::findDriverName(const string &file)
@@ -223,77 +163,33 @@ Eigen::Vector2d DReader::parseRes(const vector<string> &lineData) const
     return {stod(lineData[1]),stod(lineData[2])};
 }
 
-Eigen::Vector3d DReader::parseAmbient(const vector<string> &lineData) const
-{
-    return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3])};
-}
-
-void DReader::parseLight(const vector<string> &lineData)
-{
-    Eigen::Vector3d position;
-    Eigen::Vector3d rgb;
-    double w;
-
-    position << stod(lineData[1]),
-                stod(lineData[2]),
-                stod(lineData[3]);
-
-    w = stod(lineData[4]);
-
-    rgb << stod(lineData[5]),
-           stod(lineData[6]),
-           stod(lineData[7]);
-
-    if(isMonteCarlo)
-    {
-        Material mat("A Light Material", {0, 0, 0}, rgb, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, 16, 0);
-        items.emplace_back(new Sphere(position, w, mat, true));
-    }
-    
-    else
-    {
-        lights.emplace_back(position, rgb, w);
-    }
-}
-
 void DReader::parseSphere(const vector<string> &lineData)
 {
-    Eigen::Vector3d position;
-    double radius;
-    Eigen::Vector3d Ka;
-    Eigen::Vector3d Kd;
-    Eigen::Vector3d Ks;
-    Eigen::Vector3d Kr;
+    Eigen::Vector3d position(stod(lineData[1]), stod(lineData[2]), stod(lineData[3]));
+    double radius = stod(lineData[4]);
+    Eigen::Vector3d albedo(stod(lineData[5]), stod(lineData[6]), stod(lineData[7]));
 
-    position << stod(lineData[1]),
-                stod(lineData[2]),
-                stod(lineData[3]);
+    int otherProperty = 0;
 
-    radius = stod(lineData[4]);
+    for(size_t i = 8; i < lineData.size(); i++)
+    {
+        if(lineData[i] == "light")
+        {
+            otherProperty = 1;
+        }
 
-    Ka << stod(lineData[5]),
-          stod(lineData[6]),
-          stod(lineData[7]);
+        else if(lineData[i] == "mirror")
+        {
+            otherProperty = 2;
+        }
 
-    Kd << stod(lineData[8]),
-          stod(lineData[9]),
-          stod(lineData[10]);
+        else if(lineData[i] == "glass")
+        {
+            otherProperty = 3;
+        }
+    }
 
-    Ks << stod(lineData[11]),
-          stod(lineData[12]),
-          stod(lineData[13]);
-
-    Kr << stod(lineData[14]),
-          stod(lineData[15]),
-          stod(lineData[16]);
-
-    Material mat("A Sphere Material", Ka, Kd, Ks, Kr, Eigen::Vector3d(1, 1, 1) - Kr, 16, stod(lineData[17]));
-    items.emplace_back(new Sphere(position, radius, mat));
-}
-
-int DReader::parseRecursionLevel(const vector<string> &lineData)
-{
-    return stoi(lineData[1]);
+    items.emplace_back(new Sphere(position, radius, Material("A Sphere Material", albedo, otherProperty)));
 }
 
 void DReader::parseModel(const vector<string> &lineData)
@@ -334,18 +230,10 @@ ostream &operator<<(ostream &out, const DReader &driver)
     out << "Driver File: " << driver.driverFile << '\n';
     out << "Driver FileName: " << driver.driverName << '\n';
     out << "Driver Camera: " << driver.camera << '\n';
-    out << "Driver Depth: " << driver.recursionDepth << '\n';
     out << "Driver Ambient Light: " << driver.ambientLight.format(ArrayFormat) << '\n';
 
     cout << '\n' << "Scene Items" << '\n' << "-----------" << '\n';
 
-    cout << '\n' << "Lights" << '\n' << "------" << '\n';
-    for(size_t i = 0; i < driver.lights.size(); i++)
-    {
-        out << "Light " << i << ": " << driver.lights[i] << '\n';
-    }
-
-    cout << '\n' << "Items" << '\n' << "-------" << '\n';
     for(const auto &item : driver.items)
     {
         if(dynamic_cast<Sphere *>(&*item))

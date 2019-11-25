@@ -10,20 +10,11 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    if(argc < 3 || argc > 5)
+    if(argc != 4)
     {
-        cerr << "Usage: ./raytracer" << " " << "[Driver File]" << " " << "[PPM Output File]" << '\n';
+        cerr << "Usage: ./raytracer" << " " << "[Driver File]" << " " << "[PPM Output File]" << " " << "[Samples Per Pixel]" << '\n';
         return 1;
     }
 
-    bool isMonteCarlo = false;
-    int samples = 0;
-
-    if(argc == 4)
-    {
-        isMonteCarlo = true;
-        samples = stoi(argv[3]);
-    }
-
-    return RayTracer(argv, isMonteCarlo, samples).rayTrace();
+    return RayTracer(argv).rayTrace();
 }

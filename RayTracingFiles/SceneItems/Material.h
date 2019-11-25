@@ -19,18 +19,21 @@ public:
     Material &operator=(const Material &) = default;
     ~Material() = default;
 
-    explicit Material(const std::string &, const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &, double = 16, double = 1, int = 2);
+    explicit Material(const std::string &, const Eigen::Vector3d &, int);
 
     std::string name;
-    Eigen::Vector3d Ka;
-    Eigen::Vector3d Kd;
-    Eigen::Vector3d Ks;
-    Eigen::Vector3d Kr;
-    Eigen::Vector3d Ko;
+    Eigen::Vector3d albedo;
 
-    double Ns = 16;
-    double Ni = 1;
-    int illum = 2;
+    // Constructor Parameter to Determine Material Property as an Integer
+
+    // 0 -> Nothing
+    // 1 -> Light
+    // 2 -> Mirror
+    // 3 -> Glass
+
+    bool isLight = false;
+    bool isMirror = false;
+    bool isGlass = false;
 };
 
 std::ostream &operator<<(std::ostream &, const Material &);

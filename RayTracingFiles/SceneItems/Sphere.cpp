@@ -6,13 +6,11 @@
 
 using namespace std;
 
-Sphere::Sphere(const Eigen::Vector3d &position, const double radius, const Material &material, const bool light) :
+Sphere::Sphere(const Eigen::Vector3d &position, const double radius, const Material &material) :
 
 position(position), radius(radius), material(material)
 
-{
-    isLight = light;
-}
+{}
 
 bool Sphere::intersectionTest(Ray &ray) const
 {
@@ -52,8 +50,7 @@ Ray Sphere::makeExitRefrationRay(const Ray &invRay, double indexOne, double inde
 {
     Eigen::Vector3d refractionDirection = doSnellsLaw(invRay, indexTwo, indexOne);
     Eigen::Vector3d exitPoint = invRay.point + 2 * (position - invRay.point).dot(refractionDirection) * refractionDirection;
-    Ray refractRay(exitPoint, -1 * refractionDirection);
-    refractRay.surfaceNormal = (position - exitPoint).normalized();
+    Ray refractRay(exitPoint, -1 * refractionDirection, (position - exitPoint).normalized());
     return Ray(exitPoint, doSnellsLaw(refractRay, indexOne, indexTwo));
 }
 

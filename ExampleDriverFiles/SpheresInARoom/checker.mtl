@@ -1,0 +1,8 @@
+# Blender MTL File: 'checker.blend'
+# Material Count: 2
+
+newmtl dark
+albedo 0.100000 0.100000 0.100000
+
+newmtl light
+albedo 0.200000 0.200000 0.200000

@@ -128,16 +128,8 @@ void Object::readMaterialFile(const string &filePath) {
 
     string matLine;
     string name;
-
-    Eigen::Vector3d Ka;
-    Eigen::Vector3d Kd;
-    Eigen::Vector3d Ks;
-    Eigen::Vector3d Kr;
-    Eigen::Vector3d Ko(0, 0, 0);
-
-    double Ns = 0;
-    double Ni = 0;
-    int illum = 0;
+    Eigen::Vector3d albedo;
+    int otherProperty = 0;
 
     while(getline(matReader, matLine))
     {
@@ -145,20 +137,10 @@ void Object::readMaterialFile(const string &filePath) {
 
         if(matLine.empty())
         {
-            if(illum != 0)
+            if(!name.empty())
             {
-                if(illum == 2)
-                {
-                    Kr = {0, 0, 0};
-                }
-
-                else if(illum == 3 || illum == 6)
-                {
-                    Kr = Ks;
-                }
-
-                materials.emplace_back(name, Ka, Kd, Ks, Kr, Ko, Ns, Ni, illum);
-                illum = 0;
+                materials.emplace_back(name, albedo, otherProperty);
+                name.clear();
             }
 
             continue;
@@ -191,63 +173,20 @@ void Object::readMaterialFile(const string &filePath) {
             name = matLineData[1];
         }
 
-        else if(matLineData[0] == "Ka")
+        else if(matLineData[0] == "albedo")
         {
-            Ka << stod(matLineData[1]),
-                  stod(matLineData[2]),
-                  stod(matLineData[3]);
-        }
-
-        else if(matLineData[0] == "Kd")
-        {
-            Kd << stod(matLineData[1]),
-                  stod(matLineData[2]),
-                  stod(matLineData[3]);
-        }
-
-        else if(matLineData[0] == "Ks")
-        {
-            Ks << stod(matLineData[1]),
-                  stod(matLineData[2]),
-                  stod(matLineData[3]);
-        }
-
-        else if(matLineData[0] == "Tr")
-        {
-            Ko << stod(matLineData[1]),
-                  stod(matLineData[2]),
-                  stod(matLineData[3]);
-        }
-
-        else if(matLineData[0] == "Ns")
-        {
-            Ns = stod(matLineData[1]);
-        }
-
-        else if(matLineData[0] == "Ni")
-        {
-            Ni = stod(matLineData[1]);
-        }
-
-        else if(matLineData[0] == "illum")
-        {
-            illum = stoi(matLineData[1]);
+            albedo << stod(matLineData[1]),
+                      stod(matLineData[2]),
+                      stod(matLineData[3]);
         }
     }
 
-    if(illum != 0)
+    if(matLine.empty())
     {
-        if(illum == 2)
+        if(!name.empty())
         {
-            Kr = {0, 0, 0};
+            materials.emplace_back(name, albedo, otherProperty);
         }
-
-        else if(illum == 3 || illum == 6)
-        {
-            Kr = Ks;
-        }
-
-        materials.emplace_back(name, Ka, Kd, Ks, Kr, Ko, Ns, Ni, illum);
     }
 }
 
@@ -295,12 +234,11 @@ void Object::calculateNormals()
 Ray Object::makeExitRefrationRay(const Ray &invRay, double indexOne, double indexTwo) const
 {
     Eigen::Vector3d refractionDirection = doSnellsLaw(invRay, indexTwo, indexOne);
-    Ray innerRefractionRay(invRay.closestIntersectionPoint + refractionDirection * 0.00001, refractionDirection);
+    Ray innerRefractionRay(invRay.closestIntersectionPoint, refractionDirection);
     intersectionTest(innerRefractionRay);
-    Ray newInvRay(innerRefractionRay.closestIntersectionPoint, -1 * refractionDirection);
-    newInvRay.surfaceNormal = innerRefractionRay.surfaceNormal;
+    Ray newInvRay(innerRefractionRay.closestIntersectionPoint, -1 * refractionDirection, innerRefractionRay.surfaceNormal);
     Eigen::Vector3d exitDirection = doSnellsLaw(newInvRay, indexOne, indexTwo);
-    return Ray(innerRefractionRay.closestIntersectionPoint + exitDirection * 0.0001, exitDirection);
+    return Ray(innerRefractionRay.closestIntersectionPoint, exitDirection);
 }
 
 bool Object::intersectionTest(Ray &ray) const
@@ -328,7 +266,7 @@ bool Object::intersectionTest(Ray &ray) const
 
                 ray.hit = this;
                 ray.material = materials[face.materialIndex];
-                ray.surfaceNormal = ((1 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2]).normalized();
+                ray.surfaceNormal = ((1.0 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2]).normalized();
 
                 if(ray.direction.dot(ray.surfaceNormal) > 0)
                 {

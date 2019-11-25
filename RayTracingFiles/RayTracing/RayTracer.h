@@ -28,22 +28,19 @@ public:
     RayTracer &operator=(const RayTracer &) = delete;
     ~RayTracer() = default;
 
-    explicit RayTracer(char**, bool = false, int = 0);
+    explicit RayTracer(char**);
     int rayTrace();
 
 private:
 
     static Eigen::Vector3d makeRandomUnitVector();
     Eigen::Vector3d calculateColor(Ray &, const Eigen::Vector3d &, int);
-    Eigen::Vector3d calculateMCColor(Ray &, const Eigen::Vector3d, int);
-    Eigen::Vector3d calculateTraditionalColor(const Ray &, const Eigen::Vector3d &);
-    bool checkForIntersection(Ray &, bool isShadow = false);
+    bool checkForIntersection(Ray &);
 
     DReader driver;
     std::string inFile;
     std:: string outFile;
-    bool isMonteCarlo;
-    int samples;
+    int samples = 0;
 };
 
 
