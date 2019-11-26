@@ -33,7 +33,7 @@ up X Y Z
 d Distance  
 bounds Left Right Bottom Top  
 res Width Height
-sphere X Y Z Radius AlbedoRed AlbedoGreen AlbedoBlue
+sphere X Y Z Radius AlbedoRed AlbedoGreen AlbedoBlue  
 model RotationX RotationY RotationZ RotationTheta ScaleFactor TranslationX TranslationY TranslationZ SmoothingTheta FilePath
 
 For Spheres and Model Material Files, optional fields exist. Appending "light", "mirror", or "glass" to the end of a sphere line or material description will activate the corresponding property for that section of the image. See reference driver files for examples.
