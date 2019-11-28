@@ -58,7 +58,7 @@ int RayTracer::rayTrace() {
         auto start = high_resolution_clock::now();
         int counter = 10;
 
-        //#pragma omp parallel for num_threads(omp_get_max_threads()) schedule(dynamic)
+        #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(dynamic)
         for(int i = 0; i < height; i++)
         {
             img[i] = vector<vector<int>>(width);
@@ -89,7 +89,7 @@ int RayTracer::rayTrace() {
 
             int percentComplete = static_cast<int>(floor((static_cast<double>(i) / height) * 100));
 
-            //#pragma omp critical
+            #pragma omp critical
             if(percentComplete == counter)
             {
                 cout << percentComplete << "% complete." << endl;

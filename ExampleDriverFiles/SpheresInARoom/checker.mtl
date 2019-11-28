@@ -1,9 +1,0 @@
-# Blender MTL File: 'checker.blend'
-# Material Count: 2
-
-newmtl dark
-albedo 0.3 0.3 0.3
-
-newmtl light
-albedo 0.3 0.3 0.3
-mirror

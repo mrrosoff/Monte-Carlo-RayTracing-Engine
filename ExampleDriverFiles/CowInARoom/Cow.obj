@@ -1,7 +1,7 @@
 # Blender v2.79 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib ExampleDriverFiles/Cow/cow.mtl
-usemtl FrontColor
+mtllib ExampleDriverFiles/CowInARoom/CowInARoomMaterials.mtl
+usemtl greyLambertian
 v 0.594279 0.188549 -0.447195
 v 0.637964 0.135127 -0.469792
 v 0.589823 0.110939 -0.508260
