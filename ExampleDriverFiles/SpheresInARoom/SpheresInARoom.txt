@@ -8,7 +8,7 @@ sphere 10000000005 0 0 10000000000 0.3 0.3 0.8
 sphere 0 10000000005 0 10000000000 0.8 0.8 0.8
 sphere 0 0 -10000000005 10000000000 0.3 0.8 0.3
 sphere 0 0 10000000005 10000000000 0.8 0.3 0.3
-sphere 3 -3.75 -2 1.25 0.7 0.7 0.7 mirror
-sphere 2.5 -3.75 2 1.25 0.6 0.3 0.8
+sphere 3 -3.75 -2 1.25 0.8 0.8 0.8 mirror
+sphere 2.5 -3.75 2 1.25 0.7 0.4 0.9
 model 1.0 0.0 0.0 90 5 0 -5 0 0 ExampleDriverFiles/SpheresInARoom/CheckerBoard.obj
-model 0 0 1 90 0.18 2.4 4.99997 0 0 ExampleDriverFiles/SpheresInARoom/Light.obj
+model 0 0 1 90 0.16 2.25 4.999999 0 0 ExampleDriverFiles/SpheresInARoom/Light.obj
