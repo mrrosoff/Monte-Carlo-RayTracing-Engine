@@ -1,5 +1,4 @@
-# Blender MTL File: 'checker.blend'
-# Material Count: 2
+# Materials for Obj Files Light.obj, CheckerBoard.obj, and Cow.obj
 
 newmtl greyLambertian
 albedo 0.5 0.5 0.5

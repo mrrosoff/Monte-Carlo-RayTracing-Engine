@@ -2,12 +2,15 @@
 # Material Count: 2
 
 newmtl greyLambertian
-albedo 0.4 0.4 0.4
+albedo 0.5 0.5 0.5
+
+newmtl redLambertian
+albedo 0.8 0.5 0.3
 
 newmtl mirrorReflective
-albedo 0.9 0.9 0.9
+albedo 0.15 0.15 0.15
 mirror
 
 newmtl lightSource
-albedo 3 3 3
+albedo 5 5 5
 light

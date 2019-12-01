@@ -1,0 +1,12 @@
+# Materials for Obj Files Light.obj and CheckerBoard.obj
+
+newmtl greyLambertian
+albedo 0.5 0.5 0.5
+
+newmtl mirrorReflective
+albedo 0.15 0.15 0.15
+mirror
+
+newmtl lightSource
+albedo 5 5 5
+light

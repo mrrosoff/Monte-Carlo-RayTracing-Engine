@@ -1,6 +1,7 @@
 # Blender v2.79 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib ExampleDriverFiles/Apple/Manzana.mtl
+mtllib ExampleDriverFiles/Apple/AppleMaterials.mtl
+usemtl redLambertian
 v 0.461005 0.385194 -0.002411
 v 0.460778 0.385051 -0.020450
 v 0.463353 0.404475 -0.001768
@@ -8179,7 +8180,6 @@ vn -0.0916 0.3807 -0.9202
 vn 0.2660 0.5271 -0.8071
 vn 0.9733 0.2290 0.0110
 vn -0.6279 0.2687 -0.7304
-usemtl Material_01
 s 1
 f 1/1/1 2/2/2 3/3/3
 f 4/4/4 5/5/5 2/2/2
