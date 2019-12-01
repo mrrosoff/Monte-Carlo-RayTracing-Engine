@@ -6,6 +6,7 @@
 #define GRAPHICS_SPHERE_H
 
 #include <iostream>
+#include <cmath>
 
 #include "SceneItem.h"
 #include "../RayTracing/Ray.h"
@@ -24,7 +25,6 @@ public:
     explicit Sphere(const Eigen::Vector3d &, double, const Material &);
 
     bool intersectionTest(Ray &) const override;
-
     Ray makeExitRefrationRay(const Ray &, double, double) const override;
 
     Eigen::Vector3d position;

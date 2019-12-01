@@ -32,8 +32,8 @@ Ray Camera::pixelRay(const int row, const int col) const
     double bottom = bounds[2];
     double top = bounds[3];
 
-    int width = resolution[0];
-    int height = resolution[1];
+    int width = static_cast<int>(resolution[0]);
+    int height = static_cast<int>(resolution[1]);
 
     auto xValue = static_cast<double>(row) / (width - 1) * (right - left) + left;
     auto yValue = static_cast<double>(col) / (height - 1) * (bottom - top) + top;

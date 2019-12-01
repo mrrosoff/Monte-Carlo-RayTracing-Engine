@@ -277,11 +277,11 @@ bool Object::intersectionTest(Ray &ray) const
             if(x[2] < ray.closestIntersectionDistance)
             {
                 ray.closestIntersectionDistance = x[2];
-                ray.closestIntersectionPoint = ray.point + x[2] * ray.direction;
 
                 ray.hit = this;
                 ray.material = materials[face.materialIndex];
                 ray.surfaceNormal = ((1.0 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2]).normalized();
+                ray.closestIntersectionPoint = ray.point + x[2] * ray.direction;
 
                 if(ray.direction.dot(ray.surfaceNormal) > 0)
                 {

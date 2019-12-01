@@ -33,14 +33,19 @@ public:
 
 private:
 
-    static Eigen::Vector3d makeRandomUnitVector();
+    Eigen::Vector3d makeRandomUnitVector();
+    Eigen::Vector3d calculateAverageColor(int, int);
     Eigen::Vector3d calculateColor(Ray &, const Eigen::Vector3d &, int);
     bool checkForIntersection(Ray &);
 
     DReader driver;
     std::string inFile;
-    std:: string outFile;
+    std::string outFile;
     int samples = 0;
+
+    // Random Number Generator
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution;
 };
 
 
