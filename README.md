@@ -10,9 +10,9 @@ This engine started out as a required school project, but quickly developed furt
 
 Built with:  
 
-[C++] () 
-[CMake] (https://www.python.org)
-[Open MP] ()
+[C++](http://www.cplusplus.com/)   
+[CMake](https://cmake.org/)  
+[Open MP](https://www.openmp.org/)  
 
 ## Features
 What makes your project stand out?
@@ -58,11 +58,11 @@ res Width Height
 sphere X Y Z Radius AlbedoRed AlbedoGreen AlbedoBlue  
 model RotationX RotationY RotationZ RotationTheta ScaleFactor TranslationX TranslationY TranslationZ SmoothingTheta FilePath
 
-For Spheres and Model Material Files, optional fields exist. Appending "light", "mirror", or "glass" to the end of a sphere line or material description will activate the corresponding property for that section of the image. See reference driver files for examples.
+For Spheres and for Model Material Files, optional fields exist. Appending "light", "mirror", or "glass" to the end of a sphere line or material description will activate the corresponding property for that section of the image. See reference driver files for examples.
 
 ## Where to Find OBJ Files
 
 Finding obj files is inconsequential. Simply look up ".obj files" on the internet and choose one that fits your liking.
 Make sure that you create the proper material file using the format showcases in the example files.
 
-## Created by Max Rosoff with the advice of Ben Sattelberg and Ross Beveridge
+### Created by Max Rosoff with the advice of Ben Sattelberg and Ross Beveridge
