@@ -32,7 +32,7 @@ look X Y Z
 up X Y Z  
 d Distance  
 bounds Left Right Bottom Top  
-res Width Height
+res Width Height  
 sphere X Y Z Radius AlbedoRed AlbedoGreen AlbedoBlue  
 model RotationX RotationY RotationZ RotationTheta ScaleFactor TranslationX TranslationY TranslationZ SmoothingTheta FilePath
 
