@@ -3,6 +3,7 @@
 //
 
 #include "PWriter.h"
+#include <iostream>
 
 using namespace std;
 
@@ -24,9 +25,9 @@ PWriter& PWriter::operator<<(const vector<vector<vector<int>>> &img)
 
     auto height = img.size();
     auto width = img[0].size();
-
+    
     outWriter << "P3" << '\n';
-    outWriter << height << " " << width << " " << 255 << '\n';
+    outWriter << width << " " << height << " " << 255 << '\n';
 
     for(size_t i = 0; i < height; i++)
     {

@@ -57,7 +57,7 @@ int RayTracer::rayTrace() {
 
         // Instantiate Random Number Generator
         generator = default_random_engine(system_clock::now().time_since_epoch().count());
-        distribution = uniform_real_distribution<double>(-1,1);
+        distribution = uniform_real_distribution<double>(-1, 1);
 
         #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(dynamic)
         for(int i = 0; i < height; i++)
@@ -97,7 +97,7 @@ int RayTracer::rayTrace() {
         auto stop = high_resolution_clock::now();
         auto durationInSeconds = duration_cast<seconds>(stop - start).count();
 
-        cout << "Ray Tracer ran in " << durationInSeconds << " seconds." << endl;
+        cout << "100% Complete. Ray Tracer ran in " << durationInSeconds << " seconds. Preparing to Output Image." << endl;
         cout << "Writing to PPM File." << '\n';
 
         PWriter writer(outFile);
@@ -123,15 +123,32 @@ Eigen::Vector3d RayTracer::calculateAverageColor(const int i, const int j)
 
     for(int k = 0; k < samples; k++)
     {
-        color += calculateColor(loopedRay, {1, 1, 1}, 30);
+        color += calculateColor(loopedRay, {1, 1, 1}, 10);
         loopedRay = theRay;
     }
 
-    return color + calculateColor(loopedRay, {1, 1, 1}, 30);
+    return color + calculateColor(loopedRay, {1, 1, 1}, 10);
 }
 
-Eigen::Vector3d RayTracer::calculateColor(Ray &ray, const Eigen::Vector3d &currentAlbedo, const int depth)
+Eigen::Vector3d RayTracer::calculateColor(Ray &ray, Eigen::Vector3d currentAlbedo, const int depth)
 {
+    double max = 0;
+
+    for(int i = 0; i < 3; i++)
+    {
+        if(currentAlbedo[i] > max)
+        {
+            max = currentAlbedo[i];
+        }
+    }
+
+    if(max < abs(distribution(generator)))
+    {
+        return {0, 0, 0};
+    }
+
+    currentAlbedo /= max;
+
     if (!checkForIntersection(ray))
     {
         return {0, 0, 0};

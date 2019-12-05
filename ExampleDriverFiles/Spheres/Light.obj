@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib ExampleDriverFiles/SpheresInARoom/SpheresInARoomMaterials.mtl
+mtllib ExampleDriverFiles/Spheres/SpheresMaterials.mtl
 v -3.000000 -3.000000 -8.000000
 v 3.000000 -3.000000 -8.000000
 v 3.000000 3.000000 -8.000000

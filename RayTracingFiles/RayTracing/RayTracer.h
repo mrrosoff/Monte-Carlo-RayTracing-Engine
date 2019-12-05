@@ -35,7 +35,7 @@ private:
 
     Eigen::Vector3d makeRandomUnitVector();
     Eigen::Vector3d calculateAverageColor(int, int);
-    Eigen::Vector3d calculateColor(Ray &, const Eigen::Vector3d &, int);
+    Eigen::Vector3d calculateColor(Ray &, Eigen::Vector3d, int);
     bool checkForIntersection(Ray &);
 
     DReader driver;

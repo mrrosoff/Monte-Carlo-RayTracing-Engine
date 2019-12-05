@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib ExampleDriverFiles/CowInARoom/CowInARoomMaterials.mtl
+mtllib ExampleDriverFiles/Cow/CowMaterials.mtl
 usemtl greyLambertian
 v 0.594279 0.188549 -0.447195
 v 0.637964 0.135127 -0.469792

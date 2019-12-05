@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: 'checker.blend'
 # www.blender.org
-mtllib ExampleDriverFiles/SpheresInARoom/SpheresInARoomMaterials.mtl
+mtllib ExampleDriverFiles/Spheres/SpheresMaterials.mtl
 v -1.000000 -1.000000 0.000000
 v 1.000000 1.000000 0.000000
 v -1.000000 0.000000 0.000000

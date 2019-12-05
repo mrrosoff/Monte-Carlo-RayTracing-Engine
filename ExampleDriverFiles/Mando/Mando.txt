@@ -1,0 +1,20 @@
+eye -20 0.25 0
+look 1 0 0
+up 0 1 0
+d -10
+bounds -16 16 -9 9
+res 960 540
+# Green Floor
+sphere 0 -10000000020 0 10000000000 0.5 0.8 0.5
+# Back Sky
+sphere 10000000100 0 0 10000000000 0.5 0.5 0.9
+# Left Reflection Helper
+sphere 0 0 -10000000200 10000000000 0.8 0.8 0.8
+# Right Reflection Helper
+sphere 0 0 10000000200 10000000000 0.8 0.8 0.8
+# Back Reflection Helper
+sphere -10000000120 0 0 10000000000 0.8 0.8 0.8
+# Top Reflection Helper
+sphere 0 10000000120 0 10000000000 0.8 0.8 0.8
+model 0 0 1 90 6 10 100 0 0 ExampleDriverFiles/Spheres/Light.obj
+model 0 0 1 0 80 35 -20 0 0 ExampleDriverFiles/Mando/Mando.obj
