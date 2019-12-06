@@ -4,17 +4,35 @@ up 0 1 0
 d -10
 bounds -16 16 -9 9
 res 960 540
-# Green Floor
-sphere 0 -10000000020 0 10000000000 0.5 0.8 0.5
+
+# World Building
+
+# Red Floor
+sphere 0 -10000000020 0 10000000000 0.9 0.6 0.3
 # Back Sky
-sphere 10000000100 0 0 10000000000 0.5 0.5 0.9
+sphere 10000000200 0 0 10000000100 0.4 0.4 0.9
+
+# Lights
+
+# Yellow Sun
+sphere 100 35 -105 13 0.8 0.8 0.4 light
+# Red Sun
+sphere 100 -5 -65 13 0.7 0.3 0.2 light
+# White Light
+sphere -30 100 -20 25 1.2 1.2 1.2 light
+
+#Reflection Helpers
+
 # Left Reflection Helper
-sphere 0 0 -10000000200 10000000000 0.8 0.8 0.8
+sphere 0 0 -10000000200 10000000000 0.9 0.9 0.9
 # Right Reflection Helper
-sphere 0 0 10000000200 10000000000 0.8 0.8 0.8
+sphere 0 0 10000000200 10000000000 0.9 0.9 0.9
 # Back Reflection Helper
-sphere -10000000120 0 0 10000000000 0.8 0.8 0.8
+sphere -10000000120 0 0 10000000000 0.9 0.9 0.9
 # Top Reflection Helper
 sphere 0 10000000120 0 10000000000 0.8 0.8 0.8
-model 0 0 1 90 6 10 100 0 0 ExampleDriverFiles/Spheres/Light.obj
-model 0 0 1 0 80 35 -20 0 0 ExampleDriverFiles/Mando/Mando.obj
+
+# Models - Mando has 60000 faces and SandCrawler has 1500
+
+model 0 0 1 0 80 35 -20 4 45 ExampleDriverFiles/Mando/Mando.obj
+model 0 1 0 48 1 18 -45 80 30 ExampleDriverFiles/Mando/SandCrawler.obj
