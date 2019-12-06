@@ -38,12 +38,11 @@ bool Sphere::intersectionTest(Ray &ray) const
     return false;
 }
 
-Ray Sphere::makeExitRefrationRay(const Ray &invRay, double newIndex, double originalIndex) const
+Ray Sphere::makeExitRefrationRay(const Ray &invRay, double originalIndex, double newIndex) const
 {
-    Eigen::Vector3d refractionDirection = doSnellsLaw(invRay, originalIndex, newIndex);
-    Eigen::Vector3d exitPoint = invRay.point + 2 * (position - invRay.point).dot(refractionDirection) * refractionDirection;
-    Ray refractRay(exitPoint, -1 * refractionDirection, (position - exitPoint).normalized());
-    return Ray(exitPoint, doSnellsLaw(refractRay, newIndex, originalIndex));
+    Eigen::Vector3d refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
+    Eigen::Vector3d exitPoint = invRay.closestIntersectionPoint + 2 * (position - invRay.closestIntersectionPoint).dot(refractionDirection) * refractionDirection;
+    return Ray(exitPoint, doSnellsLaw(-1 * refractionDirection, (position - exitPoint).normalized(), newIndex, originalIndex));
 }
 
 ostream &operator<<(ostream &out, const Sphere &sph)

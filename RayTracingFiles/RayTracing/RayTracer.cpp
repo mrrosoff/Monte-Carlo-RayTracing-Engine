@@ -50,7 +50,7 @@ int RayTracer::rayTrace() {
 
         vector<vector<vector<int>>> img(height);
 
-        cout << "Beginning Ray Tracing." << endl;
+        cout << "Beginning Ray Tracing. Number of Threads: " << omp_get_max_threads() << endl;
 
         auto start = high_resolution_clock::now();
         double currentPercentCompleted = 0;
@@ -173,10 +173,13 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, Eigen::Vector3d currentAlbed
         {
             try
             {
-                newRay = ray.hit->makeExitRefrationRay(ray, 1.5, 1.0);
+                newRay = ray.hit->makeExitRefrationRay(ray, 1.0, 1.5);
             }
 
-            catch(const range_error &error) {}
+            catch(const range_error &error)
+            {
+                newRay = Ray(ray.closestIntersectionPoint, ray.surfaceNormal + makeRandomUnitVector());
+            }
         }
 
         else

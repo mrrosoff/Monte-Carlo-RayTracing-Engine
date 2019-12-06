@@ -246,14 +246,12 @@ void Object::calculateNormals()
     }
 }
 
-Ray Object::makeExitRefrationRay(const Ray &invRay, double indexOne, double indexTwo) const
+Ray Object::makeExitRefrationRay(const Ray &invRay, double originalIndex, double newIndex) const
 {
-    Eigen::Vector3d refractionDirection = doSnellsLaw(invRay, indexTwo, indexOne);
+    Eigen::Vector3d refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
     Ray innerRefractionRay(invRay.closestIntersectionPoint, refractionDirection);
     intersectionTest(innerRefractionRay);
-    Ray newInvRay(innerRefractionRay.closestIntersectionPoint, -1 * refractionDirection, innerRefractionRay.surfaceNormal);
-    Eigen::Vector3d exitDirection = doSnellsLaw(newInvRay, indexOne, indexTwo);
-    return Ray(innerRefractionRay.closestIntersectionPoint, exitDirection);
+    return Ray(innerRefractionRay.closestIntersectionPoint, doSnellsLaw(-1 * refractionDirection, innerRefractionRay.surfaceNormal, newIndex, originalIndex));
 }
 
 bool Object::intersectionTest(Ray &ray) const
