@@ -166,7 +166,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, Eigen::Vector3d currentAlbed
         if(ray.material.isMirror)
         {
             Eigen::Vector3d reflectionDirection = (2 * ray.surfaceNormal.dot(-1 * ray.direction) * ray.surfaceNormal + ray.direction).normalized();
-            newRay = Ray(ray.closestIntersectionPoint, reflectionDirection + 0.1 * makeRandomUnitVector());
+            newRay = Ray(ray.closestIntersectionPoint, reflectionDirection + 0.02 * makeRandomUnitVector());
         }
 
         else if(ray.material.isGlass)
