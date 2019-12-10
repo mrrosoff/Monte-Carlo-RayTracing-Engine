@@ -16,7 +16,14 @@ Built with:
 
 ## Example Images
 
-Show what the library does as concisely as possible, developers should be able to figure out how your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
+Show below are the resulting images when running the engine with the driver "Spheres".
+
+| Number of Samples | Resulting Image |
+| ----------------- | --------------- |
+| 10 Samples | ![10 Samples](./ExampleDriverFiles/Spheres/resultingImages/Spheres10.ppm) |
+| 100 Samples | ![100 Samples](./ExampleDriverFiles/Spheres/resultingImages/Spheres100.ppm) |
+| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Spheres/resultingImages/Spheres1000.ppm) |
+
 
 ## Installation
 
