@@ -3,9 +3,8 @@
 newmtl greyLambertian
 albedo 0.5 0.5 0.5
 
-newmtl mirrorReflective
+newmtl darkGreyLambertian
 albedo 0.25 0.25 0.25
-mirror
 
 newmtl lightSource
 albedo 5 5 5
