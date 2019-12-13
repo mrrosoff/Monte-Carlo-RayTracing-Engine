@@ -24,17 +24,18 @@ Shown below are the resulting images when running the engine with the driver "Sp
 
 | Number of Samples | Resulting Image |
 | ----------------- | --------------- |
-| 10 Samples | ![10 Samples](./ExampleDriverFiles/Spheres/resultingImages/Spheres10.jpg) |
-| 100 Samples | ![100 Samples](./ExampleDriverFiles/Spheres/resultingImages/Spheres100.jpg) |
-| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Spheres/resultingImages/Spheres1000.jpg) |
+| 10 Samples | ![10 Samples](./ExampleDriverFiles/Spheres/images/Spheres10.jpg) |
+| 100 Samples | ![100 Samples](./ExampleDriverFiles/Spheres/images/Spheres100.jpg) |
+| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Spheres/images/Spheres1000.jpg) |
+| 10000 Samples | ![10000 Samples](./ExampleDriverFiles/Spheres/images/Spheres10000.jpg) |
 
 Shown below are the resulting images when running the engine with the driver "Mando".
 
 | Number of Samples | Resulting Image |
 | ----------------- | --------------- |
-| 10 Samples | ![10 Samples](./ExampleDriverFiles/Mando/resultingImages/Mando10.jpg) |
-| 100 Samples | ![100 Samples](./ExampleDriverFiles/Mando/resultingImages/Mando100.jpg) |
-| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Mando/resultingImages/Mando1000.jpg) |
+| 10 Samples | ![10 Samples](./ExampleDriverFiles/Mando/images/Mando10.jpg) |
+| 100 Samples | ![100 Samples](./ExampleDriverFiles/Mando/images/Mando100.jpg) |
+| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Mando/images/Mando1000.jpg) |
 
 
 ## Installation
