@@ -3,7 +3,7 @@ look 1 0 0
 up 0 1 0
 d -10
 bounds -16 16 -9 9
-res 60 34
+res 1920 1080
 
 # World Building
 

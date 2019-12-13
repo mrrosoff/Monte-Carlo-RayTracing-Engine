@@ -6,9 +6,6 @@ albedo 0.5 0.5 0.5
 newmtl darkGreyLambertian
 albedo 0.25 0.25 0.25
 
-newmtl darkGreyLambertian
-albedo 0.25 0.25 0.25
-
 newmtl lightSource
 albedo 5 5 5
 light

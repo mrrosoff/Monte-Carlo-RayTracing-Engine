@@ -1,0 +1,39 @@
+eye -20 0.25 0
+look 1 0 0
+up 0 1 0
+d -10
+bounds -16 16 -9 9
+res 240 135
+
+# World Building
+
+# Red Floor
+sphere 0 -10000000020 0 10000000000 0.9 0.65 0.3
+# Back Sky
+sphere 10000000200 0 0 10000000100 0.4 0.4 0.9
+
+# Lights
+
+# Yellow Sun
+sphere 100 35 -90 13 0.8 0.8 0.4 light
+# Red Sun
+sphere 100 -5 -65 13 0.7 0.3 0.2 light
+# White Light
+sphere -30 100 -20 25 1.3 1.3 1.3 light
+
+#Reflection Helpers
+
+# Left Reflection Helper
+sphere 0 0 -10000000200 10000000000 0.9 0.9 0.9
+# Right Reflection Helper
+sphere 0 0 10000000200 10000000000 0.9 0.9 0.9
+# Back Reflection Helper
+sphere -10000000120 0 0 10000000000 0.9 0.9 0.9
+# Top Reflection Helper
+sphere 0 10000000120 0 10000000000 0.8 0.8 0.8
+
+# Models - Mando, SandCrawler, and Mountains have 60000, 1500, and 3000 faces respectfully
+
+model 0 0 1 0 80 32 -20 4 55 ExampleDriverFiles/Mando/Mando.obj
+model 0 1 0 48 1 16 -48 80 30 ExampleDriverFiles/Mando/SandCrawler.obj
+model 0 1 0 0 35 170 -22 100 0 ExampleDriverFiles/Mando/Mountains.obj
