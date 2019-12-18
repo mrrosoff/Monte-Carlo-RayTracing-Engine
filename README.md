@@ -2,10 +2,6 @@
 
 An engine built to render complex scenes with all the capabilities of real world private engines. Images are outputted in the PPM format and use a simple driver file system for creation.
 
-## For Ben and Wen
-
-The Two Drivers that I am submitting are Spheres and Mando. Spheres is the simpler of the scenes, I have found that running it with a sample size of 100 results in a reasonable run time of about 5 minutes. The second driver file is actually amazing, but it is incredibly complex to render. I have provided a version titled QuickMando for testing purposes. Running QuickMando with a sample size of 100 results in a run time of about 2 hours. If you run it with 10 samples the image will have significant degredation but will still produce a semi-accurate image with at a reasonable speed. QuickMando has a resolution of 240x135. The regular Mando file is identical but its resolution has been brought up to 1920x1080. I have probed this driver with what limited time I have and have found it to produce images with 100 samples in around a week. The resulting images folders contain the images that are created at various resolutions. I am running the Mando driver file at higher resolutions currently and they will be completed by the end of winter break. If Ross wants the image for his wall, I can provide it to him them. I plan on implementing the bounding box hierarchy at some point over the break, but it didn't make it for this release. It has been fun learning from you and I am sure I will see you around as I am taking 510 next semester. Have a great break!
-
 ## Features
 
 The engine uses a Monte Carlo technique to render images. This process randomly fires rays on contact with Lambertian materials. This creates much more accurate lighting than traditional Ray Tracing. The downside is of course speed. The engine can handle simple Lambertian surfaces, metal surfaces with total reflection, and refractive surfaces such as glass. The engine also produces accurate shadows and highlights and has complex material control.
@@ -24,18 +20,18 @@ Shown below are the resulting images when running the engine with the driver "Sp
 
 | Number of Samples | Resulting Image |
 | ----------------- | --------------- |
-| 10 Samples | ![10 Samples](./ExampleDriverFiles/Spheres/images/Spheres10.jpg) |
-| 100 Samples | ![100 Samples](./ExampleDriverFiles/Spheres/images/Spheres100.jpg) |
-| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Spheres/images/Spheres1000.jpg) |
-| 10000 Samples | ![10000 Samples](./ExampleDriverFiles/Spheres/images/Spheres10000.jpg) |
+| 10 Samples | ![10 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres10.jpg) |
+| 100 Samples | ![100 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres100.jpg) |
+| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres1000.jpg) |
+| 10000 Samples | ![10000 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres10000.jpg) |
 
 Shown below are the resulting images when running the engine with the driver "Mando".
 
 | Number of Samples | Resulting Image |
 | ----------------- | --------------- |
-| 10 Samples | ![10 Samples](./ExampleDriverFiles/Mando/images/Mando10.jpg) |
-| 100 Samples | ![100 Samples](./ExampleDriverFiles/Mando/images/Mando100.jpg) |
-| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Mando/images/Mando1000.jpg) |
+| 10 Samples | ![10 Samples](./ExampleDriverFiles/Mando/Images/JPG/Mando10.jpg) |
+| 100 Samples | ![100 Samples](./ExampleDriverFiles/Mando/Images/JPG/Mando100.jpg) |
+| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Mando/Images/JPG/Mando1000.jpg) |
 
 
 ## Installation
