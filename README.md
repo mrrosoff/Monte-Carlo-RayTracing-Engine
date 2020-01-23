@@ -1,6 +1,6 @@
 # Monte Carlo Ray Tracing Engine Built in C++
 
-An engine built to render complex scenes with all the capabilities of real world private engines. Images are outputted in the PPM format and use a simple driver file system for creation.
+An engine built to render complex scenes with all the capabilities of real world private engines. Images are outputted in the PPM format and use a simple driver file system for creation. This engine runs entirely on the CPU.
 
 ## Features
 
@@ -31,8 +31,6 @@ Shown below are the resulting images when running the engine with the driver "Ma
 | ----------------- | --------------- |
 | 10 Samples | ![10 Samples](./ExampleDriverFiles/Mando/Images/JPG/Mando10.jpg) |
 | 100 Samples | ![100 Samples](./ExampleDriverFiles/Mando/Images/JPG/Mando100.jpg) |
-| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Mando/Images/JPG/Mando1000.jpg) |
-
 
 ## Installation
 
@@ -79,4 +77,4 @@ For Spheres and for Model Material Files, optional fields exist. Appending "ligh
 Finding obj files is inconsequential. Simply look up ".obj files" on the internet and choose one that fits your liking.
 Make sure that you create the proper material file using the format showcases in the example files. Files with Triangle counts of over 10K will result in images that take a significant time to render.
 
-### Created by Max Rosoff with the advice of Ben Sattelberg and Ross Beveridge
+**Created by Max Rosoff with the advice of Ben Sattelberg and Ross Beveridge**
