@@ -6,24 +6,22 @@
 
 using namespace std;
 
-Ray::Ray(const Eigen::Vector3d &point, const Eigen::Vector3d &direction) :
+Ray::Ray(const Vector &point, const Vector direction) :
 
-point(point), direction(direction.normalized())
+point(point), direction(direction.normalize())
 
 {}
 
-Ray::Ray(const Eigen::Vector3d &point, const Eigen::Vector3d &direction, const Eigen::Vector3d &surfaceNormal) :
+Ray::Ray(const Vector &point, const Vector direction, const Vector &surfaceNormal) :
 
-point(point), direction(direction.normalized()), surfaceNormal(surfaceNormal)
+point(point), direction(direction.normalize()), surfaceNormal(surfaceNormal)
 
 {}
 
 ostream &operator<<(ostream &out, const Ray &ray)
 {
-    Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
-
-    out << "Ray Point: \n" << ray.point.format(ArrayFormat) << '\n';
-    out << "Ray Direction: \n" << ray.direction.format(ArrayFormat) << '\n';
+    out << "Ray Point: \n" << ray.point;
+    out << "Ray Direction: \n" << ray.direction;
 
     return out;
 }

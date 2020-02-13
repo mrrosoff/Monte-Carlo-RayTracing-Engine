@@ -24,12 +24,12 @@ void DReader::readDriver(const string &file)
         throw invalid_argument("Failure to open Driver File - " + file + ": " + err);
     }
 
-    Eigen::Vector3d eye;
-    Eigen::Vector3d look;
-    Eigen::Vector3d up;
+    Vector eye;
+    Vector look;
+    Vector up;
     double focLen = 0;
-    Eigen::Vector4d bounds;
-    Eigen::Vector2d res;
+    std::vector<double> bounds;
+    std::vector<double> res;
 
     string driverLine;
 
@@ -133,17 +133,17 @@ string DReader::findDriverName(const string &file)
     return driverFile.substr(sIndex, pIndex - sIndex);
 }
 
-Eigen::Vector3d DReader::parseEye(const vector<string> &lineData) const
+Vector DReader::parseEye(const vector<string> &lineData) const
 {
     return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3])};
 }
 
-Eigen::Vector3d DReader::parseLook(const vector<string> &lineData) const
+Vector DReader::parseLook(const vector<string> &lineData) const
 {
     return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3])};
 }
 
-Eigen::Vector3d DReader::parseUp(const vector<string> &lineData) const
+Vector DReader::parseUp(const vector<string> &lineData) const
 {
     return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3])};
 }
@@ -153,21 +153,21 @@ double DReader::parseD(const vector<string> &lineData) const
     return stod(lineData[1]);
 }
 
-Eigen::Vector4d DReader::parseBounds(const vector<string> &lineData) const
+std::vector<double> DReader::parseBounds(const vector<string> &lineData) const
 {
     return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3]), stod(lineData[4])};
 }
 
-Eigen::Vector2d DReader::parseRes(const vector<string> &lineData) const
+std::vector<double> DReader::parseRes(const vector<string> &lineData) const
 {
     return {stod(lineData[1]),stod(lineData[2])};
 }
 
 void DReader::parseSphere(const vector<string> &lineData)
 {
-    Eigen::Vector3d position(stod(lineData[1]), stod(lineData[2]), stod(lineData[3]));
+    Vector position(stod(lineData[1]), stod(lineData[2]), stod(lineData[3]));
     double radius = stod(lineData[4]);
-    Eigen::Vector3d albedo(stod(lineData[5]), stod(lineData[6]), stod(lineData[7]));
+    Vector albedo(stod(lineData[5]), stod(lineData[6]), stod(lineData[7]));
 
     int otherProperty = 0;
 
@@ -194,25 +194,20 @@ void DReader::parseSphere(const vector<string> &lineData)
 
 void DReader::parseModel(const vector<string> &lineData)
 {
-    Eigen::Vector3d rotationVector;
-
-    rotationVector << stod(lineData[1]),
-            stod(lineData[2]),
-            stod(lineData[3]);
-
+    Vector rotationVector = {stod(lineData[1]), stod(lineData[2]), stod(lineData[3])};
     double theta = stod(lineData[4]);
 
-    Eigen::Matrix4d scalar;
-    scalar << stod(lineData[5]), 0, 0, 0,
-            0, stod(lineData[5]), 0, 0,
-            0, 0, stod(lineData[5]), 0,
-            0, 0, 0, 1;
+    Matrix scalar(4, 4);
+    scalar[0] = {stod(lineData[5]), 0, 0, 0};
+    scalar[1] = {0, stod(lineData[5]), 0, 0};
+    scalar[2] = {0, 0, stod(lineData[5]), 0};
+    scalar[3] = {0, 0, 0, 1};
 
-    Eigen::Matrix4d translation;
-    translation << 1, 0, 0, stod(lineData[6]),
-            0, 1, 0, stod(lineData[7]),
-            0, 0, 1, stod(lineData[8]),
-            0, 0, 0, 1;
+    Matrix translation(4, 4);
+    translation[0] = {1, 0, 0, stod(lineData[6])};
+    translation[1] = {0, 1, 0, stod(lineData[7])};
+    translation[2] = {0, 0, 1, stod(lineData[8])};
+    translation[3] = {0, 0, 0, 1};
 
     double smoothingAngle = stod(lineData[9]);
     string modelPath = lineData[10];
@@ -223,14 +218,12 @@ void DReader::parseModel(const vector<string> &lineData)
 
 ostream &operator<<(ostream &out, const DReader &driver)
 {
-    Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
-
     cout << '\n' << "Scene Setup" << '\n' << "-----------" << '\n';
 
     out << "Driver File: " << driver.driverFile << '\n';
     out << "Driver FileName: " << driver.driverName << '\n';
     out << "Driver Camera: " << driver.camera << '\n';
-    out << "Driver Ambient Light: " << driver.ambientLight.format(ArrayFormat) << '\n';
+    out << "Driver Ambient Light: " << driver.ambientLight;
 
     cout << '\n' << "Scene Items" << '\n' << "-----------" << '\n';
 

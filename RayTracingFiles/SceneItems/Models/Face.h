@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-#include "../../../Eigen/Eigen"
+#include "../../Matrix/Vector.h"
 
 class Face {
 
@@ -22,10 +22,10 @@ public:
     explicit Face(const std::vector<int> &, int);
 
     std::vector<int> vertexIndexList;
-    int materialIndex;
-    std::vector<Eigen::Vector3d> normals;
+    int materialIndex = 0;
+    std::vector<Vector> normals;
     
-    Eigen::Vector3d columnOne, columnTwo;
+    Vector columnOne, columnTwo;
     bool calcColumns = false;
 };
 

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Material::Material(const string &name, const Eigen::Vector3d &albedo, const int materialType) :
+Material::Material(const string &name, const Vector &albedo, const int materialType) :
 
 name(name), albedo(albedo)
 
@@ -29,10 +29,9 @@ name(name), albedo(albedo)
 
 ostream &operator<<(ostream &out, const Material &mat)
 {
-    Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
     out << boolalpha;
     out << "Material Name: " << mat.name << '\n';
-    out << "Material Albedo: " << mat.albedo.format(ArrayFormat) << '\n';
+    out << "Material Albedo: " << mat.albedo;
     out << "Material is Light: " << mat.isLight << '\n';
     out << "Material is Mirror: " << mat.isMirror << '\n';
     out << "Material is Glass: " << mat.isGlass << '\n';

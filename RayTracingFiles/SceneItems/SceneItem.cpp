@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Eigen::Vector3d SceneItem::doSnellsLaw(const Eigen::Vector3d &direction, const Eigen::Vector3d &surfaceNormal, const double indexOne, const double indexTwo) const
+Vector SceneItem::doSnellsLaw(const Vector &direction, const Vector &surfaceNormal, const double indexOne, const double indexTwo) const
 {
     double refractionEquation  = indexOne / indexTwo;
 
@@ -21,6 +21,6 @@ Eigen::Vector3d SceneItem::doSnellsLaw(const Eigen::Vector3d &direction, const E
     else
     {
         double beta = (refractionEquation * WN) - sqrt(indexSq);
-        return -refractionEquation * direction + beta * surfaceNormal;
+        return direction * -refractionEquation + surfaceNormal * beta;
     }
 }

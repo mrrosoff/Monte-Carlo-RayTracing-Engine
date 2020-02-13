@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "../../Eigen/Eigen"
+#include "../Matrix/Vector.h"
 
 class LightSource {
 
@@ -18,10 +18,10 @@ public:
     LightSource &operator=(const LightSource &) = delete;
     ~LightSource() = default;
 
-    explicit LightSource(const Eigen::Vector3d &, const Eigen::Vector3d &, double);
+    explicit LightSource(const Vector &, const Vector &, double);
 
-    Eigen::Vector3d position;
-    Eigen::Vector3d rgb;
+    Vector position;
+    Vector rgb;
     double w = 0;
 
 };

@@ -9,8 +9,6 @@
 
 #include "Ray.h"
 
-#include "../../Eigen/Eigen"
-
 class Camera {
 
 public:
@@ -20,19 +18,19 @@ public:
     Camera &operator=(const Camera &) = default;
     ~Camera() = default;
 
-    explicit Camera(const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector4d &, double, const Eigen::Vector2d &);
+    explicit Camera(const Vector &, const Vector &, const Vector &, const std::vector<double> &, double, const std::vector<double> &);
     Ray pixelRay( int row, int col) const;
 
-    Eigen::Vector3d eye;
-    Eigen::Vector3d lookAtPoint;
-    Eigen::Vector3d upVector;
-    Eigen::Vector4d bounds;
+    Vector eye;
+    Vector lookAtPoint;
+    Vector upVector;
+    std::vector<double> bounds;
     double focalLength = 0;
-    Eigen::Vector2d resolution;
+    std::vector<double> resolution;
 
-    Eigen::Vector3d cameraWVector;
-    Eigen::Vector3d cameraUVector;
-    Eigen::Vector3d cameraVVector;
+    Vector cameraWVector;
+    Vector cameraUVector;
+    Vector cameraVVector;
 
 private:
 

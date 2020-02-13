@@ -13,9 +13,9 @@ inFile(argv[1]), outFile(argv[2]), samples(stoi(argv[3]))
 
 {}
 
-Eigen::Vector3d RayTracer::makeRandomUnitVector()
+Vector RayTracer::makeRandomUnitVector()
 {
-    Eigen::Vector3d returnVector;
+    Vector returnVector;
 
     while(true)
     {
@@ -68,7 +68,7 @@ int RayTracer::rayTrace() {
             {
                 img[i][j] = vector<int>(3);
 
-                Eigen::Vector3d color = calculateAverageColor(i, j);
+                Vector color = calculateAverageColor(i, j);
 
                 for(int k = 0; k < 3; k++)
                 {
@@ -114,12 +114,12 @@ int RayTracer::rayTrace() {
     }
 }
 
-Eigen::Vector3d RayTracer::calculateAverageColor(const int i, const int j)
+Vector RayTracer::calculateAverageColor(const int i, const int j)
 {
     auto theRay = driver.camera.pixelRay(j, i);
     auto loopedRay = theRay;
 
-    Eigen::Vector3d color = {0, 0, 0};
+    Vector color = {0, 0, 0};
 
     for(int k = 0; k < samples; k++)
     {
@@ -130,7 +130,7 @@ Eigen::Vector3d RayTracer::calculateAverageColor(const int i, const int j)
     return color + calculateColor(loopedRay, {1, 1, 1}, 10);
 }
 
-Eigen::Vector3d RayTracer::calculateColor(Ray &ray, Eigen::Vector3d currentAlbedo, const int depth)
+Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth)
 {
     double max = 0;
 
@@ -156,7 +156,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, Eigen::Vector3d currentAlbed
 
     else if(ray.material.isLight)
     {
-        return currentAlbedo.cwiseProduct(ray.material.albedo);
+        return currentAlbedo * ray.material.albedo;
     }
 
     else if (depth > 0)
@@ -165,7 +165,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, Eigen::Vector3d currentAlbed
 
         if(ray.material.isMirror)
         {
-            Eigen::Vector3d reflectionDirection = (2 * ray.surfaceNormal.dot(-1 * ray.direction) * ray.surfaceNormal + ray.direction).normalized();
+            Vector reflectionDirection = (2 * ray.surfaceNormal.dot(-ray.direction) * ray.surfaceNormal + ray.direction).normalize();
             newRay = Ray(ray.closestIntersectionPoint, reflectionDirection + 0.02 * makeRandomUnitVector());
         }
 
@@ -187,7 +187,7 @@ Eigen::Vector3d RayTracer::calculateColor(Ray &ray, Eigen::Vector3d currentAlbed
             newRay = Ray(ray.closestIntersectionPoint, ray.surfaceNormal + makeRandomUnitVector());
         }
 
-        return calculateColor(newRay, currentAlbedo.cwiseProduct(ray.material.albedo), depth - 1);
+        return calculateColor(newRay, currentAlbedo * ray.material.albedo, depth - 1);
     }
 
     return currentAlbedo;

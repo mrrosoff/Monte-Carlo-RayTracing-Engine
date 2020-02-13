@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 
-#include "../../Eigen/Eigen"
+#include "../Matrix/Vector.h"
 
 class Material {
 
@@ -19,14 +19,14 @@ public:
     Material &operator=(const Material &) = default;
     ~Material() = default;
 
-    explicit Material(const std::string &, const Eigen::Vector3d &, int);
+    explicit Material(const std::string &, const Vector &, int);
 
     std::string name;
-    Eigen::Vector3d albedo;
+    Vector albedo;
 
     // Constructor Parameter to Determine Material Property as an Integer
 
-    // 0 -> Nothing
+    // 0 -> Lambertian
     // 1 -> Light
     // 2 -> Mirror
     // 3 -> Glass

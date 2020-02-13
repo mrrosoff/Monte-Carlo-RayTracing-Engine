@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Vertex::Vertex(const Eigen::Vector3d &vertex) :
+Vertex::Vertex(const Vector &vertex) :
 
 vertex(vertex)
 
@@ -14,9 +14,7 @@ vertex(vertex)
 
 ostream &operator<<(ostream &out, const Vertex &vertex)
 {
-    Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
-
-    out << vertex.vertex.format(ArrayFormat);
+    out << vertex.vertex;
 
     return out;
 }

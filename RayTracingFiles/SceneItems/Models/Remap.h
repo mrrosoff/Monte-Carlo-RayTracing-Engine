@@ -9,8 +9,10 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <limits>
 
-#include "../../../Eigen/Eigen"
+#include "../../Matrix/Vector.h"
+#include "../../Matrix/Matrix.h"
 
 class Remap {
 
@@ -21,17 +23,17 @@ public:
     Remap &operator=(const Remap &) = delete;
     ~Remap() = default;
 
-    explicit Remap(const Eigen::Vector3d &, double, const Eigen::Matrix4d &, const Eigen::Matrix4d &, double smoothingAngle, const std::string &);
+    explicit Remap(const Vector &, double, const Matrix &, const Matrix &, double smoothingAngle, const std::string &);
 
     double smoothingAngle = 0;
     std::string objPath;
-    Eigen::MatrixXd transformation;
+    Matrix transformation;
 
 private:
 
-    Eigen::Matrix4d findRotationMatrix(const Eigen::Vector3d &, double theta) const;
-    Eigen::Matrix4d changeCords(const Eigen::Vector3d &) const;
-    int findMinIndex(const Eigen::Vector3d &rotationVector) const;
+    Matrix findRotationMatrix(const Vector &, double theta) const;
+    Matrix changeCords(const Vector &) const;
+    int findMinIndex(const Vector &rotationVector) const;
 };
 
 std::ostream &operator<<(std::ostream &, const Remap &);

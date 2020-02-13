@@ -14,10 +14,9 @@
 #include <iomanip>
 
 #include "Ray.h"
+#include "../Matrix/Vector.h"
 #include "../FileInOut/DReader.h"
 #include "../FileInOut/PWriter.h"
-
-#include "../../Eigen/Eigen"
 
 class RayTracer {
 
@@ -33,9 +32,9 @@ public:
 
 private:
 
-    Eigen::Vector3d makeRandomUnitVector();
-    Eigen::Vector3d calculateAverageColor(int, int);
-    Eigen::Vector3d calculateColor(Ray &, Eigen::Vector3d, int);
+    Vector makeRandomUnitVector();
+    Vector calculateAverageColor(int, int);
+    Vector calculateColor(Ray &, Vector, int);
     bool checkForIntersection(Ray &);
 
     DReader driver;

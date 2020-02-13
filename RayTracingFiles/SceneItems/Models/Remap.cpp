@@ -6,33 +6,33 @@
 
 using namespace std;
 
-Remap::Remap(const Eigen::Vector3d &rotationVector, const double theta, const Eigen::Matrix4d &scalar, const Eigen::Matrix4d &translation, const double smoothingAngle, const string &path) :
+Remap::Remap(const Vector &rotationVector, const double theta, const Matrix &scalar, const Matrix &translation, const double smoothingAngle, const string &path) :
 
-smoothingAngle(smoothingAngle), objPath(path)
+smoothingAngle(smoothingAngle), objPath(path), transformation(Matrix(4, 4))
 
 {
-    Eigen::Matrix4d rotation = findRotationMatrix(rotationVector, theta);
+    Matrix rotation = findRotationMatrix(rotationVector, theta);
     transformation = translation * scalar * rotation;
 }
 
-Eigen::Matrix4d Remap::findRotationMatrix(const Eigen::Vector3d &rotationVector, const double theta) const
+Matrix Remap::findRotationMatrix(const Vector &rotationVector, const double theta) const
 {
     auto coords = changeCords(rotationVector);
-    Eigen::Matrix4d zMatrix;
+    Matrix zMatrix(4, 4);
 
     double radTheta = M_PI * theta / 180;
 
-    zMatrix << cos(radTheta), -sin(radTheta), 0, 0,
-               sin(radTheta), cos(radTheta),  0, 0,
-               0,             0,              1, 0,
-               0,             0,              0, 1;
+    zMatrix[0] = {cos(radTheta), -sin(radTheta), 0, 0};
+    zMatrix[1] = {sin(radTheta), cos(radTheta),  0, 0};
+    zMatrix[2] = {0, 0, 1, 0};
+    zMatrix[3] = {0, 0, 0, 1};
 
     return coords.transpose() * zMatrix * coords;
 }
 
-Eigen::Matrix4d Remap::changeCords(const Eigen::Vector3d &rotationVector) const
+Matrix Remap::changeCords(const Vector &rotationVector) const
 {
-    auto bottomVector = rotationVector.normalized();
+    auto bottomVector = rotationVector.normalize();
 
     auto helperVector = bottomVector;
     int min = findMinIndex(bottomVector);
@@ -43,17 +43,17 @@ Eigen::Matrix4d Remap::changeCords(const Eigen::Vector3d &rotationVector) const
 
     auto middleVector = bottomVector.cross(topVector);
 
-    Eigen::Matrix4d r;
+    Matrix r(4, 4);
 
-    r << topVector[0],    topVector[1],    topVector[2],    0,
-         middleVector[0], middleVector[1], middleVector[2], 0,
-         bottomVector[0], bottomVector[1], bottomVector[2], 0,
-         0,               0,               0,               1;
+    r[0] = {topVector[0], topVector[1], topVector[2], 0};
+    r[1] = {middleVector[0], middleVector[1], middleVector[2], 0};
+    r[2] = {bottomVector[0], bottomVector[1], bottomVector[2], 0};
+    r[3] = {0, 0, 0, 1};
 
     return r;
 }
 
-int Remap::findMinIndex(const Eigen::Vector3d &rotationVector) const
+int Remap::findMinIndex(const Vector &rotationVector) const
 {
     int index = 0;
     double min = numeric_limits<double>::max();

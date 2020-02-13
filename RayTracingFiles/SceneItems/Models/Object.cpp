@@ -72,9 +72,9 @@ void Object::readObject(const Remap &map)
 
         else if (line[0] == "v")
         {
-            Eigen::Vector4d beforeVector(stod(line[1]), stod(line[2]), stod(line[3]), 1);
+            Vector beforeVector = {stod(line[1]), stod(line[2]), stod(line[3]), 1};
             auto afterVector = map.transformation * beforeVector;
-            vertices.emplace_back(Eigen::Vector3d(afterVector[0], afterVector[1], afterVector[2]));
+            vertices.emplace_back(Vector(afterVector[0], afterVector[1], afterVector[2]));
         }
 
         else if (line[0] == "vn")
@@ -128,7 +128,7 @@ void Object::readMaterialFile(const string &filePath) {
 
     string matLine;
     string name;
-    Eigen::Vector3d albedo;
+    Vector albedo;
     int otherProperty = 0;
 
     while(getline(matReader, matLine))
@@ -175,9 +175,7 @@ void Object::readMaterialFile(const string &filePath) {
 
         else if(matLineData[0] == "albedo")
         {
-            albedo << stod(matLineData[1]),
-                      stod(matLineData[2]),
-                      stod(matLineData[3]);
+            albedo = {stod(matLineData[1]), stod(matLineData[2]), stod(matLineData[3])};
         }
 
         else if(matLineData[0] == "light")
@@ -216,11 +214,11 @@ void Object::calculateNormals()
             face.calcColumns = true;
         }
 
-        auto F1Normal = (face.columnOne.cross(face.columnTwo)).normalized();
+        auto F1Normal = (face.columnOne.cross(face.columnTwo)).normalize();
         
         for(const auto vertex : face.vertexIndexList)
         {
-            Eigen::Vector3d sum = {0, 0, 0};
+            Vector sum = {0, 0, 0};
 
             for(const auto faceIndex : vertices[vertex - 1].adjacentFaces)
             {
@@ -233,7 +231,7 @@ void Object::calculateNormals()
                     otherFace.calcColumns = true;
                 }
 
-                auto F2Normal = (otherFace.columnOne.cross(otherFace.columnTwo)).normalized();
+                auto F2Normal = (otherFace.columnOne.cross(otherFace.columnTwo)).normalize();
 
                 if(abs(acos(min(max(F1Normal.dot(F2Normal), -1.0), 1.0)) * (180 / M_PI)) <= smoothingAngle)
                 {
@@ -241,14 +239,14 @@ void Object::calculateNormals()
                 }
             }
 
-            face.normals.emplace_back(sum.normalized());
+            face.normals.emplace_back(sum.normalize());
         }
     }
 }
 
 Ray Object::makeExitRefrationRay(const Ray &invRay, double originalIndex, double newIndex) const
 {
-    Eigen::Vector3d refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
+    Vector refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
     Ray innerRefractionRay(invRay.closestIntersectionPoint, refractionDirection);
     intersectionTest(innerRefractionRay);
     return Ray(innerRefractionRay.closestIntersectionPoint, doSnellsLaw(-1 * refractionDirection, innerRefractionRay.surfaceNormal, newIndex, originalIndex));
@@ -263,10 +261,10 @@ bool Object::intersectionTest(Ray &ray) const
     {
         const auto b = vertices[face.vertexIndexList[0] - 1].vertex - ray.point;
 
-        Eigen::Matrix3d a;
-        a << face.columnOne[0], face.columnTwo[0], ray.direction[0],
-             face.columnOne[1], face.columnTwo[1], ray.direction[1],
-             face.columnOne[2], face.columnTwo[2], ray.direction[2];
+        Matrix a(3, 3);
+        a[0] = {face.columnOne[0], face.columnTwo[0], ray.direction[0]};
+        a[0] = {face.columnOne[1], face.columnTwo[1], ray.direction[1]};
+        a[0] = {face.columnOne[2], face.columnTwo[2], ray.direction[2]};
 
         const auto x = a.inverse() * b;
 
@@ -278,7 +276,7 @@ bool Object::intersectionTest(Ray &ray) const
 
                 ray.hit = this;
                 ray.material = materials[face.materialIndex];
-                ray.surfaceNormal = ((1.0 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2]).normalized();
+                ray.surfaceNormal = ((1.0 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2]).normalize();
                 ray.closestIntersectionPoint = ray.point + x[2] * ray.direction;
 
                 if(ray.direction.dot(ray.surfaceNormal) > 0)

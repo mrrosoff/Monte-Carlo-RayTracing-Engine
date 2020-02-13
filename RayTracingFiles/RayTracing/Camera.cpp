@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Camera::Camera(const Eigen::Vector3d &eye, const Eigen::Vector3d &lookAtPoint, const Eigen::Vector3d &upVector, const Eigen::Vector4d &bounds, const double focalLength, const Eigen::Vector2d &resolution) :
+Camera::Camera(const Vector &eye, const Vector &lookAtPoint, const Vector &upVector, const std::vector<double> &bounds, const double focalLength, const std::vector<double> &resolution) :
 
 eye(eye), lookAtPoint(lookAtPoint), upVector(upVector), bounds(bounds), focalLength(focalLength), resolution(resolution)
 
@@ -16,12 +16,8 @@ eye(eye), lookAtPoint(lookAtPoint), upVector(upVector), bounds(bounds), focalLen
 
 void Camera::setUpUVW()
 {
-    auto makeCameraWVector = eye - lookAtPoint;
-    cameraWVector = makeCameraWVector.normalized();
-
-    auto makeCameraUVector = upVector.cross(cameraWVector);
-    cameraUVector = makeCameraUVector.normalized();
-
+    cameraWVector = (eye - lookAtPoint).normalize();
+    cameraUVector = upVector.cross(cameraWVector).normalize();
     cameraVVector = cameraWVector.cross(cameraUVector);
 }
 
@@ -38,26 +34,24 @@ Ray Camera::pixelRay(const int row, const int col) const
     auto xValue = static_cast<double>(row) / (width - 1) * (right - left) + left;
     auto yValue = static_cast<double>(col) / (height - 1) * (bottom - top) + top;
 
-    auto point = eye + (focalLength * cameraWVector) + (xValue * cameraUVector) + (yValue * cameraVVector);
+    auto point = eye + (cameraWVector * focalLength) + (cameraUVector * xValue) + (cameraVVector * yValue);
     auto direction = point - eye;
-    auto normalizedDirection = direction.normalized();
+    auto normalizedDirection = direction.normalize();
 
     return Ray(point, normalizedDirection);
 }
 
 ostream &operator<<(ostream &out, const Camera &cam)
 {
-    Eigen::IOFormat ArrayFormat(Eigen::StreamPrecision, 0, "", ", ", "", "", "[", "]");
-
-    out << "Camera Eye: " << cam.eye.format(ArrayFormat) << '\n';
-    out << "Camera Look At: " << cam.lookAtPoint.format(ArrayFormat) << '\n';
-    out << "Camera Up: " << cam.upVector.format(ArrayFormat) << '\n';
-    out << "Camera Bounds: " << cam.bounds.format(ArrayFormat) << '\n';
-    out << "Camera FocalLength: " << cam.focalLength << '\n';
-    out << "Camera Resolution: " << cam.resolution.format(ArrayFormat) << '\n';
-    out << "Camera W: " << cam.cameraWVector.format(ArrayFormat) << '\n';
-    out << "Camera U: " << cam.cameraUVector.format(ArrayFormat) << '\n';
-    out << "Camera V: " << cam.cameraVVector.format(ArrayFormat) << '\n';
+    out << "Camera Eye: " << cam.eye;
+    out << "Camera Look At: " << cam.lookAtPoint;
+    out << "Camera Up: " << cam.upVector;
+    //out << "Camera Bounds: " << cam.bounds;
+    out << "Camera FocalLength: " << cam.focalLength;
+    //out << "Camera Resolution: " << cam.resolution;
+    out << "Camera W: " << cam.cameraWVector;
+    out << "Camera U: " << cam.cameraUVector;
+    out << "Camera V: " << cam.cameraVVector;
 
     return out;
 }

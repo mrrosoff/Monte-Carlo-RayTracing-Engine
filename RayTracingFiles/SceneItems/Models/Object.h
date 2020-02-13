@@ -25,8 +25,6 @@
 #include "./Vertex.h"
 #include "./Face.h"
 
-#include "../../../Eigen/Eigen"
-
 class Object : public SceneItem {
 
 public:

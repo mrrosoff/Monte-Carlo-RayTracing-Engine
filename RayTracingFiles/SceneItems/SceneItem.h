@@ -7,10 +7,9 @@
 
 #include <exception>
 
-#include "../SceneItems/Material.h"
+#include "../Matrix/Vector.h"
 #include "../RayTracing/Ray.h"
-
-#include "../../Eigen/Eigen"
+#include "../SceneItems/Material.h"
 
 class SceneItem {
 
@@ -18,7 +17,7 @@ public:
 
     virtual bool intersectionTest(Ray &) const = 0;
     virtual Ray makeExitRefrationRay(const Ray &, double, double) const = 0;
-    Eigen::Vector3d doSnellsLaw(const Eigen::Vector3d &, const Eigen::Vector3d &, double, double) const;
+    Vector doSnellsLaw(const Vector &, const Vector &, double, double) const;
 };
 
 #endif //RAYTRACER_SCENEITEM_H

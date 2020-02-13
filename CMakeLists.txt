@@ -36,7 +36,7 @@ RayTracingFiles/SceneItems/SceneItem.cpp RayTracingFiles/SceneItems/SceneItem.h
 RayTracingFiles/SceneItems/Models/Object.cpp RayTracingFiles/SceneItems/Models/Object.h
 RayTracingFiles/SceneItems/Models/Remap.cpp RayTracingFiles/SceneItems/Models/Remap.h
 RayTracingFiles/SceneItems/Models/Vertex.cpp RayTracingFiles/SceneItems/Models/Vertex.h
-RayTracingFiles/SceneItems/Models/Face.cpp RayTracingFiles/SceneItems/Models/Face.h)
+RayTracingFiles/SceneItems/Models/Face.cpp RayTracingFiles/SceneItems/Models/Face.h RayTracingFiles/Matrix/Matrix.cpp RayTracingFiles/Matrix/Matrix.h RayTracingFiles/Matrix/Vector.cpp RayTracingFiles/Matrix/Vector.h)
 
 # Create a tar file every time
 add_custom_target(mrosoff.tar ALL COMMAND tar cf mrosoff.tar ExampleDriverFiles main.cpp RayTracingFiles README.md CMakeLists.txt Eigen)

@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-#include "../../../Eigen/Eigen"
+#include "../../Matrix/Vector.h"
 
 class Vertex {
 
@@ -19,9 +19,9 @@ public:
     Vertex &operator=(const Vertex &) = default;
     virtual ~Vertex()= default;
 
-    explicit Vertex(const Eigen::Vector3d &);
+    explicit Vertex(const Vector &);
 
-    Eigen::Vector3d vertex;
+    Vector vertex;
     std::vector<int> adjacentFaces;
 };
 

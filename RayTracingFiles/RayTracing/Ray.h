@@ -10,9 +10,8 @@
 #include <limits>
 #include <iostream>
 
+#include "../Matrix/Vector.h"
 #include "../SceneItems/Material.h"
-
-#include "../../Eigen/Eigen"
 
 class SceneItem;
 
@@ -25,18 +24,18 @@ public:
     Ray &operator=(const Ray &) = default;
     ~Ray() = default;
 
-    explicit Ray(const Eigen::Vector3d &, const Eigen::Vector3d &);
-    explicit Ray(const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &);
+    explicit Ray(const Vector &, const Vector);
+    explicit Ray(const Vector &, const Vector, const Vector &);
 
-    Eigen::Vector3d point;
-    Eigen::Vector3d direction;
+    Vector point;
+    Vector direction;
 
-    Eigen::Vector3d closestIntersectionPoint;
+    Vector closestIntersectionPoint;
     double closestIntersectionDistance = std::numeric_limits<double>::max();
 
     const SceneItem* hit = nullptr;
     Material material;
-    Eigen::Vector3d surfaceNormal;
+    Vector surfaceNormal;
 };
 
 std::ostream &operator<<(std::ostream &, const Ray &);
