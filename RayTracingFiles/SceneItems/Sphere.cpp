@@ -48,7 +48,7 @@ Ray Sphere::makeExitRefrationRay(const Ray &invRay, double originalIndex, double
 ostream &operator<<(ostream &out, const Sphere &sph)
 {
     out << "Sphere Position: " << sph.position;
-    out << "Sphere Radius: " << sph.radius;
+    out << "Sphere Radius: " << sph.radius << '\n';
     out << "Sphere Material: \n" << sph.material;
 
     return out;

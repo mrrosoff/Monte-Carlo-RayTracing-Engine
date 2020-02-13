@@ -40,8 +40,6 @@ public:
     std::string driverFile;
 
     Camera camera;
-    Vector ambientLight;
-    std::vector<LightSource> lights;
     std::vector<std::shared_ptr<SceneItem>> items;
 
 private:

@@ -6,23 +6,9 @@
 
 using namespace std;
 
-Vector::Vector()
-{
-    data.reserve(3);
-}
-
 Vector::Vector(double size)
 {
-    data.reserve(size);
-}
-
-Vector::Vector(double x, double y, double z)
-{
-    data.reserve(3);
-
-    data[0] = x;
-    data[1] = y;
-    data[2] = z;
+    data.resize(size);
 }
 
 Vector::Vector(const initializer_list<double> &il)
@@ -32,22 +18,23 @@ Vector::Vector(const initializer_list<double> &il)
 
 Vector &Vector::operator=(const initializer_list<double> &il)
 {
-    data.reserve(il.size());
-
-    auto it = il.begin();
-
-    for(int i = 0; i < il.size(); i++)
-    {
-        data[i] = *it;
-        it++;
-    }
-
+    data.resize(il.size());
+    copy(il.begin(), il.end(), data.begin());
     return *this;
 }
 
-std::ostream &operator<<(std::ostream &out, const Vector &vector)
+std::ostream &operator<<(std::ostream &out, const Vector &other)
 {
-    out << "[" << vector[0] << ", " << vector[1] << ", " << vector[2] << "]" << '\n';
+    out << "[";
+
+    size_t i = 0;
+
+    for(i = 0; i < other.size() - 1; i++)
+    {
+        out << other[i] << ", ";
+    }
+
+    out << other[i] << "]" << '\n';
 
     return out;
 }

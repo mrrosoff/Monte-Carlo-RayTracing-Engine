@@ -8,21 +8,12 @@ using namespace std;
 
 Matrix::Matrix(int rows, int cols)
 {
-    data.reserve(rows);
+    data.resize(rows);
 
     for(int i = 0; i < rows; i++)
     {
         data[i] = Vector(cols);
     }
-}
-
-Matrix::Matrix(const Vector &one, const Vector &two, const Vector &three)
-{
-    data.reserve(3);
-
-    data[0] = one;
-    data[1] = two;
-    data[2] = three;
 }
 
 Matrix::Matrix(const std::initializer_list<Vector> &il)
@@ -32,21 +23,17 @@ Matrix::Matrix(const std::initializer_list<Vector> &il)
 
 Matrix &Matrix::operator=(const std::initializer_list<Vector> &il)
 {
-    data.reserve(il.size());
-
-    auto it = il.begin();
-
-    for(int i = 0; i < il.size(); i++)
-    {
-        data[i] = *it;
-        it++;
-    }
-
+    data.resize(il.size());
+    copy(il.begin(), il.end(), data.begin());
     return *this;
 }
 
 std::ostream &operator<<(std::ostream &out, const Matrix &other)
 {
-    out << other;
+    for(size_t i = 0; i < other.size(); i++)
+    {
+        out << other[i];
+    }
+
     return out;
 }

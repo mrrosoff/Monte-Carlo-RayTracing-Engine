@@ -74,7 +74,8 @@ void Object::readObject(const Remap &map)
         {
             Vector beforeVector = {stod(line[1]), stod(line[2]), stod(line[3]), 1};
             auto afterVector = map.transformation * beforeVector;
-            vertices.emplace_back(Vector(afterVector[0], afterVector[1], afterVector[2]));
+            Vector removeLastElement = {afterVector[0], afterVector[1], afterVector[2]};
+            vertices.emplace_back(removeLastElement);
         }
 
         else if (line[0] == "vn")
@@ -263,8 +264,8 @@ bool Object::intersectionTest(Ray &ray) const
 
         Matrix a(3, 3);
         a[0] = {face.columnOne[0], face.columnTwo[0], ray.direction[0]};
-        a[0] = {face.columnOne[1], face.columnTwo[1], ray.direction[1]};
-        a[0] = {face.columnOne[2], face.columnTwo[2], ray.direction[2]};
+        a[1] = {face.columnOne[1], face.columnTwo[1], ray.direction[1]};
+        a[2] = {face.columnOne[2], face.columnTwo[2], ray.direction[2]};
 
         const auto x = a.inverse() * b;
 

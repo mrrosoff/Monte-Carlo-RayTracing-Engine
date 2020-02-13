@@ -165,9 +165,9 @@ std::vector<double> DReader::parseRes(const vector<string> &lineData) const
 
 void DReader::parseSphere(const vector<string> &lineData)
 {
-    Vector position(stod(lineData[1]), stod(lineData[2]), stod(lineData[3]));
+    Vector position = {stod(lineData[1]), stod(lineData[2]), stod(lineData[3])};
     double radius = stod(lineData[4]);
-    Vector albedo(stod(lineData[5]), stod(lineData[6]), stod(lineData[7]));
+    Vector albedo = {stod(lineData[5]), stod(lineData[6]), stod(lineData[7])};
 
     int otherProperty = 0;
 
@@ -223,7 +223,6 @@ ostream &operator<<(ostream &out, const DReader &driver)
     out << "Driver File: " << driver.driverFile << '\n';
     out << "Driver FileName: " << driver.driverName << '\n';
     out << "Driver Camera: " << driver.camera << '\n';
-    out << "Driver Ambient Light: " << driver.ambientLight;
 
     cout << '\n' << "Scene Items" << '\n' << "-----------" << '\n';
 

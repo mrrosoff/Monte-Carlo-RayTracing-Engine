@@ -46,9 +46,25 @@ ostream &operator<<(ostream &out, const Camera &cam)
     out << "Camera Eye: " << cam.eye;
     out << "Camera Look At: " << cam.lookAtPoint;
     out << "Camera Up: " << cam.upVector;
-    //out << "Camera Bounds: " << cam.bounds;
-    out << "Camera FocalLength: " << cam.focalLength;
-    //out << "Camera Resolution: " << cam.resolution;
+    out << "Camera Bounds: ";
+
+    for(const auto &b : cam.bounds)
+    {
+        cout << b << " ";
+    }
+
+    cout << "\n";
+
+    out << "Camera FocalLength: " << cam.focalLength << '\n';
+    out << "Camera Resolution: ";
+
+    for(const auto &r : cam.resolution)
+    {
+        cout << r << " ";
+    }
+
+    cout << "\n";
+
     out << "Camera W: " << cam.cameraWVector;
     out << "Camera U: " << cam.cameraUVector;
     out << "Camera V: " << cam.cameraVVector;

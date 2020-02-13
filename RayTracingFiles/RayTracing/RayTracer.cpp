@@ -15,7 +15,7 @@ inFile(argv[1]), outFile(argv[2]), samples(stoi(argv[3]))
 
 Vector RayTracer::makeRandomUnitVector()
 {
-    Vector returnVector;
+    Vector returnVector(3);
 
     while(true)
     {
@@ -41,7 +41,7 @@ int RayTracer::rayTrace() {
 
         driver << inFile;
 
-        //cout << driver << endl; // Uncomment for Debugging.
+        // cout << driver << endl; // Uncomment for Debugging.
 
         auto resolution = driver.camera.resolution;
 
@@ -121,7 +121,7 @@ Vector RayTracer::calculateAverageColor(const int i, const int j)
 
     Vector color = {0, 0, 0};
 
-    for(int k = 0; k < samples; k++)
+    for(int k = 0; k < samples - 1; k++)
     {
         color += calculateColor(loopedRay, {1, 1, 1}, 10);
         loopedRay = theRay;
