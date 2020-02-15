@@ -32,10 +32,10 @@ public:
 
 private:
 
-    Vector makeRandomUnitVector();
-    Vector calculateAverageColor(int, int);
-    Vector calculateColor(Ray &, Vector, int);
-    bool checkForIntersection(Ray &);
+    Vector makeRandomUnitVector() const;
+    Vector calculateAverageColor(int, int) const;
+    Vector calculateColor(Ray &, Vector, int) const;
+    bool checkForIntersection(Ray &) const;
 
     DReader driver;
     std::string inFile;

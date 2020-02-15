@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "RayTracingFiles/RayTracing/RayTracer.h"
+#include "RayTracing/RayTracer.h"
 
 using namespace std;
 

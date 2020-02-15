@@ -13,7 +13,7 @@ inFile(argv[1]), outFile(argv[2]), samples(stoi(argv[3]))
 
 {}
 
-Vector RayTracer::makeRandomUnitVector()
+Vector RayTracer::makeRandomUnitVector() const
 {
     Vector returnVector(3);
 
@@ -50,7 +50,7 @@ int RayTracer::rayTrace() {
 
         vector<vector<vector<int>>> img(height);
 
-        cout << "Beginning Ray Tracing. Number of Threads: " << omp_get_max_threads() << endl;
+        cout << "Beginning Ray Tracing. Num Threads: " << omp_get_max_threads() << endl;
 
         auto start = high_resolution_clock::now();
         double currentPercentCompleted = 0;
@@ -114,7 +114,7 @@ int RayTracer::rayTrace() {
     }
 }
 
-Vector RayTracer::calculateAverageColor(const int i, const int j)
+Vector RayTracer::calculateAverageColor(const int i, const int j) const
 {
     auto theRay = driver.camera.pixelRay(j, i);
     auto loopedRay = theRay;
@@ -130,7 +130,7 @@ Vector RayTracer::calculateAverageColor(const int i, const int j)
     return color + calculateColor(loopedRay, {1, 1, 1}, 10);
 }
 
-Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth)
+Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth) const
 {
     double max = 0;
 
@@ -193,7 +193,7 @@ Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth
     return currentAlbedo;
 }
 
-bool RayTracer::checkForIntersection(Ray &ray)
+bool RayTracer::checkForIntersection(Ray &ray) const
 {
     for(const auto &item : driver.items)
     {

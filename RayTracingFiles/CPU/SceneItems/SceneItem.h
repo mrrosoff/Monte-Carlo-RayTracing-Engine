@@ -9,7 +9,7 @@
 
 #include "../Matrix/Vector.h"
 #include "../RayTracing/Ray.h"
-#include "../SceneItems/Material.h"
+#include "Material.h"
 
 class SceneItem {
 
