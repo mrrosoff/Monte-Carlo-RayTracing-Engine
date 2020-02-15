@@ -13,7 +13,7 @@ inFile(argv[1]), outFile(argv[2]), samples(stoi(argv[3]))
 
 {}
 
-Vector RayTracer::makeRandomUnitVector() const
+Vector RayTracer::makeRandomUnitVector()
 {
     Vector returnVector(3);
 
@@ -114,7 +114,7 @@ int RayTracer::rayTrace() {
     }
 }
 
-Vector RayTracer::calculateAverageColor(const int i, const int j) const
+Vector RayTracer::calculateAverageColor(const int i, const int j)
 {
     auto theRay = driver.camera.pixelRay(j, i);
     auto loopedRay = theRay;
@@ -130,7 +130,7 @@ Vector RayTracer::calculateAverageColor(const int i, const int j) const
     return color + calculateColor(loopedRay, {1, 1, 1}, 10);
 }
 
-Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth) const
+Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth)
 {
     double max = 0;
 

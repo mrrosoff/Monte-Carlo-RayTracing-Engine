@@ -13,7 +13,7 @@ __host__ RayTracer::RayTracer(const DReader &, int samples, std::default_random_
 
 {}
 
-__device__ Vector RayTracer::makeRandomUnitVector() const
+__device__ Vector RayTracer::makeRandomUnitVector()
 {
     Vector returnVector(3);
 
@@ -33,7 +33,7 @@ __device__ Vector RayTracer::makeRandomUnitVector() const
     }
 }
 
-__device__ Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth) const
+__device__ Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth)
 {
     double max = 0;
 
@@ -96,7 +96,7 @@ __device__ Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, cons
     return currentAlbedo;
 }
 
-__device__ bool RayTracer::checkForIntersection(Ray &ray)
+__device__ bool RayTracer::checkForIntersection(Ray &ray) const
 {
     for(const auto &item : driver.items)
     {
