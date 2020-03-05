@@ -1,6 +1,6 @@
 # Monte Carlo Ray Tracing Engine Built in C++
 
-An engine built to render complex scenes with all the capabilities of real world private engines. Images are outputted in the PPM format and use a simple driver file system for creation. This engine runs entirely on the CPU.
+An engine built to render complex scenes with all the capabilities of real world private engines. Images are outputted in the PPM format and use a simple driver file system for creation.
 
 ## Features
 
@@ -10,9 +10,7 @@ The engine uses a Monte Carlo technique to render images. This process randomly 
 
 Built with:  
 
-[C++](http://www.cplusplus.com/)   
-[CMake](https://cmake.org/)  
-[Open MP](https://www.openmp.org/)  
+[C++](http://www.cplusplus.com/), [CMake](https://cmake.org/), [Open MP](https://www.openmp.org/), [Cuda](), [OptiX]()  
 
 ## Example Images
 
