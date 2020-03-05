@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Vector::Vector(double size)
+Vector::Vector(int size)
 {
     data.resize(size);
 }

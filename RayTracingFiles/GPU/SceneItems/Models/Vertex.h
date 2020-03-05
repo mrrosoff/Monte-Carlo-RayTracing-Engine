@@ -5,9 +5,6 @@
 #ifndef GRAPHICS_VERTEX_H
 #define GRAPHICS_VERTEX_H
 
-#include <vector>
-#include <iostream>
-
 #include "../../Matrix/Vector.h"
 
 class Vertex {
@@ -19,13 +16,11 @@ public:
     Vertex &operator=(const Vertex &) = default;
     virtual ~Vertex()= default;
 
-    __host__ explicit Vertex(const Vector &);
+    __host__ explicit Vertex(const Vector<3> &);
 
-    Vector vertex;
+    Vector<3> vertex;
     std::vector<int> adjacentFaces;
 };
-
-__host__ std::ostream &operator<<(std::ostream &, const Vertex &);
 
 
 #endif //GRAPHICS_VERTEX_H

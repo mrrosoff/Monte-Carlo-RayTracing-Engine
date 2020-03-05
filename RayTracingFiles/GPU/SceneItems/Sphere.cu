@@ -40,16 +40,7 @@ bool Sphere::intersectionTest(Ray &ray) const
 
 Ray Sphere::makeExitRefrationRay(const Ray &invRay, double originalIndex, double newIndex) const
 {
-    Vector refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
-    Vector exitPoint = invRay.closestIntersectionPoint + refractionDirection * 2 * (position - invRay.closestIntersectionPoint).dot(refractionDirection);
+    Vector<3> refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
+    Vector<3> exitPoint = invRay.closestIntersectionPoint + refractionDirection * 2 * (position - invRay.closestIntersectionPoint).dot(refractionDirection);
     return Ray(exitPoint, doSnellsLaw(-refractionDirection, (position - exitPoint).normalize(), newIndex, originalIndex));
-}
-
-ostream &operator<<(ostream &out, const Sphere &sph)
-{
-    out << "Sphere Position: " << sph.position;
-    out << "Sphere Radius: " << sph.radius << '\n';
-    out << "Sphere Material: \n" << sph.material;
-
-    return out;
 }

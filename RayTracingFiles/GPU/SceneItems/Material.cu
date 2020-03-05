@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Material::Material(const string &name, const Vector &albedo, const int materialType) :
+Material::Material(const string &name, const Vector<3> &albedo, const int materialType) :
 
 name(name), albedo(albedo)
 
@@ -25,16 +25,4 @@ name(name), albedo(albedo)
     {
         isGlass = true;
     }
-}
-
-ostream &operator<<(ostream &out, const Material &mat)
-{
-    out << boolalpha;
-    out << "Material Name: " << mat.name << '\n';
-    out << "Material Albedo: " << mat.albedo;
-    out << "Material is Light: " << mat.isLight << '\n';
-    out << "Material is Mirror: " << mat.isMirror << '\n';
-    out << "Material is Glass: " << mat.isGlass << '\n';
-
-    return out;
 }

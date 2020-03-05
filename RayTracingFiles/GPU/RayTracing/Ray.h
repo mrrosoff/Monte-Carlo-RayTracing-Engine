@@ -24,18 +24,18 @@ public:
     Ray &operator=(const Ray &) = default;
     ~Ray() = default;
 
-    __device__ explicit Ray(const Vector &, const Vector);
-    __device__ explicit Ray(const Vector &, const Vector, const Vector &);
+    __device__ explicit Ray(const Vector<3> &, const Vector<3>);
+    __device__ explicit Ray(const Vector<3> &, const Vector<3>, const Vector<3> &);
 
-    Vector point;
-    Vector direction;
+    Vector<3> point;
+    Vector<3> direction;
 
-    Vector closestIntersectionPoint;
+    Vector<3> closestIntersectionPoint;
     double closestIntersectionDistance = std::numeric_limits<double>::max();
 
     const SceneItem* hit = nullptr;
     Material material;
-    Vector surfaceNormal;
+    Vector<3> surfaceNormal;
 };
 
 __host__ std::ostream &operator<<(std::ostream &, const Ray &);

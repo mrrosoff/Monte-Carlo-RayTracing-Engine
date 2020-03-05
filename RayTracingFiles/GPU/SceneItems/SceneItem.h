@@ -17,7 +17,7 @@ public:
 
     __device__ virtual bool intersectionTest(Ray &) const = 0;
     __device__ virtual Ray makeExitRefrationRay(const Ray &, double, double) const = 0;
-    __device__ Vector doSnellsLaw(const Vector &, const Vector &, double, double) const;
+    __device__ Vector<3> doSnellsLaw(const Vector<3> &, const Vector<3> &, double, double) const;
 };
 
 #endif //RAYTRACER_SCENEITEM_H

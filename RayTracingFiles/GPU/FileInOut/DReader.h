@@ -18,7 +18,6 @@
 
 #include "../Matrix/Matrix.h"
 #include "../RayTracing/Camera.h"
-#include "../SceneItems/LightSource.h"
 #include "../SceneItems/Models/Object.h"
 #include "../SceneItems/Material.h"
 #include "../SceneItems/SceneItem.h"
@@ -48,17 +47,15 @@ private:
     __host__ static void throwErrorMessage(int, int, const std::string &);
 
     __host__ std::string findDriverName(const std::string &);
-    __host__ Vector parseEye(const std::vector<std::string> &) const;
-    __host__ Vector parseLook(const std::vector<std::string> &) const;
-    __host__ Vector parseUp(const std::vector<std::string> &) const;
+    __host__ Vector<3> parseEye(const std::vector<std::string> &) const;
+    __host__ Vector<3> parseLook(const std::vector<std::string> &) const;
+    __host__ Vector<3> parseUp(const std::vector<std::string> &) const;
     __host__ double parseD(const std::vector<std::string> &) const;
-    __host__ std::vector<double> parseBounds(const std::vector<std::string> &) const;
-    __host__ std::vector<double> parseRes(const std::vector<std::string> &) const;
+    __host__ Vector<4> parseBounds(const std::vector<std::string> &) const;
+    __host__ Vector<2> parseRes(const std::vector<std::string> &) const;
     __host__ void parseSphere(const std::vector<std::string> &);
     __host__ void parseModel(const std::vector<std::string> &);
 };
-
-std::ostream &operator<<(std::ostream &, const DReader &);
 
 
 #endif //GRAPHICS_DRIVERREADER_H

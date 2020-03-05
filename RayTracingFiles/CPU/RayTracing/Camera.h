@@ -19,7 +19,7 @@ public:
     ~Camera() = default;
 
     explicit Camera(const Vector &, const Vector &, const Vector &, const std::vector<double> &, double, const std::vector<double> &);
-    Ray pixelRay( int row, int col) const;
+    Ray pixelRay(int row, int col) const;
 
     Vector eye;
     Vector lookAtPoint;

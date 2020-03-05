@@ -5,14 +5,9 @@
 #ifndef RAYTRACER_VECTOR_H
 #define RAYTRACER_VECTOR_H
 
-#include <iostream>
-
-#include <algorithm>
 #include <cmath>
-#include <vector>
-#include <initializer_list>
 
-
+template <int n>
 class Vector {
 
 public:
@@ -22,13 +17,9 @@ public:
     Vector &operator=(const Vector &) = default;
     ~Vector() = default;
 
-    __host__ __device__ explicit Vector(double);
-    __host__ __device__ Vector(const std::initializer_list<double> &);
-    __host__ __device__ Vector &operator=(const std::initializer_list<double> &);
-
     __host__ __device__ inline size_t size() const
     {
-        return data.size();
+        return n;
     }
 
     __host__ __device__ inline double operator[](const int i) const
@@ -41,11 +32,11 @@ public:
         return data[i];
     }
 
-    __host__ __device__ inline Vector operator-() const
+    __host__ __device__ inline Vector<n> operator-() const
     {
-        Vector newVector(data.size());
+        Vector<n> newVector;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             newVector[i] = -data[i];
         }
@@ -53,11 +44,11 @@ public:
         return newVector;
     }
 
-    __host__ __device__ inline Vector operator+(const Vector &other) const
+    __host__ __device__ inline Vector<n> operator+(const Vector<n> &other) const
     {
-        Vector newVector(data.size());
+        Vector<n> newVector;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             newVector[i] = data[i] + other[i];
         }
@@ -65,11 +56,11 @@ public:
         return newVector;
     }
 
-    __host__ __device__ inline Vector operator-(const Vector &other) const
+    __host__ __device__ inline Vector<n> operator-(const Vector &other) const
     {
-        Vector newVector(data.size());
+        Vector<n> newVector;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             newVector[i] = data[i] - other[i];
         }
@@ -77,11 +68,11 @@ public:
         return newVector;
     }
 
-    __host__ __device__ inline Vector operator*(const Vector &other) const
+    __host__ __device__ inline Vector<n> operator*(const Vector<n> &other) const
     {
-        Vector newVector(data.size());
+        Vector<n> newVector;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             newVector[i] = data[i] * other[i];
         }
@@ -89,29 +80,29 @@ public:
         return newVector;
     }
 
-    __host__ __device__ inline Vector &operator+=(const Vector &other)
+    __host__ __device__ inline Vector<n> &operator+=(const Vector<n> &other)
     {
         *this = operator+(other);
         return *this;
     }
 
-    __host__ __device__ inline Vector &operator-=(const Vector &other)
+    __host__ __device__ inline Vector<n> &operator-=(const Vector<n> &other)
     {
         *this = operator-(other);
         return *this;
     }
 
-    __host__ __device__ inline Vector &operator*=(const Vector &other)
+    __host__ __device__ inline Vector<n> &operator*=(const Vector<n> &other)
     {
         *this = operator*(other);
         return *this;
     }
 
-    __host__ __device__ inline Vector operator*(const double scalar) const
+    __host__ __device__ inline Vector<n> operator*(const double scalar) const
     {
-        Vector newVector(data.size());
+        Vector<n> newVector;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             newVector[i] = data[i] * scalar;
         }
@@ -119,18 +110,18 @@ public:
         return newVector;
     }
 
-    __host__ __device__ inline Vector operator/(const double scalar) const
+    __host__ __device__ inline Vector<n> operator/(const double scalar) const
     {
         return operator*(1 / scalar);
     }
 
-    __host__ __device__ inline Vector &operator*=(const double scalar)
+    __host__ __device__ inline Vector<n> &operator*=(const double scalar)
     {
         *this = operator*(scalar);
         return *this;
     }
 
-    __host__ __device__ inline Vector &operator/=(const double scalar)
+    __host__ __device__ inline Vector<n> &operator/=(const double scalar)
     {
         *this = operator/(1 / scalar);
         return *this;
@@ -141,16 +132,16 @@ public:
         return sqrt(this->dot(*this));
     }
 
-    __host__ __device__ inline Vector normalize() const
+    __host__ __device__ inline Vector<n> normalize() const
     {
         return *this / length();
     }
 
-    __host__ __device__ inline double dot(const Vector &other) const
+    __host__ __device__ inline double dot(const Vector<n> &other) const
     {
         double sum = 0;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             sum += data[i] * other[i];
         }
@@ -158,25 +149,21 @@ public:
         return sum;
     }
 
-    __host__ __device__ inline Vector cross(const Vector &other) const
+    __host__ __device__ inline Vector<3> cross(const Vector<3> &other) const
     {
-        return {data[1] * other[2] - data[2] * other[1],
-              -(data[0] * other[2] - data[2] * other[0]),
-                data[0] * other[1] - data[1] * other[0]};
+        Vector<3> newVector;
+
+        newVector[0] = data[1] * other[2] - data[2] * other[1];
+        newVector[1] = -(data[0] * other[2] - data[2] * other[0]);
+        newVector[2] = data[0] * other[1] - data[1] * other[0];
+
+        return newVector;
     }
 
 private:
 
-    std::vector<double> data;
+    double data[n];
 };
-
-__host__ __device__ inline Vector operator*(double scalar, const Vector &other)
-{
-    return other * scalar;
-}
-
-__host__ std::ostream &operator<<(std::ostream &, const Vector &);
-
 
 
 #endif //RAYTRACER_VECTOR_H

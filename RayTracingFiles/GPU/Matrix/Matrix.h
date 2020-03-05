@@ -6,12 +6,10 @@
 #define RAYTRACER_MATRIX_H
 
 #include <cmath>
-#include <iostream>
-#include <vector>
-#include <initializer_list>
 
 #include "./Vector.h"
 
+template <int w, int h>
 class Matrix {
 
 public:
@@ -21,30 +19,26 @@ public:
     Matrix &operator=(const Matrix &) = default;
     ~Matrix() = default;
 
-    __host__ __device__ Matrix(int, int);
-    __host__ __device__ Matrix(const std::initializer_list<Vector> &);
-    __host__ __device__ Matrix &operator=(const std::initializer_list<Vector> &);
-
     __host__ __device__ inline size_t size() const
     {
-        return data.size();
+        return h;
     }
 
-    __host__ __device__ inline Vector operator[](const int i) const
+    __host__ __device__ inline Vector<w> operator[](const int i) const
     {
         return data[i];
     }
 
-    __host__ __device__ inline Vector &operator[](const int i)
+    __host__ __device__ inline Vector<w> &operator[](const int i)
     {
         return data[i];
     }
 
-    __host__ __device__ inline Matrix operator+(const Matrix &other) const
+    __host__ __device__ inline Matrix<w, h> operator+(const Matrix<w, h> &other) const
     {
-        Matrix newMatrix(data.size(), data.size());
+        Matrix<w, h> newMatrix;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             newMatrix[i] = data[i] + other[i];
         }
@@ -52,11 +46,11 @@ public:
         return newMatrix;
     }
 
-    __host__ __device__ inline Matrix operator-(const Matrix &other) const
+    __host__ __device__ inline Matrix<w, h> operator-(const Matrix<w, h> &other) const
     {
-        Matrix newMatrix(data.size(), data.size());
+        Matrix<w, h> newMatrix;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             newMatrix[i] = data[i] - other[i];
         }
@@ -64,15 +58,15 @@ public:
         return newMatrix;
     }
 
-    __host__ __device__ inline Matrix operator*(const Matrix &other) const
+    __host__ __device__ inline Matrix<w, h> operator*(const Matrix<w, h> &other) const
     {
-        Matrix newMatrix(data.size(), data.size());
+        Matrix<w, h> newMatrix;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
-            for(size_t j = 0; j < data.size(); j++)
+            for(size_t j = 0; j < size(); j++)
             {
-                for(size_t k = 0; k < data.size(); k++)
+                for(size_t k = 0; k < size(); k++)
                 {
                     newMatrix[i][j] += data[i][k] * other[k][j];
                 }
@@ -82,27 +76,27 @@ public:
         return newMatrix;
     }
 
-    __host__ __device__ inline Matrix &operator+=(const Matrix &other)
+    __host__ __device__ inline Matrix<w, h> &operator+=(const Matrix<w, h> &other)
     {
         *this = operator+(other);
         return *this;
     }
 
-    __host__ __device__ inline Matrix &operator-=(const Matrix &other)
+    __host__ __device__ inline Matrix<w, h> &operator-=(const Matrix<w, h> &other)
     {
         *this = operator-(other);
         return *this;
     }
 
-    __host__ __device__ inline Matrix &operator*=(const Matrix &other)
+    __host__ __device__ inline Matrix<w, h> &operator*=(const Matrix<w, h> &other)
     {
         *this = operator*(other);
         return *this;
     }
 
-    __host__ __device__ inline Vector operator*(const Vector &other) const
+    __host__ __device__ inline Vector<w> operator*(const Vector<w> &other) const
     {
-        Vector newVector(other.size());
+        Vector<w> newVector;
 
         for (size_t i = 0; i < newVector.size(); i++)
         {
@@ -122,11 +116,11 @@ public:
 
     __host__ __device__ inline Matrix transpose()
     {
-        Matrix newMatrix(data.size(), data.size());
+        Matrix<w, h> newMatrix;
 
-        for(size_t i = 0; i < data.size(); i++)
+        for(size_t i = 0; i < size(); i++)
         {
-            for (size_t j = 0; j < data.size(); j++)
+            for (size_t j = 0; j < size(); j++)
             {
                 newMatrix[j][i] = data[i][j];
             }
@@ -139,11 +133,6 @@ public:
     {
         double det = 0;
 
-        if(data.size() != 3)
-        {
-            throw std::invalid_argument("Only 3x3 Matrices Supported For Determinant!");
-        }
-
         for(int i = 0; i < 3; i++)
         {
             det += data[0][i] * (data[1][(i + 1) % 3] * data[2][(i + 2) % 3] - data[1][(i + 2) % 3] * data[2][(i + 1) % 3]);
@@ -154,12 +143,7 @@ public:
 
     __host__ __device__ inline Matrix inverse()
     {
-        Matrix newMatrix(data.size(), data.size());
-
-        if(data.size() != 3)
-        {
-            throw std::invalid_argument("Only 3x3 Matrices Supported For Inverse!");
-        }
+        Matrix<3, 3> newMatrix;
 
         double det = determinant();
 
@@ -182,10 +166,8 @@ public:
 
 private:
 
-    std::vector<Vector> data;
+    Vector<w>[h] data;
 };
-
-__host__ std::ostream &operator<<(std::ostream &, const Matrix &);
 
 
 #endif //RAYTRACER_MATRIX_H

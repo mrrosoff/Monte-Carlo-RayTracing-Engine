@@ -6,7 +6,6 @@
 #define GRAPHICS_MATERIAL_H
 
 #include <string>
-#include <iostream>
 
 #include "../Matrix/Vector.h"
 
@@ -19,10 +18,10 @@ public:
     Material &operator=(const Material &) = default;
     ~Material() = default;
 
-    __host__ explicit Material(const std::string &, const Vector &, int);
+    __host__ explicit Material(const std::string &, const Vector<3> &, int);
 
     std::string name;
-    Vector albedo;
+    Vector<3> albedo;
 
     // Constructor Parameter to Determine Material Property as an Integer
 
@@ -35,8 +34,6 @@ public:
     bool isMirror = false;
     bool isGlass = false;
 };
-
-__host__ std::ostream &operator<<(std::ostream &, const Material &);
 
 
 #endif //GRAPHICS_MATERIAL_H

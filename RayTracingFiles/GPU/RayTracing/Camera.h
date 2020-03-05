@@ -5,8 +5,6 @@
 #ifndef GRAPHICS_CAMERA_H
 #define GRAPHICS_CAMERA_H
 
-#include <iostream>
-
 #include "Ray.h"
 
 class Camera {
@@ -18,26 +16,24 @@ public:
     Camera &operator=(const Camera &) = default;
     ~Camera() = default;
 
-    __host__ explicit Camera(const Vector &, const Vector &, const Vector &, const std::vector<double> &, double, const std::vector<double> &);
-    __device__ Ray pixelRay( int row, int col) const;
+    __host__ explicit Camera(const Vector<3> &, const Vector<3> &, const Vector<3> &, const Vector<4> &, double, const Vector<2> &);
+    __device__ Ray pixelRay(int row, int col) const;
 
-    Vector eye;
-    Vector lookAtPoint;
-    Vector upVector;
-    std::vector<double> bounds;
+    Vector<3> eye;
+    Vector<3> lookAtPoint;
+    Vector<3> upVector;
+    Vector<4> bounds;
     double focalLength = 0;
-    std::vector<double> resolution;
+    Vector<2> resolution;
 
-    Vector cameraWVector;
-    Vector cameraUVector;
-    Vector cameraVVector;
+    Vector<3> cameraWVector;
+    Vector<3> cameraUVector;
+    Vector<3> cameraVVector;
 
 private:
 
     void setUpUVW();
 };
-
-__host__ std::ostream &operator<<(std::ostream &, const Camera &);
 
 
 #endif //GRAPHICS_CAMERA_H

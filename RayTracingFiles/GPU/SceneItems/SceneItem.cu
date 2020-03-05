@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Vector SceneItem::doSnellsLaw(const Vector &direction, const Vector &surfaceNormal, const double indexOne, const double indexTwo) const
+Vector<3> SceneItem::doSnellsLaw(const Vector<3> &direction, const Vector<3> &surfaceNormal, const double indexOne, const double indexTwo) const
 {
     double refractionEquation  = indexOne / indexTwo;
 

@@ -22,7 +22,7 @@ public:
     Vector &operator=(const Vector &) = default;
     ~Vector() = default;
 
-    explicit Vector(double);
+    explicit Vector(int);
     Vector(const std::initializer_list<double> &);
     Vector &operator=(const std::initializer_list<double> &);
 

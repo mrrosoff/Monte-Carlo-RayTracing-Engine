@@ -11,8 +11,6 @@ using namespace std;
 using namespace std::chrono;
 
 __host__ int rayTrace(const char** argv);
-#define checkCudaErrors(val) checkCuda((val), #val, __FILE__, __LINE__ )
-__host__ int checkCuda(cudaError_t result, char const *const func, const char *const file, int const line);
 __global__ void calculateAverageColor(double *frameBuffer, const int maxX, const int maxY);
 
 __host__ int main(const int argc, const char** argv)
@@ -58,7 +56,7 @@ __host__ int rayTrace(const char** argv) {
         size_t frameBufferSize = 3 * numPixels * sizeof(double);
 
         double *frameBuffer;
-        checkCudaErrors(cudaMallocManaged((void **) &frameBuffer, frameBufferSize));
+        cudaMallocManaged((void **) &frameBuffer, frameBufferSize);
 
         int xThreads = 8, yThreads = 8;
 
@@ -66,8 +64,8 @@ __host__ int rayTrace(const char** argv) {
         dim3 threads(xThreads, yThreads);
         calculateAverageColor<<<blocks, threads>>>(frameBuffer, width, height);
 
-        checkCudaErrors(cudaGetLastError());
-        checkCudaErrors(cudaDeviceSynchronize());
+        cudaGetLastError();
+        cudaDeviceSynchronize();
 
         for(int i = 0; i < height; i++)
         {
@@ -86,7 +84,7 @@ __host__ int rayTrace(const char** argv) {
             }
         }
 
-        checkCudaErrors(cudaFree(frameBuffer));
+        cudaFree(frameBuffer);
 
         auto stop = high_resolution_clock::now();
         auto durationInSeconds = duration_cast<seconds>(stop - start).count();
@@ -106,19 +104,6 @@ __host__ int rayTrace(const char** argv) {
         cerr << "\033[1;31m" << err.what() << "\033[0m" << endl;
         return 1;
     }
-}
-
-
-__host__ int checkCuda(cudaError_t result, char const *const func, const char *const file, int const line)
-{
-    if (result)
-    {
-        cerr << "CUDA error = " << static_cast<unsigned int>(result) << " at " << file << ":" << line << " '" << func << "' \n";
-        cudaDeviceReset();
-        return 2;
-    }
-
-    return 0;
 }
 
 

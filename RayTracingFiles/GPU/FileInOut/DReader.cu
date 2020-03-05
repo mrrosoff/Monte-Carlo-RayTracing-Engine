@@ -24,12 +24,12 @@ void DReader::readDriver(const string &file)
         throw invalid_argument("Failure to open Driver File - " + file + ": " + err);
     }
 
-    Vector eye;
-    Vector look;
-    Vector up;
+    Vector<3> eye;
+    Vector<3> look;
+    Vector<3> up;
     double focLen = 0;
-    std::vector<double> bounds;
-    std::vector<double> res;
+    Vector<4> bounds;
+    Vector<2> res;
 
     string driverLine;
 
@@ -133,19 +133,37 @@ string DReader::findDriverName(const string &file)
     return driverFile.substr(sIndex, pIndex - sIndex);
 }
 
-Vector DReader::parseEye(const vector<string> &lineData) const
+Vector<3> DReader::parseEye(const vector<string> &lineData) const
 {
-    return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3])};
+    Vector<3> eyeVector;
+
+    eyeVector[0] = stod(lineData[1]);
+    eyeVector[1] = stod(lineData[2]);
+    eyeVector[2] = stod(lineData[3]);
+
+    return eyeVector;
 }
 
-Vector DReader::parseLook(const vector<string> &lineData) const
+Vector<3> DReader::parseLook(const vector<string> &lineData) const
 {
-    return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3])};
+    Vector<3> lookVector;
+
+    lookVector[0] = stod(lineData[1]);
+    lookVector[1] = stod(lineData[2]);
+    lookVector[2] = stod(lineData[3]);
+
+    return lookVector;
 }
 
-Vector DReader::parseUp(const vector<string> &lineData) const
+Vector<3> DReader::parseUp(const vector<string> &lineData) const
 {
-    return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3])};
+    Vector<3> upVector;
+
+    upVector[0] = stod(lineData[1]);
+    upVector[1] = stod(lineData[2]);
+    upVector[2] = stod(lineData[3]);
+
+    return upVector;
 }
 
 double DReader::parseD(const vector<string> &lineData) const
@@ -153,21 +171,42 @@ double DReader::parseD(const vector<string> &lineData) const
     return stod(lineData[1]);
 }
 
-std::vector<double> DReader::parseBounds(const vector<string> &lineData) const
+Vector<4> DReader::parseBounds(const vector<string> &lineData) const
 {
-    return {stod(lineData[1]),stod(lineData[2]), stod(lineData[3]), stod(lineData[4])};
+    Vector<4> bounds;
+
+    bounds[0] = stod(lineData[1]);
+    bounds[1] = stod(lineData[2]);
+    bounds[2] = stod(lineData[3]);
+    bounds[3] = stod(lineData[4]);
+
+    return bounds;
 }
 
-std::vector<double> DReader::parseRes(const vector<string> &lineData) const
+Vector<2> DReader::parseRes(const vector<string> &lineData) const
 {
-    return {stod(lineData[1]),stod(lineData[2])};
+    Vector<2> resolution;
+
+    resolution[0] = stod(lineData[1]);
+    resolution[1] = stod(lineData[2]);
+
+    return resolution;
 }
 
 void DReader::parseSphere(const vector<string> &lineData)
 {
-    Vector position = {stod(lineData[1]), stod(lineData[2]), stod(lineData[3])};
+    Vector<3> position;
+    Vector<3> albedo;
+
+    position[0] = stod(lineData[1]);
+    position[1] = stod(lineData[2]);
+    position[2] = stod(lineData[3]);
+
     double radius = stod(lineData[4]);
-    Vector albedo = {stod(lineData[5]), stod(lineData[6]), stod(lineData[7])};
+
+    albedo[0] = stod(lineData[5]);
+    albedo[1] = stod(lineData[6]);
+    albedo[2] = stod(lineData[7]);
 
     int otherProperty = 0;
 
@@ -194,50 +233,81 @@ void DReader::parseSphere(const vector<string> &lineData)
 
 void DReader::parseModel(const vector<string> &lineData)
 {
-    Vector rotationVector = {stod(lineData[1]), stod(lineData[2]), stod(lineData[3])};
+    Vector<3> rotationVector;
+
+    rotationVector[0] = stod(lineData[1]);
+    rotationVector[1] = stod(lineData[2]);
+    rotationVector[2] = stod(lineData[3]);
+
     double theta = stod(lineData[4]);
 
-    Matrix scalar(4, 4);
-    scalar[0] = {stod(lineData[5]), 0, 0, 0};
-    scalar[1] = {0, stod(lineData[5]), 0, 0};
-    scalar[2] = {0, 0, stod(lineData[5]), 0};
-    scalar[3] = {0, 0, 0, 1};
+    Matrix<4, 4> scalar;
 
-    Matrix translation(4, 4);
-    translation[0] = {1, 0, 0, stod(lineData[6])};
-    translation[1] = {0, 1, 0, stod(lineData[7])};
-    translation[2] = {0, 0, 1, stod(lineData[8])};
-    translation[3] = {0, 0, 0, 1};
+    Vector<4> scalarLineOne;
+    Vector<4> scalarLineTwo;
+    Vector<4> scalarLineThree;
+    Vector<4> scalarLineFour;
+
+    scalarLineOne[0] = stod(lineData[5]);
+    scalarLineOne[1] = 0;
+    scalarLineOne[2] = 0;
+    scalarLineOne[3] = 0;
+
+    scalarLineTwo[0] = 0;
+    scalarLineTwo[1] = stod(lineData[5]);
+    scalarLineTwo[2] = 0;
+    scalarLineTwo[3] = 0;
+
+    scalarLineThree[0] = 0;
+    scalarLineThree[1] = 0;
+    scalarLineThree[2] = stod(lineData[5]);
+    scalarLineThree[3] = 0;
+
+    scalarLineFour[0] = 0;
+    scalarLineFour[1] = 0;
+    scalarLineFour[2] = 0;
+    scalarLineFour[3] = 1;
+
+    scalar[0] = scalarLineOne;
+    scalar[1] = scalarLineTwo;
+    scalar[2] = scalarLineThree;
+    scalar[3] = scalarLineFour;
+
+    Matrix<4, 4> translation;
+
+    Vector<4> translationLineOne;
+    Vector<4> translationLineTwo;
+    Vector<4> translationLineThree;
+    Vector<4> translationLineFour;
+
+    translationLineOne[0] = 1;
+    translationLineOne[1] = 0;
+    translationLineOne[2] = 0;
+    translationLineOne[3] = stod(lineData[6]);
+
+    translationLineTwo[0] = 0;
+    translationLineTwo[1] = 1;
+    translationLineTwo[2] = 0;
+    translationLineTwo[3] = stod(lineData[7]);
+
+    translationLineThree[0] = 0;
+    translationLineThree[1] = 0;
+    translationLineThree[2] = 1;
+    translationLineThree[3] = stod(lineData[8]);
+
+    translationLineFour[0] = 0;
+    translationLineFour[1] = 0;
+    translationLineFour[2] = 0;
+    translationLineFour[3] = 1;
+
+    translation[0] = translationLineOne;
+    translation[1] = translationLineTwo;
+    translation[2] = translationLineThree;
+    translation[3] = translationLineFour;
 
     double smoothingAngle = stod(lineData[9]);
     string modelPath = lineData[10];
 
     Remap map(rotationVector, theta, scalar, translation, smoothingAngle, modelPath);
     items.emplace_back(new Object(map));
-}
-
-ostream &operator<<(ostream &out, const DReader &driver)
-{
-    cout << '\n' << "Scene Setup" << '\n' << "-----------" << '\n';
-
-    out << "Driver File: " << driver.driverFile << '\n';
-    out << "Driver FileName: " << driver.driverName << '\n';
-    out << "Driver Camera: " << driver.camera << '\n';
-
-    cout << '\n' << "Scene Items" << '\n' << "-----------" << '\n';
-
-    for(const auto &item : driver.items)
-    {
-        if(dynamic_cast<Sphere *>(&*item))
-        {
-            out << "Sphere: \n" << *dynamic_cast<Sphere *>(&*item) << '\n';
-        }
-
-        else if(dynamic_cast<Object *>(&*item))
-        {
-            out << "Object:" << *dynamic_cast<Object *>(&*item) << '\n';
-        }
-    }
-
-    return out;
 }

@@ -23,9 +23,9 @@ public:
 
     std::vector<int> vertexIndexList;
     int materialIndex = 0;
-    std::vector<Vector> normals;
+    std::vector<Vector<3>> normals;
     
-    Vector columnOne, columnTwo;
+    Vector<3> columnOne, columnTwo;
     bool calcColumns = false;
 };
 

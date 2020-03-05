@@ -6,19 +6,19 @@
 
 using namespace std;
 
-Remap::Remap(const Vector &rotationVector, const double theta, const Matrix &scalar, const Matrix &translation, const double smoothingAngle, const string &path) :
+Remap::Remap(const Vector<3> &rotationVector, const double theta, const Matrix<4, 4> &scalar, const Matrix<4, 4> &translation, const double smoothingAngle, const string &path) :
 
 smoothingAngle(smoothingAngle), objPath(path), transformation(Matrix(4, 4))
 
 {
-    Matrix rotation = findRotationMatrix(rotationVector, theta);
+    Matrix<4, 4> rotation = findRotationMatrix(rotationVector, theta);
     transformation = translation * scalar * rotation;
 }
 
-Matrix Remap::findRotationMatrix(const Vector &rotationVector, const double theta) const
+Matrix<4, 4> Remap::findRotationMatrix(const Vector<3> &rotationVector, const double theta) const
 {
     auto coords = changeCords(rotationVector);
-    Matrix zMatrix(4, 4);
+    Matrix<4, 4> zMatrix;
 
     double radTheta = M_PI * theta / 180;
 
@@ -30,7 +30,7 @@ Matrix Remap::findRotationMatrix(const Vector &rotationVector, const double thet
     return coords.transpose() * zMatrix * coords;
 }
 
-Matrix Remap::changeCords(const Vector &rotationVector) const
+Matrix<4, 4> Remap::changeCords(const Vector<3> &rotationVector) const
 {
     auto bottomVector = rotationVector.normalize();
 
@@ -43,7 +43,7 @@ Matrix Remap::changeCords(const Vector &rotationVector) const
 
     auto middleVector = bottomVector.cross(topVector);
 
-    Matrix r(4, 4);
+    Matrix<4, 4> r;
 
     r[0] = {topVector[0], topVector[1], topVector[2], 0};
     r[1] = {middleVector[0], middleVector[1], middleVector[2], 0};
@@ -53,7 +53,7 @@ Matrix Remap::changeCords(const Vector &rotationVector) const
     return r;
 }
 
-int Remap::findMinIndex(const Vector &rotationVector) const
+int Remap::findMinIndex(const Vector<3> &rotationVector) const
 {
     int index = 0;
     double min = numeric_limits<double>::max();
@@ -70,12 +70,4 @@ int Remap::findMinIndex(const Vector &rotationVector) const
     }
 
     return index;
-}
-
-ostream &operator<<(ostream &out, const Remap &remap)
-{
-    out << "Remap Path: " << remap.objPath << '\n';
-    out << "Remap Transformation Matrix:\n" << remap.transformation << '\n';
-
-    return out;
 }

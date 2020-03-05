@@ -18,7 +18,6 @@
 
 #include "../Matrix/Matrix.h"
 #include "../RayTracing/Camera.h"
-#include "../SceneItems/LightSource.h"
 #include "../SceneItems/Models/Object.h"
 #include "../SceneItems/Material.h"
 #include "../SceneItems/SceneItem.h"
