@@ -6,11 +6,7 @@ An engine built to render complex scenes with all the capabilities of real world
 
 The engine uses a Monte Carlo technique to render images. This process randomly fires rays on contact with Lambertian materials. This creates much more accurate lighting than traditional Ray Tracing. The downside is of course speed. The engine can handle simple Lambertian surfaces, metal surfaces with total reflection, and refractive surfaces such as glass. The engine also produces accurate shadows and highlights and has complex material control.
 
-## Tech/framework used
-
-Built with:  
-
-[C++](http://www.cplusplus.com/), [CMake](https://cmake.org/), [Open MP](https://www.openmp.org/), [Cuda](), [OptiX]()  
+Current work on this project is to migrate all base files to GPU compatible Cuda code.
 
 ## Example Images
 
