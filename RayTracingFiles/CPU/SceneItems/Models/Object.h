@@ -5,9 +5,11 @@
 #ifndef GRAPHICS_OBJECT_H
 #define GRAPHICS_OBJECT_H
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <string>
 #include <vector>
-#include <cmath>
 #include <algorithm>
 
 #include <iostream>

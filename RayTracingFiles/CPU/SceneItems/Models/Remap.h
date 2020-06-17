@@ -5,9 +5,11 @@
 #ifndef GRAPHICS_TRANSFORM_H
 #define GRAPHICS_TRANSFORM_H
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <string>
 #include <vector>
-#include <cmath>
 #include <iostream>
 #include <limits>
 
