@@ -18,9 +18,9 @@ public:
     Material &operator=(const Material &) = default;
     ~Material() = default;
 
-    __host__ explicit Material(const std::string &, const Vector<3> &, int);
+    __host__ __device__ explicit Material(int, const Vector<3> &, int);
 
-    std::string name;
+    int name;
     Vector<3> albedo;
 
     // Constructor Parameter to Determine Material Property as an Integer

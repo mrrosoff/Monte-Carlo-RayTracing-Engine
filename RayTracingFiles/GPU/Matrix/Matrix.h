@@ -166,7 +166,7 @@ public:
 
 private:
 
-    Vector<w>[h] data;
+    Vector<w> data[h];
 };
 
 

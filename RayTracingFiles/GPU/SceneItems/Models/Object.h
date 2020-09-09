@@ -53,7 +53,5 @@ private:
     __host__ void calculateNormals();
 };
 
-__host__ std::ostream &operator<<(std::ostream &, const Object &);
-
 
 #endif //GRAPHICS_OBJECT_H

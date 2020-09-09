@@ -6,22 +6,14 @@
 
 using namespace std;
 
-Ray::Ray(const Vector &point, const Vector direction) :
+__device__ Ray::Ray(const Vector<3> &point, const Vector<3> direction) :
 
 point(point), direction(direction.normalize())
 
 {}
 
-Ray::Ray(const Vector &point, const Vector direction, const Vector &surfaceNormal) :
+__device__ Ray::Ray(const Vector<3> &point, const Vector<3> direction, const Vector<3> &surfaceNormal) :
 
 point(point), direction(direction.normalize()), surfaceNormal(surfaceNormal)
 
 {}
-
-ostream &operator<<(ostream &out, const Ray &ray)
-{
-    out << "Ray Point: \n" << ray.point;
-    out << "Ray Direction: \n" << ray.direction;
-
-    return out;
-}

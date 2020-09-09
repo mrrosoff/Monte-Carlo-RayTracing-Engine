@@ -3,7 +3,7 @@ look 0 0 1
 up 0 1 0
 d -10
 bounds -10 10 -10 10
-res 1000 1000
+res 400 400
 
 # Front / Back
 

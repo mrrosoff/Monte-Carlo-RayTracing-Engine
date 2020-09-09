@@ -56,7 +56,7 @@ public:
         return newVector;
     }
 
-    __host__ __device__ inline Vector<n> operator-(const Vector &other) const
+    __host__ __device__ inline Vector<n> operator-(const Vector<n> &other) const
     {
         Vector<n> newVector;
 

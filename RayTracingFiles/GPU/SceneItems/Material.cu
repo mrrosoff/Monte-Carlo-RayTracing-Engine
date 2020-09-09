@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Material::Material(const string &name, const Vector<3> &albedo, const int materialType) :
+__host__ __device__ Material::Material(const int name, const Vector<3> &albedo, const int materialType) :
 
 name(name), albedo(albedo)
 

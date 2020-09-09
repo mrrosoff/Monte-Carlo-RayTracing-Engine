@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Vector<3> SceneItem::doSnellsLaw(const Vector<3> &direction, const Vector<3> &surfaceNormal, const double indexOne, const double indexTwo) const
+__device__ Vector<3> SceneItem::doSnellsLaw(const Vector<3> &direction, const Vector<3> &surfaceNormal, const double indexOne, const double indexTwo) const
 {
     double refractionEquation  = indexOne / indexTwo;
 
@@ -15,7 +15,13 @@ Vector<3> SceneItem::doSnellsLaw(const Vector<3> &direction, const Vector<3> &su
 
     if (indexSq < 0)
     {
-        throw range_error("Refraction Not Needed.");
+        Vector<3> badReturnValue;
+
+        badReturnValue[0] = 0;
+        badReturnValue[1] = 0;
+        badReturnValue[2] = 0;
+
+        return badReturnValue;
     }
 
     else

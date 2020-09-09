@@ -6,15 +6,8 @@
 
 using namespace std;
 
-Vertex::Vertex(const Vector &vertex) :
+Vertex::Vertex(const Vector<3> &vertex) :
 
 vertex(vertex)
 
 {}
-
-ostream &operator<<(ostream &out, const Vertex &vertex)
-{
-    out << vertex.vertex;
-
-    return out;
-}

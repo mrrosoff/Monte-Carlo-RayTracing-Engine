@@ -8,7 +8,7 @@ using namespace std;
 
 Object::Object(const Remap &map) :
 
-objPath(map.objPath), smoothingAngle(map.smoothingAngle)
+objPath(map.path), smoothingAngle(map.smoothingAngle)
 
 {
     readObject(map);
@@ -72,9 +72,21 @@ void Object::readObject(const Remap &map)
 
         else if (line[0] == "v")
         {
-            Vector beforeVector = {stod(line[1]), stod(line[2]), stod(line[3]), 1};
+            Vector<4> beforeVector;
+
+            beforeVector[0] = stod(line[1]);
+            beforeVector[1] = stod(line[2]);
+            beforeVector[2] = stod(line[3]);
+            beforeVector[3] = 1;
+
             auto afterVector = map.transformation * beforeVector;
-            Vector removeLastElement = {afterVector[0], afterVector[1], afterVector[2]};
+
+            Vector<3> removeLastElement;
+
+            removeLastElement[0] = afterVector[0];
+            removeLastElement[1] = afterVector[1];
+            removeLastElement[2] = afterVector[2];
+
             vertices.emplace_back(removeLastElement);
         }
 
@@ -129,7 +141,7 @@ void Object::readMaterialFile(const string &filePath) {
 
     string matLine;
     string name;
-    Vector albedo;
+    Vector<3> albedo;
     int otherProperty = 0;
 
     while(getline(matReader, matLine))
@@ -176,7 +188,9 @@ void Object::readMaterialFile(const string &filePath) {
 
         else if(matLineData[0] == "albedo")
         {
-            albedo = {stod(matLineData[1]), stod(matLineData[2]), stod(matLineData[3])};
+            albedo[0] = stod(matLineData[1]);
+            albedo[1] = stod(matLineData[2]);
+            albedo[2] = stod(matLineData[3]);
         }
 
         else if(matLineData[0] == "light")
@@ -219,7 +233,11 @@ void Object::calculateNormals()
         
         for(const auto vertex : face.vertexIndexList)
         {
-            Vector sum = {0, 0, 0};
+            Vector<3> sum;
+
+            sum[0] = 0;
+            sum[1] = 0;
+            sum[2] = 0;
 
             for(const auto faceIndex : vertices[vertex - 1].adjacentFaces)
             {
@@ -245,15 +263,15 @@ void Object::calculateNormals()
     }
 }
 
-Ray Object::makeExitRefrationRay(const Ray &invRay, double originalIndex, double newIndex) const
+__device__ Ray Object::makeExitRefrationRay(const Ray &invRay, double originalIndex, double newIndex) const
 {
-    Vector refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
+    Vector<3> refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
     Ray innerRefractionRay(invRay.closestIntersectionPoint, refractionDirection);
     intersectionTest(innerRefractionRay);
-    return Ray(innerRefractionRay.closestIntersectionPoint, doSnellsLaw(-1 * refractionDirection, innerRefractionRay.surfaceNormal, newIndex, originalIndex));
+    return Ray(innerRefractionRay.closestIntersectionPoint, doSnellsLaw(refractionDirection * -1, innerRefractionRay.surfaceNormal, newIndex, originalIndex));
 }
 
-bool Object::intersectionTest(Ray &ray) const
+__device__ bool Object::intersectionTest(Ray &ray) const
 {
     bool foundFace = false;
     const double EPSILON = 1 * pow(10, -5);
@@ -262,10 +280,27 @@ bool Object::intersectionTest(Ray &ray) const
     {
         const auto b = vertices[face.vertexIndexList[0] - 1].vertex - ray.point;
 
-        Matrix a(3, 3);
-        a[0] = {face.columnOne[0], face.columnTwo[0], ray.direction[0]};
-        a[1] = {face.columnOne[1], face.columnTwo[1], ray.direction[1]};
-        a[2] = {face.columnOne[2], face.columnTwo[2], ray.direction[2]};
+        Matrix<3, 3> a;
+
+        Vector<3> aLineOne;
+        Vector<3> aLineTwo;
+        Vector<3> aLineThree;
+
+        aLineOne[0] = face.columnOne[0];
+        aLineOne[1] = face.columnTwo[0];
+        aLineOne[2] = ray.direction[0];
+
+        aLineTwo[0] = face.columnOne[1];
+        aLineTwo[1] = face.columnTwo[1];
+        aLineTwo[2] = ray.direction[1];
+
+        aLineThree[0] = face.columnOne[2];
+        aLineThree[1] = face.columnTwo[2];
+        aLineThree[2] = ray.direction[2];
+
+        a[0] = aLineOne;
+        a[1] = aLineTwo;
+        a[2] = aLineThree;
 
         const auto x = a.inverse() * b;
 
@@ -277,8 +312,8 @@ bool Object::intersectionTest(Ray &ray) const
 
                 ray.hit = this;
                 ray.material = materials[face.materialIndex];
-                ray.surfaceNormal = ((1.0 - x[0] - x[1]) * face.normals[0] + x[0] * face.normals[1] + x[1] * face.normals[2]).normalize();
-                ray.closestIntersectionPoint = ray.point + x[2] * ray.direction;
+                ray.surfaceNormal = (face.normals[0] * (1.0 - x[0] - x[1]) + face.normals[1] * x[0] + face.normals[2] * x[1]).normalize();
+                ray.closestIntersectionPoint = ray.point + ray.direction * x[2];
 
                 if(ray.direction.dot(ray.surfaceNormal) > 0)
                 {
@@ -291,16 +326,4 @@ bool Object::intersectionTest(Ray &ray) const
     }
     
     return foundFace;
-}
-
-ostream &operator<<(ostream &out, const Object &object)
-{
-    out << "\n\n" << "Materials: " << "\n\n";
-
-    for(const auto &material : object.materials)
-    {
-        out << material << '\n';
-    }
-
-    return out;
 }

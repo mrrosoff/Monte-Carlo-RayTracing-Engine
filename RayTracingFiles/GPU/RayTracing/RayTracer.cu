@@ -13,9 +13,9 @@ __host__ RayTracer::RayTracer(const DReader &, int samples, std::default_random_
 
 {}
 
-__device__ Vector RayTracer::makeRandomUnitVector()
+__device__ Vector<3> RayTracer::makeRandomUnitVector()
 {
-    Vector returnVector(3);
+    Vector<3> returnVector;
 
     while(true)
     {
@@ -33,7 +33,7 @@ __device__ Vector RayTracer::makeRandomUnitVector()
     }
 }
 
-__device__ Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, const int depth)
+__device__ Vector<3> RayTracer::calculateColor(Ray &ray, Vector<3> currentAlbedo, const int depth)
 {
     double max = 0;
 
@@ -74,12 +74,9 @@ __device__ Vector RayTracer::calculateColor(Ray &ray, Vector currentAlbedo, cons
 
         else if(ray.material.isGlass)
         {
-            try
-            {
-                newRay = ray.hit->makeExitRefrationRay(ray, 1.0, 1.5);
-            }
+            newRay = ray.hit->makeExitRefrationRay(ray, 1.0, 1.5);
 
-            catch(const range_error &error)
+            if(newRay[0] == 0 && newRay[1] == 0 && newRay[2] == 0)
             {
                 newRay = Ray(ray.closestIntersectionPoint, ray.surfaceNormal + makeRandomUnitVector());
             }

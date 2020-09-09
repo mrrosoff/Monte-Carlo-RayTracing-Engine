@@ -5,9 +5,7 @@
 #ifndef GRAPHICS_TRANSFORM_H
 #define GRAPHICS_TRANSFORM_H
 
-#include <iostream>
 #include <string>
-#include <vector>
 #include <cmath>
 #include <limits>
 
@@ -23,11 +21,11 @@ public:
     Remap &operator=(const Remap &) = delete;
     ~Remap() = default;
 
-    __host__ explicit Remap(const Vector<3> &, double, const Matrix<4, 4> &, const Matrix<4, 4> &, double smoothingAngle, const std::string &);
+    __host__ explicit Remap(const Vector<3> &, double, const Matrix<4, 4> &, const Matrix<4, 4> &, double, std::string &);
 
     double smoothingAngle = 0;
-    std::string objPath;
     Matrix<4, 4> transformation;
+    std::string path;
 
 private:
 

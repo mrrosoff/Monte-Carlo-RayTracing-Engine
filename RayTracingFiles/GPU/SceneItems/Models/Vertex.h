@@ -5,6 +5,8 @@
 #ifndef GRAPHICS_VERTEX_H
 #define GRAPHICS_VERTEX_H
 
+#include <vector>
+
 #include "../../Matrix/Vector.h"
 
 class Vertex {

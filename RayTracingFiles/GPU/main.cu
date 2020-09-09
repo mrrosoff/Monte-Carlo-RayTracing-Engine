@@ -44,13 +44,11 @@ __host__ int rayTrace(const char** argv) {
         std::default_random_engine generator = default_random_engine(system_clock::now().time_since_epoch().count());
         std::uniform_real_distribution<double> distribution = uniform_real_distribution<double>(-1, 1);
 
-        RayTracer(driver, samples, generator, distribution);
+        RayTracer trace(driver, samples, generator, distribution);
 
         vector<vector<vector<int>>> img(height);
 
         cout << "Beginning Ray Tracing." << endl;
-
-        auto start = high_resolution_clock::now();
 
         int numPixels = width * height;
         size_t frameBufferSize = 3 * numPixels * sizeof(double);
@@ -86,10 +84,6 @@ __host__ int rayTrace(const char** argv) {
 
         cudaFree(frameBuffer);
 
-        auto stop = high_resolution_clock::now();
-        auto durationInSeconds = duration_cast<seconds>(stop - start).count();
-
-        cout << "Ray Tracer ran in " << durationInSeconds << " seconds. Preparing to Output Image." << endl;
         cout << "Writing to PPM File." << '\n';
 
         PWriter writer(argv[2]);
@@ -111,15 +105,15 @@ __global__ void calculateAverageColor(const RayTracer &trace, double *frameBuffe
 {
     // Identify Pixel Location (i, j)
 
-    double i = threadIdx.y + blockIdx.y * blockDim.y;
-    double j = threadIdx.x + blockIdx.x * blockDim.x;
+    size_t i = threadIdx.y + blockIdx.y * blockDim.y;
+    size_t j = threadIdx.x + blockIdx.x * blockDim.x;
 
     if(i >= maxY || j >= maxX)
     {
         return;
     }
 
-    int pixelIndex = i * maxX * 3 + j * 3;
+    size_t pixelIndex = i * maxX * 3 + j * 3;
 
     // Do Ray Trace
 

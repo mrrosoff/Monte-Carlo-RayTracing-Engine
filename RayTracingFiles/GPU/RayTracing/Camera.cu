@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Camera::Camera(const Vector &eye, const Vector &lookAtPoint, const Vector &upVector, const std::vector<double> &bounds, const double focalLength, const std::vector<double> &resolution) :
+Camera::Camera(const Vector<3> &eye, const Vector<3> &lookAtPoint, const Vector<3> &upVector, const Vector<4> &bounds, const double focalLength, const Vector<2> &resolution) :
 
 eye(eye), lookAtPoint(lookAtPoint), upVector(upVector), bounds(bounds), focalLength(focalLength), resolution(resolution)
 
@@ -21,7 +21,7 @@ void Camera::setUpUVW()
     cameraVVector = cameraWVector.cross(cameraUVector);
 }
 
-Ray Camera::pixelRay(const int row, const int col) const
+__device__ Ray Camera::pixelRay(const int row, const int col) const
 {
     double left = bounds[0];
     double right = bounds[1];
@@ -39,35 +39,4 @@ Ray Camera::pixelRay(const int row, const int col) const
     auto normalizedDirection = direction.normalize();
 
     return Ray(point, normalizedDirection);
-}
-
-ostream &operator<<(ostream &out, const Camera &cam)
-{
-    out << "Camera Eye: " << cam.eye;
-    out << "Camera Look At: " << cam.lookAtPoint;
-    out << "Camera Up: " << cam.upVector;
-    out << "Camera Bounds: ";
-
-    for(const auto &b : cam.bounds)
-    {
-        cout << b << " ";
-    }
-
-    cout << "\n";
-
-    out << "Camera FocalLength: " << cam.focalLength << '\n';
-    out << "Camera Resolution: ";
-
-    for(const auto &r : cam.resolution)
-    {
-        cout << r << " ";
-    }
-
-    cout << "\n";
-
-    out << "Camera W: " << cam.cameraWVector;
-    out << "Camera U: " << cam.cameraUVector;
-    out << "Camera V: " << cam.cameraVVector;
-
-    return out;
 }

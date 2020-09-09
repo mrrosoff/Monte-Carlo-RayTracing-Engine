@@ -6,13 +6,13 @@
 
 using namespace std;
 
-Sphere::Sphere(const Vector &position, const double radius, const Material &material) :
+Sphere::Sphere(const Vector<3> &position, const double radius, const Material &material) :
 
 position(position), radius(radius), material(material)
 
 {}
 
-bool Sphere::intersectionTest(Ray &ray) const
+__device__ bool Sphere::intersectionTest(Ray &ray) const
 {
     auto cVector = position - ray.point;
     auto vDist = cVector.dot(ray.direction);
@@ -38,7 +38,7 @@ bool Sphere::intersectionTest(Ray &ray) const
     return false;
 }
 
-Ray Sphere::makeExitRefrationRay(const Ray &invRay, double originalIndex, double newIndex) const
+__device__ Ray Sphere::makeExitRefrationRay(const Ray &invRay, double originalIndex, double newIndex) const
 {
     Vector<3> refractionDirection = doSnellsLaw(invRay.direction, invRay.surfaceNormal, originalIndex, newIndex);
     Vector<3> exitPoint = invRay.closestIntersectionPoint + refractionDirection * 2 * (position - invRay.closestIntersectionPoint).dot(refractionDirection);

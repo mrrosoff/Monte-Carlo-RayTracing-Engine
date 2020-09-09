@@ -5,10 +5,7 @@
 #ifndef GRAPHICS_RAY_H
 #define GRAPHICS_RAY_H
 
-#include <string>
-#include <vector>
 #include <limits>
-#include <iostream>
 
 #include "../Matrix/Vector.h"
 #include "../SceneItems/Material.h"
@@ -37,8 +34,5 @@ public:
     Material material;
     Vector<3> surfaceNormal;
 };
-
-__host__ std::ostream &operator<<(std::ostream &, const Ray &);
-
 
 #endif //GRAPHICS_RAY_H

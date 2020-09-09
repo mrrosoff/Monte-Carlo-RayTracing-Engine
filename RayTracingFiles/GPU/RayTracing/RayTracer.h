@@ -26,7 +26,7 @@ public:
     ~RayTracer() = default;
 
     explicit RayTracer(const DReader &, int, std::default_random_engine, std::uniform_real_distribution<double>);
-    __device__ Vector calculateColor(Ray &, Vector, int);
+    __device__ Vector<3> calculateColor(Ray &, Vector<3>, int);
 
     int samples;
     DReader driver;
@@ -35,7 +35,7 @@ public:
 
 private:
 
-    __device__ Vector makeRandomUnitVector();
+    __device__ Vector<3> makeRandomUnitVector();
     __device__ bool checkForIntersection(Ray &) const;
 };
 

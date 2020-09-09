@@ -228,7 +228,7 @@ void DReader::parseSphere(const vector<string> &lineData)
         }
     }
 
-    items.emplace_back(new Sphere(position, radius, Material("A Sphere Material", albedo, otherProperty)));
+    items.emplace_back(new Sphere(position, radius, Material(0, albedo, otherProperty)));
 }
 
 void DReader::parseModel(const vector<string> &lineData)
