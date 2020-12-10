@@ -21,7 +21,7 @@
 #include "../SceneItems/Models/Object.h"
 #include "../SceneItems/Material.h"
 #include "../SceneItems/SceneItem.h"
-#include "../SceneItems/Sphere.h"
+#include "../SceneItems/Spheres/Sphere.h"
 #include "../SceneItems/Models/Remap.h"
 
 class DReader {

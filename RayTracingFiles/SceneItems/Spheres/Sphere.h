@@ -6,10 +6,11 @@
 #define GRAPHICS_SPHERE_H
 
 #include <cmath>
+#include <iostream>
 
-#include "SceneItem.h"
-#include "../Matrix/Vector.h"
-#include "../RayTracing/Ray.h"
+#include "../SceneItem.h"
+#include "../../Matrix/Vector.h"
+#include "../../RayTracing/Ray.h"
 
 class Sphere : public SceneItem {
 
@@ -20,15 +21,17 @@ public:
     Sphere &operator=(const Sphere &) = default;
     virtual ~Sphere() = default;
 
-    __host__ explicit Sphere(const Vector<3> &, double, const Material &);
+    explicit Sphere(const Vector &, double, const Material &);
 
-    __device__ bool intersectionTest(Ray &) const override;
-    __device__ Ray makeExitRefrationRay(const Ray &, double, double) const override;
+    bool intersectionTest(Ray &) const override;
+    Ray makeExitRefrationRay(const Ray &, double, double) const override;
 
-    Vector<3> position;
+    Vector position;
     double radius = 0;
     Material material;
 };
+
+std::ostream &operator<<(std::ostream &, const Sphere &);
 
 
 #endif //GRAPHICS_SPHERE_H
