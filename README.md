@@ -1,8 +1,10 @@
-# Monte Carlo Ray Tracing Engine Built in C++
+# Monte Carlo Raytracing Engine
+
+### A Dynamic Fully Fledged Raytracing Engine Built in C++
+
+# About Project
 
 An engine built to render complex scenes with all the capabilities of real world private engines. Images are outputted in the PPM format and use a simple driver file system for creation.
-
-## Features
 
 The engine uses a Monte Carlo technique to render images. This process randomly fires rays on contact with Lambertian materials. This creates much more accurate lighting than traditional Ray Tracing. The downside is of course speed. The engine can handle simple Lambertian surfaces, metal surfaces with total reflection, and refractive surfaces such as glass. The engine also produces accurate shadows and highlights and has complex material control.
 
@@ -38,7 +40,7 @@ From the Command Line, Enter The Command
 cmake . && make
 ```
 
-### Running the Engine:
+### Running the Engine
 
 After You Have Built the Executable, Run The Program Using the Command 
 
@@ -70,5 +72,3 @@ For Spheres and for Model Material Files, optional fields exist. Appending "ligh
 
 Finding obj files is inconsequential. Simply look up ".obj files" on the internet and choose one that fits your liking.
 Make sure that you create the proper material file using the format showcases in the example files. Files with Triangle counts of over 10K will result in images that take a significant time to render.
-
-**Created by Max Rosoff with the advice of Ben Sattelberg and Ross Beveridge**
