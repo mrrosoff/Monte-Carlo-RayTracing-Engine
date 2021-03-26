@@ -1,0 +1,27 @@
+# Idea Files
+
+.idea
+
+# Node Files
+
+node_modules
+package-lock.json
+
+# Tim's files
+
+/venv
+/env
+__pycache__
+
+# Output Files
+
+build
+coverage
+dist
+lib
+out
+
+# Server Files
+
+dependency-reduced-pom.xml
+target
