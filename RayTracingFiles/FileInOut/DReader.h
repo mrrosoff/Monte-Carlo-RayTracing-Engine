@@ -23,6 +23,7 @@
 #include "../SceneItems/SceneItem.h"
 #include "../SceneItems/Spheres/Sphere.h"
 #include "../SceneItems/Models/Remap.h"
+#include <iostream>
 
 class DReader {
 
@@ -35,9 +36,6 @@ public:
 
     DReader &operator<<(const std::string &);
 
-    std::string driverName;
-    std::string driverFile;
-
     Camera camera;
     std::vector<std::shared_ptr<SceneItem>> items;
 
@@ -46,7 +44,6 @@ private:
     void readDriver(const std::string &);
     static void throwErrorMessage(int, int, const std::string &);
 
-    std::string findDriverName(const std::string &);
     Vector parseEye(const std::vector<std::string> &) const;
     Vector parseLook(const std::vector<std::string> &) const;
     Vector parseUp(const std::vector<std::string> &) const;
@@ -58,6 +55,5 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &, const DReader &);
-
 
 #endif //GRAPHICS_DRIVERREADER_H

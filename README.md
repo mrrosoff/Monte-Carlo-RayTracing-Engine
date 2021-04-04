@@ -50,6 +50,14 @@ After You Have Built the Executable, Run The Program Using the Command
 
 The output format for the image is the PPM model. You can open such images in most image viewers and applications such as Adobe Photoshop. The number of Samples directly coresponds to the amount of noise in the image. The higher the samples, the higher quality of an image.
 
+### Node Driver
+
+In addition, you can build this project as a Node.js package. Simply install the package, and follow the below documentation.
+
+```bash
+npm install
+```
+
 ### Creating Driver Files
 
 For your convenience, example driver files have been provided under the folder titled ExampleDriverFiles. These driver

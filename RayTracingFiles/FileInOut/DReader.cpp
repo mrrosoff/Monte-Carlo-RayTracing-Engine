@@ -8,21 +8,23 @@ using namespace std;
 
 DReader &DReader::operator<<(const string &file)
 {
-    driverFile = file;
-    driverName = findDriverName(file);
     readDriver(file);
     return *this;
 }
 
-void DReader::readDriver(const string &file)
+void DReader::readDriver(const string &fileInfo)
 {
-    ifstream driverReader(file);
+    #ifdef NODE
+    stringstream driverReader(fileInfo);
+    #else
+    ifstream driverReader(fileInfo);
 
     if (!driverReader)
     {
         string err = strerror(errno);
-        throw invalid_argument("Failure to open Driver File - " + file + ": " + err);
+        throw invalid_argument("Failure to open Driver File - " + fileInfo + ": " + err);
     }
+    #endif
 
     Vector eye;
     Vector look;
@@ -110,7 +112,7 @@ void DReader::readDriver(const string &file)
 
         else
         {
-            throw invalid_argument("Invalid Driver File Argument, File - " + file);
+            throw invalid_argument("Invalid Driver File Argument");
         }
     }
 
@@ -123,14 +125,6 @@ void DReader::throwErrorMessage(int size, int requiredSize, const string &messag
     {
         throw invalid_argument(message);
     }
-}
-
-string DReader::findDriverName(const string &file)
-{
-    unsigned long pIndex = driverFile.find_last_of('.');
-    unsigned long sIndex = driverFile.find_last_of('/');
-    sIndex += 1;
-    return driverFile.substr(sIndex, pIndex - sIndex);
 }
 
 Vector DReader::parseEye(const vector<string> &lineData) const
@@ -220,24 +214,7 @@ ostream &operator<<(ostream &out, const DReader &driver)
 {
     cout << '\n' << "Scene Setup" << '\n' << "-----------" << '\n';
 
-    out << "Driver File: " << driver.driverFile << '\n';
-    out << "Driver FileName: " << driver.driverName << '\n';
     out << "Driver Camera: " << driver.camera << '\n';
-
-    cout << '\n' << "Scene Items" << '\n' << "-----------" << '\n';
-
-    for(const auto &item : driver.items)
-    {
-        if(dynamic_cast<Sphere *>(&*item))
-        {
-            out << "Sphere: \n" << *dynamic_cast<Sphere *>(&*item) << '\n';
-        }
-
-        else if(dynamic_cast<Object *>(&*item))
-        {
-            out << "Object:" << *dynamic_cast<Object *>(&*item) << '\n';
-        }
-    }
 
     return out;
 }

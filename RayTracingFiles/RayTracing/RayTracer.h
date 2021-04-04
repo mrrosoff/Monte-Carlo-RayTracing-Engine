@@ -6,12 +6,22 @@
 #define RAYTRACER_RAYTRACER_H
 
 #include <iostream>
-#include <cmath>
-#include <algorithm>
-#include <omp.h>
-#include <chrono>
-#include <random>
 #include <iomanip>
+
+#include <string>
+#include <sstream>
+
+#include <cmath>
+#include <random>
+#include <algorithm>
+
+#ifdef NODE
+#include <napi.h>
+#else
+#include <omp.h>
+#endif
+
+#include <chrono>
 
 #include "Ray.h"
 #include "../Matrix/Vector.h"
@@ -22,13 +32,17 @@ class RayTracer {
 
 public:
 
-    RayTracer() = delete;
+    RayTracer() = default;
     RayTracer(const RayTracer &) = default;
     RayTracer &operator=(const RayTracer &) = delete;
     ~RayTracer() = default;
 
-    explicit RayTracer(char**);
+    #ifdef NODE
+    std::string rayTrace(const Napi::Env &, const Napi::Function &, const std::vector<std::string> &, const std::vector<std::string> &);
+    #else
+    explicit RayTracer(char **);
     int rayTrace();
+    #endif
 
 private:
 
@@ -38,14 +52,15 @@ private:
     bool checkForIntersection(Ray &) const;
 
     DReader driver;
+    #ifndef NODE
     std::string inFile;
     std::string outFile;
+    #endif
     int samples = 0;
 
     // Random Number Generator
     std::default_random_engine generator;
     std::uniform_real_distribution<double> distribution;
 };
-
 
 #endif //RAYTRACER_RAYTRACER_H
