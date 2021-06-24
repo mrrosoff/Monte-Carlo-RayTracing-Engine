@@ -132,7 +132,7 @@ public:
 
     inline Vector &operator/=(const double scalar)
     {
-        *this = operator/(1 / scalar);
+        *this = operator/(scalar);
         return *this;
     }
 
