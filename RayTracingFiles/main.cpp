@@ -15,6 +15,6 @@ int main(int argc, char** argv)
         cerr << "Usage: ./raytracer" << " " << "[Driver File]" << " " << "[PPM Output File]" << " " << "[Samples Per Pixel]" << '\n';
         return 1;
     }
-
+    
     return RayTracer(argv).rayTrace();
 }
