@@ -5,7 +5,7 @@
     "raytracing",
     "monte-carlo"
   ],
-  "version": "4.0.0",
+  "version": "5.0.0",
   "author": "Max Rosoff",
   "gypfile": true,
   "main": "index.js",
