@@ -12,6 +12,8 @@ Current work on this project is to migrate all base files to GPU compatible Cuda
 
 ## Example Images
 
+### Spheres
+
 Shown below are the resulting images when running the engine with the driver "Spheres".
 
 | Number of Samples | Resulting Image |
@@ -20,6 +22,8 @@ Shown below are the resulting images when running the engine with the driver "Sp
 | 100 Samples | ![100 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres100.jpg) |
 | 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres1000.jpg) |
 | 10000 Samples | ![10000 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres10000.jpg) |
+
+### Mando
 
 Shown below are the resulting images when running the engine with the driver "Mando".
 
@@ -34,11 +38,14 @@ Shown below are the resulting images when running the engine with the driver "Ma
 
 After downloading the repository, navigate to the directory where the repository is stored.
 
-From the Command Line, Enter The Command
+From the command line, enter the following commands.
 
 ``` bash
-cmake . && make
+mkdir build
+cmake .. && make
 ```
+
+At this time, we do not support Windows or MacOS.
 
 ### Running the Engine
 
@@ -52,10 +59,117 @@ The output format for the image is the PPM model. You can open such images in mo
 
 ### Node Driver
 
-In addition, you can build this project as a Node.js package. Simply install the package, and follow the below documentation.
+In addition, you can build this project as a Node.js package. Simply install the package with the following command.
 
 ```bash
-npm install
+npm install raytracer-node
+```
+
+Here are a couple of example functions that utilize the library (written with ES6 syntax). Please note that node is single threaded, and as such, this library will appear to "crash" your thread. It will complete its task given time. If you wish to use a rendering engine with this program, I would recommend looking into experimental node features or using worker windows in something like electron to hide the slowdown.
+
+```javascript
+function runRaytracer() {
+    createImage(
+        [
+            "0 0.25 -30", 
+            "0 0 1", 
+            "0 1 0", 
+            "-10", 
+            "-10 10 -10 10", 
+            "400 400", 
+            "100"
+        ],
+		[
+			"0 0 -10000000030 10000000000 0.3 0.3 0.8",
+			"0 0 10000000020 10000000000 0.3 0.3 0.8",
+			"0 -10000000020 0 10000000000 0.9 0.9 0.9",
+			"0 10000000020 0 10000000000 0.9 0.9 0.9",
+			"0 59.5 0 40 1.5 1.5 1.5 light",
+			"-10000000020 0 0 10000000000 0.3 0.8 0.3",
+			"10000000020 0 0 10000000000 0.8 0.3 0.3",
+			"-7 -17.1 0 3 0.8 0.8 0.8 glass",
+			"5 -17.1 5 3 0.8 0.8 0.8 mirror"
+		])
+}
+```
+
+```javascript
+import raytracer from 'raytracer-node';
+
+var lastCall = 0;
+
+function createImage(sceneData, sphereData) {
+    const emitter = new EventEmitter()
+
+	emitter.on('start', (file) => console.log(file));
+	emitter.on('progress', (percent, time) =>
+	{
+        let splitTime = time.split(" ");
+        splitTime[3] = parseFloat(splitTime[3]).toFixed(2);
+
+        let fixedString = splitTime.join(" ");
+
+        if (new Date() - lastCall < 500)
+        {
+            return false;
+        }
+
+        lastCall = new Date();
+        console.log("Percent Complete", parseInt(percent.substring(0, 2)), "Time Remaining", fixedString);
+    });
+    emitter.on('finish', (time) => console.log(time));
+    const imageString = raytracer(emitter.emit.bind(emitter), sceneData, sphereData);
+
+    emitter.removeListener('start', () => {});
+	emitter.removeListener('progress', () => {});
+	emitter.removeListener('finish', () => {});
+
+    return imageString;
+}
+```
+
+```javascript
+function generateHTMLElement(imageString) {
+    let imageDataLines = outputImageString.split("\n");
+    let imageDataLinesBroken = [];
+
+    imageDataLines.forEach((line) =>
+    {
+        imageDataLinesBroken.push(line.split(" "));
+    });
+
+    let width = imageDataLinesBroken[1][0];
+    let height = imageDataLinesBroken[1][1];
+
+    let c = document.createElement("canvas");
+    let ctx = c.getContext("2d");
+
+    c.width = width;
+    c.height = height;
+
+    let myImageData = ctx.createImageData(width, height);
+    let counter = 0;
+
+    let imageData = myImageData.data;
+
+    for (let i = 2; i < imageDataLinesBroken.length; i++)
+    {
+        for (let j = 0; j < imageDataLinesBroken[i].length; j++)
+        {
+            imageData[counter] = parseInt(imageDataLinesBroken[i][j]);
+            counter++;
+
+            if ((j + 1) % 3 === 0)
+            {
+                imageData[counter] = 255;
+                counter++;
+            }
+        }
+    }
+
+    ctx.putImageData(myImageData, 0, 0);
+    return c.toDataURL("image/png");
+}
 ```
 
 ### Creating Driver Files
@@ -65,6 +179,7 @@ files are all fully featured to create interesting and dramatic images that show
 
 If you wish to create your own driver files, the following fields are required for each element:
 
+```
 eye X Y Z  
 look X Y Z  
 up X Y Z  
@@ -73,8 +188,11 @@ bounds Left Right Bottom Top
 res Width Height  
 sphere X Y Z Radius AlbedoRed AlbedoGreen AlbedoBlue  
 model RX RY RZ RTheta ScaleFactor TX TY TZ SmoothingTheta FilePath
+```
 
-For Spheres and for Model Material Files, optional fields exist. Appending "light", "mirror", or "glass" to the end of a sphere line or material description will activate the corresponding property for that section of the image. See reference driver files for examples. Make sure that the bounds and resolution share an aspect ratio. This is important to ensure no artifacts.
+For Spheres and for Model Material Files, optional fields exist. Appending `light`, `mirror`, or `glass` to the end of a sphere line or material description will activate the corresponding property for that section of the image. See reference driver files for examples. Make sure that the bounds and resolution share an aspect ratio. This is important to ensure no artifacts.
+
+For a node install, you directly input the fields above into the function call. The first arguement to the library will be an emitter, followed by the scene data, and then the sphere data. You must also append the number of samples required to the scene data, as shown in the example above.
 
 ## Where to Find OBJ Files
 

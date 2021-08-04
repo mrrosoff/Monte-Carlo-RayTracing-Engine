@@ -9,11 +9,13 @@ set(CMAKE_CXX_STANDARD 17)
 file(GLOB main "${CMAKE_SOURCE_DIR}/RayTracingFiles/main.cpp")
 file(GLOB_RECURSE file_in_out "${CMAKE_SOURCE_DIR}/RayTracingFiles/FileInOut/*.cpp")
 file(GLOB_RECURSE matrix "${CMAKE_SOURCE_DIR}/RayTracingFiles/Matrix/*.cpp")
-file(GLOB_RECURSE raytracing "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/*.cpp")
 file(GLOB_RECURSE scene_items "${CMAKE_SOURCE_DIR}/RayTracingFiles/SceneItems/*.cpp")
+file(GLOB_RECURSE raytracing "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/Camera.cpp")
+file(GLOB_RECURSE raytracing "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/Ray.cpp")
+file(GLOB_RECURSE raytracing "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/RayTracer.cpp")
 
 if (APPLE)
-  add_compile_options(-DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_CXX_LIB_NAMES="omp" -DOpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib)
+
 endif()
 
 find_package(OpenMP REQUIRED)

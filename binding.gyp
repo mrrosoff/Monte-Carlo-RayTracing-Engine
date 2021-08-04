@@ -2,13 +2,15 @@
     "targets": [
         {
             "target_name": "raytracer",
-            "cflags_cc": ["-std=c++17", "-Wall", "-fopenmp", "-fexceptions"],
-            "defines": [ "NODE" ],
+            "cflags_cc": ["-std=c++17", "-Wall", "-fexceptions", "-DNODE"],
             'conditions': [
                 ['OS=="mac"', {
                     'xcode_settings': {
                         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
-                    }
+                    },
+                    'defines': [
+                        'NODE',
+                    ],
                 }]
             ],
             "sources": [
@@ -18,7 +20,7 @@
                 "./RayTracingFiles/Matrix/Vector.cpp",
                 "./RayTracingFiles/RayTracing/Camera.cpp",
                 "./RayTracingFiles/RayTracing/Ray.cpp",
-                "./RayTracingFiles/RayTracing/RayTracer.cpp",
+                "./RayTracingFiles/RayTracing/RayTracerNode.cpp",
                 "./RayTracingFiles/SceneItems/Models/Face.cpp",
                 "./RayTracingFiles/SceneItems/Models/Object.cpp",
                 "./RayTracingFiles/SceneItems/Models/Remap.cpp",

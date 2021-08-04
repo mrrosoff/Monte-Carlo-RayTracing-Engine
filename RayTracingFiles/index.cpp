@@ -18,7 +18,6 @@ Napi::String raytrace(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
 
     Napi::Function emit = info[0].As<Napi::Function>();
-
     Napi::Array sceneData = info[1].As<Napi::Array>();
     Napi::Array spheres = info[2].As<Napi::Array>();
 
@@ -42,8 +41,8 @@ Napi::String raytrace(const Napi::CallbackInfo &info) {
     return Napi::String::New(env, result);
 }
 
-Napi::Object Init(Napi::Env env, Napi::Object exports) {
-
+Napi::Object Init(Napi::Env env, Napi::Object exports)
+{
     exports.Set(Napi::String::New(env, "raytrace"), Napi::Function::New(env, raytrace));
     return exports;
 }
