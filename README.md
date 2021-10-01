@@ -62,6 +62,12 @@ The output format for the image is the PPM model. You can open such images in mo
 In addition, you can build this project as a Node.js package. Simply install the package with the following command.
 
 ```bash
+npm install
+```
+
+Or if you are in another project use the following command.
+
+```
 npm install raytracer-node
 ```
 

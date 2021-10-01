@@ -111,7 +111,6 @@ int RayTracer::rayTrace()
         return 1;
     }
 }
-#endif
 
 Vector RayTracer::calculateAverageColor(const int i, const int j)
 {

@@ -10,13 +10,6 @@ file(GLOB main "${CMAKE_SOURCE_DIR}/RayTracingFiles/main.cpp")
 file(GLOB_RECURSE file_in_out "${CMAKE_SOURCE_DIR}/RayTracingFiles/FileInOut/*.cpp")
 file(GLOB_RECURSE matrix "${CMAKE_SOURCE_DIR}/RayTracingFiles/Matrix/*.cpp")
 file(GLOB_RECURSE scene_items "${CMAKE_SOURCE_DIR}/RayTracingFiles/SceneItems/*.cpp")
-file(GLOB_RECURSE raytracing "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/Camera.cpp")
-file(GLOB_RECURSE raytracing "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/Ray.cpp")
-file(GLOB_RECURSE raytracing "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/RayTracer.cpp")
-
-if (APPLE)
-
-endif()
 
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
@@ -26,4 +19,12 @@ if (OPENMP_FOUND)
 endif()
 
 add_compile_options(-Wall -O3)
-add_executable(raytracer ${main} ${file_in_out} ${matrix} ${raytracing} ${scene_items})
+add_executable(raytracer 
+    ${main} 
+    ${file_in_out} 
+    ${matrix} 
+    ${scene_items} 
+    "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/Camera.cpp" 
+    "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/Ray.cpp" 
+    "${CMAKE_SOURCE_DIR}/RayTracingFiles/RayTracing/RayTracer.cpp"
+)
