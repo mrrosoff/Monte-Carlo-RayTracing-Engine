@@ -42,14 +42,15 @@ int RayTracer::rayTrace()
 
         driver << inFile;
 
-        auto resolution = driver.camera.resolution;
+        const auto resolution = driver.camera.resolution;
 
-        int width = resolution[0];
-        int height = resolution[1];
+        const int width = resolution[0];
+        const int height = resolution[1];
 
         vector<vector<vector<int>>> img(height);
 
-        cout << "Beginning Ray Tracing. Num Threads: " << omp_get_max_threads() << endl;
+        const int threads = omp_get_max_threads() / 2;
+        cout << "Beginning Ray Tracing. Num Threads: " << threads << endl;
 
         auto start = high_resolution_clock::now();
         double currentPercentCompleted = 0;
@@ -57,7 +58,7 @@ int RayTracer::rayTrace()
         generator = default_random_engine(system_clock::now().time_since_epoch().count());
         distribution = uniform_real_distribution<double>(-1, 1);
 
-        #pragma omp parallel for num_threads(omp_get_max_threads()) schedule(dynamic)
+        #pragma omp parallel for num_threads(threads) schedule(dynamic)
         for (int i = 0; i < height; i++)
         {
             img[i] = vector<vector<int>>(width);

@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.cjs": "javascript",
+        "chrono": "cpp",
+        "iostream": "cpp"
+    }
+}

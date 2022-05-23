@@ -4,13 +4,23 @@
 
 # About Project
 
-An engine built to render complex scenes with all the capabilities of real world private engines. Images are outputted in the PPM format and use a simple driver file system for creation.
+An CPU based engine built to render complex scenes with all the capabilities of real world private engines. Images are outputted in the PPM format and use a simple driver file system for creation.
 
 The engine uses a Monte Carlo technique to render images. This process randomly fires rays on contact with Lambertian materials. This creates much more accurate lighting than traditional Ray Tracing. The downside is of course speed. The engine can handle simple Lambertian surfaces, metal surfaces with total reflection, and refractive surfaces such as glass. The engine also produces accurate shadows and highlights and has complex material control.
 
-Current work on this project is to migrate all base files to GPU compatible Cuda code.
-
 ## Example Images
+
+### SquareSpheres
+
+Shown below are the resulting images when running the engine with the driver "SquareSpheres". This driver file consists of only spheres.
+
+| Number of Samples | Resulting Image |
+| ----------------- | --------------- |
+| 10 Samples | ![10 Samples](./ExampleDriverFiles/SquareSpheres/Images/JPG/SquareSpheres10.jpg) |
+| 100 Samples | ![100 Samples](./ExampleDriverFiles/SquareSpheres/Images/JPG/SquareSpheres100.jpg) |
+| 1,000 Samples | ![1000 Samples](./ExampleDriverFiles/SquareSpheres/Images/JPG/SquareSpheres1000.jpg) |
+| 10,000 Samples | ![10000 Samples](./ExampleDriverFiles/SquareSpheres/Images/JPG/SquareSpheres10000.jpg) |
+| 100,000 Samples | ![100000 Samples](./ExampleDriverFiles/SquareSpheres/Images/JPG/SquareSpheres100000.jpg) |
 
 ### Spheres
 
@@ -20,12 +30,12 @@ Shown below are the resulting images when running the engine with the driver "Sp
 | ----------------- | --------------- |
 | 10 Samples | ![10 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres10.jpg) |
 | 100 Samples | ![100 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres100.jpg) |
-| 1000 Samples | ![1000 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres1000.jpg) |
-| 10000 Samples | ![10000 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres10000.jpg) |
+| 1,000 Samples | ![1000 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres1000.jpg) |
+| 10,000 Samples | ![10000 Samples](./ExampleDriverFiles/Spheres/Images/JPG/Spheres10000.jpg) |
 
 ### Mando
 
-Shown below are the resulting images when running the engine with the driver "Mando".
+Shown below are the resulting images when running the engine with the driver "Mando". Due to the high triangle count of this driver file, rendering times are very long.
 
 | Number of Samples | Resulting Image |
 | ----------------- | --------------- |
@@ -40,7 +50,7 @@ After downloading the repository, navigate to the directory where the repository
 
 From the command line, enter the following commands.
 
-``` bash
+```bash
 mkdir build
 cmake .. && make
 ```
@@ -51,7 +61,7 @@ At this time, we do not support Windows or MacOS.
 
 After You Have Built the Executable, Run The Program Using the Command 
 
-``` bash
+```bash
 ./raytracer [Driver File] [Ouput File] [Samples]
 ```
 
@@ -67,7 +77,7 @@ npm install
 
 Or if you are in another project use the following command.
 
-```
+```bash
 npm install raytracer-node
 ```
 
@@ -185,7 +195,7 @@ files are all fully featured to create interesting and dramatic images that show
 
 If you wish to create your own driver files, the following fields are required for each element:
 
-```
+```txt
 eye X Y Z  
 look X Y Z  
 up X Y Z  

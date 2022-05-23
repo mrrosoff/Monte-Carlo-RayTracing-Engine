@@ -18,7 +18,7 @@ if (OPENMP_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-add_compile_options(-Wall -O3)
+add_compile_options(-Wall -O3 -g)
 add_executable(raytracer 
     ${main} 
     ${file_in_out} 
